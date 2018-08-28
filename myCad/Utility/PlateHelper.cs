@@ -42,9 +42,9 @@ namespace myCad .Utility
             public PlateModel GetMinPlate(PlateModel pm)
             {
                   RectHelper rect = new RectHelper();
-                  Dictionary<string, object> dic = rect .MinRect(pm .OutModel .ListPoint);
+                  Dictionary<string, object> dic = rect .MinRect(pm .OutModel .ExpandPoint);
                   PlateModel pmnew = RotateAndMove(pm, Convert .ToSingle(dic["angle"]));
-                  pmnew .Rect = GetRect(pmnew .OutModel .ListPoint);
+                  pmnew .Rect = GetRect(pmnew .OutModel .ExpandPoint);
                   return pmnew;
             }
 
@@ -139,21 +139,21 @@ namespace myCad .Utility
                   CopyOper co = new CopyOper();
                   PlateModel pm = co .CopyPlate(pmold);
                   new RotateOper() .RotatePlate(pm, new PointF(0, 0), angle);
-                  float maxX = pm .OutModel .ListPoint[0] .X;
-                  float maxY = pm .OutModel .ListPoint[0] .Y;
-                  float minX = pm .OutModel .ListPoint[0] .X;
-                  float minY = pm .OutModel .ListPoint[0] .Y;
-                  for (int i = 0; i < pm .OutModel .ListPoint .Count; i++)
+                  float maxX = pm .OutModel .ExpandPoint[0] .X;
+                  float maxY = pm .OutModel .ExpandPoint[0] .Y;
+                  float minX = pm .OutModel .ExpandPoint[0] .X;
+                  float minY = pm .OutModel .ExpandPoint[0] .Y;
+                  for (int i = 0; i < pm .OutModel .ExpandPoint .Count; i++)
                   {
-                        if (maxX < pm .OutModel .ListPoint[i] .X)
-                              maxX = pm .OutModel .ListPoint[i] .X;
-                        if (maxY < pm .OutModel .ListPoint[i] .Y)
-                              maxY = pm .OutModel .ListPoint[i] .Y;
+                        if (maxX < pm .OutModel .ExpandPoint[i] .X)
+                              maxX = pm .OutModel .ExpandPoint[i] .X;
+                        if (maxY < pm .OutModel .ExpandPoint[i] .Y)
+                              maxY = pm .OutModel .ExpandPoint[i] .Y;
 
-                        if (minX > pm .OutModel .ListPoint[i] .X)
-                              minX = pm .OutModel .ListPoint[i] .X;
-                        if (minY > pm .OutModel .ListPoint[i] .Y)
-                              minY = pm .OutModel .ListPoint[i] .Y;
+                        if (minX > pm .OutModel .ExpandPoint[i] .X)
+                              minX = pm .OutModel .ExpandPoint[i] .X;
+                        if (minY > pm .OutModel .ExpandPoint[i] .Y)
+                              minY = pm .OutModel .ExpandPoint[i] .Y;
                   }
                   PlateModel pmmove = new MoveOper() .MovePlate(pm, -minX, -minY);
                   /*if (angle == 90 || angle == 270)

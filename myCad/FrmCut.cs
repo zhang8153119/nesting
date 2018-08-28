@@ -451,6 +451,7 @@ namespace myCad
             /// <param name="e"></param>
             private void btnDXF_Click(object sender, EventArgs e)
             {
+                  float dis = Convert .ToSingle(txtDis .Text);
                   _bgcad .Graphics .Clear(Color .Black);
                   //DrawStock();
                   DxfInputB di = new DxfInputB();
@@ -460,7 +461,9 @@ namespace myCad
                         txtpart .Text = inputPlate[0] .PlateName;
                         PlateHelper ph = new PlateHelper();
                         GridHelper gh = new GridHelper();
-                        PlateModel pm = ph .GetMinPlate(inputPlate[i]);
+                        RectHelper rh = new RectHelper();
+
+                        PlateModel pm = ph .GetMinPlate(rh .Expand(inputPlate[i], dis));
                         pm .GridValue = gh .GetGridValue(pm, T) .Grid;
                         pm .id = i;
                         _part .Add(pm);
