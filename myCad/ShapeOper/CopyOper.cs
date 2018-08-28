@@ -25,7 +25,12 @@ namespace myCad .ShapeOper
                   {
                         newOutModel .ListShape .Add(copy(plate .OutModel .ListShape[i]));
                   }
+                  for (int i = 0; i < plate .OutModel .ExpandShape .Count; i++)
+                  {
+                        newOutModel .ExpandShape .Add(copy(plate .OutModel .ExpandShape[i]));
+                  }
                   newOutModel .ListPoint .AddRange(plate .OutModel .ListPoint);
+                  newOutModel .ExpandPoint .AddRange(plate .OutModel .ExpandPoint);
                   newOutModel .IsArc = plate .OutModel .IsArc;
                   newOutModel .IsInner = plate .OutModel .IsInner;
                   newOutModel .Area = plate .OutModel .Area;
@@ -75,6 +80,7 @@ namespace myCad .ShapeOper
                   copyPlate .Rect = plate .Rect;
                   copyPlate .Combine = plate .Combine;
                   copyPlate .PlateCount = plate .PlateCount;
+
                   return copyPlate;
             }
 

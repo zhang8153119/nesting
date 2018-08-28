@@ -29,8 +29,8 @@ namespace myCad .Model
             private List<PointF> listPoint = new List<PointF>();   //模型的顶点
             private bool clockwise = false;                   //模型的顶点是顺时针还是逆时针，false代表逆时针，true代表顺时针
 
-            public List<BaseShape> ExpandShape { get; set; }
-            public List<PointF> ExpandPoint { get; set; }
+            public List<BaseShape> ExpandShape { get; set; } = new List<BaseShape>();
+            public List<PointF> ExpandPoint { get; set; } = new List<PointF>();
             public virtual void Draw(Graphics g)
             {
                   if (!IsBound)

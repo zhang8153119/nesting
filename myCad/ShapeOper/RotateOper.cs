@@ -25,9 +25,17 @@ namespace myCad .ShapeOper
                   {
                         rotate(plate .OutModel .ListShape[i], rotatePoint, angle);
                   }
+                  for (int i = 0; i < plate .OutModel .ExpandShape .Count; i++)
+                  {
+                        rotate(plate .OutModel .ExpandShape[i], rotatePoint, angle);
+                  }
                   for (int i = 0; i < plate .OutModel .ListPoint .Count; i++)
                   {
                         plate .OutModel .ListPoint[i] = rotate(plate .OutModel .ListPoint[i], rotatePoint, angle);
+                  }
+                  for (int i = 0; i < plate .OutModel .ExpandPoint .Count; i++)
+                  {
+                        plate .OutModel .ExpandPoint[i] = rotate(plate .OutModel .ExpandPoint[i], rotatePoint, angle);
                   }
                   for (int i = 0; i < plate .InnerModel .Count; i++)
                   {

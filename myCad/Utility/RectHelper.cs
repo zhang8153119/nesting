@@ -866,9 +866,9 @@ namespace myCad .Utility
                               }
                         }
                         //副图凸包向右移动与主图组合
-                        if (mindis > T)
+                        if (mindis > 0)//图形已加保护量，移动时不考虑
                         {
-                              chnew_move = Move(chnew_move, mindis - T, 0);
+                              chnew_move = Move(chnew_move, mindis, 0);
                         }
                         chCombine = ConvexHullCombine(chnew_move, ch);
                         if (chCombine .Count == 0)
@@ -890,7 +890,7 @@ namespace myCad .Utility
                               )
                         {
                               area = Convert .ToSingle(dicCombine["area"]);
-                              movex = mindis - T;
+                              movex = mindis;
                               movey = i * T;
                               angle = Convert .ToSingle(dicCombine["angle"]);
                               length = Convert .ToSingle(dicCombine["length"]);
@@ -1064,9 +1064,9 @@ namespace myCad .Utility
                               }
                         }
                         //副图凸包向左移动与主图组合
-                        if (mindis > T)
+                        if (mindis > 0)
                         {
-                              chnew_move = Move(chnew_move, -(mindis - T), 0);
+                              chnew_move = Move(chnew_move, -mindis, 0);
                         }
                         chCombine = ConvexHullCombine(chnew_move, ch);
                         if (chCombine .Count == 0)
@@ -1086,7 +1086,7 @@ namespace myCad .Utility
                               && (limit < 0 || (Convert .ToSingle(dicCombine["length"]) <= limit && Convert .ToSingle(dicCombine["height"]) <= limit)))
                         {
                               area = Convert .ToSingle(dicCombine["area"]);
-                              movex = l * 2 - (mindis - T);
+                              movex = l * 2 - mindis;
                               movey = i * T;
                               angle = Convert .ToSingle(dicCombine["angle"]);
                               length = Convert .ToSingle(dicCombine["length"]);
@@ -1248,9 +1248,9 @@ namespace myCad .Utility
                               }
                         }
                         //副图凸包向右移动与主图组合
-                        if (mindis > T)
+                        if (mindis > 0)
                         {
-                              chnew_move = Move(chnew_move, 0, mindis - T);
+                              chnew_move = Move(chnew_move, 0, mindis);
                         }
                         chCombine = ConvexHullCombine(chnew_move, ch);
                         if (chCombine .Count == 0)
@@ -1271,7 +1271,7 @@ namespace myCad .Utility
                         {
                               area = Convert .ToSingle(dicCombine["area"]);
                               movex = i * T;
-                              movey = mindis - T;
+                              movey = mindis;
                               angle = Convert .ToSingle(dicCombine["angle"]);
                               length = Convert .ToSingle(dicCombine["length"]);
                               height = Convert .ToSingle(dicCombine["height"]);
@@ -1444,9 +1444,9 @@ namespace myCad .Utility
                               }
                         }
                         //副图凸包向左移动与主图组合
-                        if (mindis > T)
+                        if (mindis > 0)
                         {
-                              chnew_move = Move(chnew_move, 0, -(mindis - T));
+                              chnew_move = Move(chnew_move, 0, -mindis);
                         }
                         chCombine = ConvexHullCombine(chnew_move, ch);
                         if (chCombine .Count == 0)
@@ -1467,7 +1467,7 @@ namespace myCad .Utility
                         {
                               area = Convert .ToSingle(dicCombine["area"]);
                               movex = i * T;
-                              movey = h * 2 - (mindis - T);
+                              movey = h * 2 - mindis;
                               angle = Convert .ToSingle(dicCombine["angle"]);
                               length = Convert .ToSingle(dicCombine["length"]);
                               height = Convert .ToSingle(dicCombine["height"]);

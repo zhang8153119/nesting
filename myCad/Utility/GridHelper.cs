@@ -37,9 +37,9 @@ namespace myCad .Utility
                               y = r .Y + r .Height;
                         }
                         List<PointF> plist = new List<PointF>();
-                        for (int i = 0; i < pm .OutModel .ListShape .Count; i++)
+                        for (int i = 0; i < pm .OutModel .ExpandShape .Count; i++)
                         {
-                              plist = IntersectPointX(pm .OutModel .ListShape[i], y, plist);
+                              plist = IntersectPointX(pm .OutModel .ExpandShape[i], y, plist);
                         }
 
                         for (int i = 0; i < pm .InnerModel .Count; i++)
@@ -49,7 +49,7 @@ namespace myCad .Utility
                                     plist = IntersectPointX(pm .InnerModel[i] .ListShape[j], y, plist);
                               }
                         }
-                        Tuple<List<PointF>, List<PointF>> tp = DisposeSpecialPointX(pm .OutModel .ListPoint, plist);
+                        Tuple<List<PointF>, List<PointF>> tp = DisposeSpecialPointX(pm .OutModel .ExpandPoint, plist);
                         plist = tp .Item1;
                         List<PointF> line = tp .Item2;
                         for (int i = 0; i < pm .InnerModel .Count; i++)
@@ -88,9 +88,9 @@ namespace myCad .Utility
                               x = r .X + r .Width;
                         }
                         List<PointF> plist = new List<PointF>();
-                        for (int i = 0; i < pm .OutModel .ListShape .Count; i++)
+                        for (int i = 0; i < pm .OutModel .ExpandShape .Count; i++)
                         {
-                              plist = IntersectPointY(pm .OutModel .ListShape[i], x, plist);
+                              plist = IntersectPointY(pm .OutModel .ExpandShape[i], x, plist);
                         }
 
                         for (int i = 0; i < pm .InnerModel .Count; i++)
@@ -100,7 +100,7 @@ namespace myCad .Utility
                                     plist = IntersectPointY(pm .InnerModel[i] .ListShape[j], x, plist);
                               }
                         }
-                        Tuple<List<PointF>, List<PointF>> tp = DisposeSpecialPointY(pm .OutModel .ListPoint, plist);
+                        Tuple<List<PointF>, List<PointF>> tp = DisposeSpecialPointY(pm .OutModel .ExpandPoint, plist);
                         plist = tp .Item1;
                         List<PointF> line = tp .Item2;
                         for (int i = 0; i < pm .InnerModel .Count; i++)

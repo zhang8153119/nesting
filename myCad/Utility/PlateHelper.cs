@@ -56,11 +56,11 @@ namespace myCad .Utility
                   PlateModel pmnew = co .CopyPlate(source);//旋转180后的图形
                   pmnew = Rotate(pmnew, 180);
 
-                  List<PointF> pnew = pmnew .OutModel .ListPoint;
-                  List<PointF> chnew = rect .GetConvexHull(pmnew .OutModel .ListPoint);
+                  List<PointF> pnew = pmnew .OutModel .ExpandPoint;
+                  List<PointF> chnew = rect .GetConvexHull(pmnew .OutModel .ExpandPoint);
 
-                  List<PointF> p = pm .OutModel .ListPoint;
-                  List<PointF> ch = rect .GetConvexHull(pm .OutModel .ListPoint);
+                  List<PointF> p = pm .OutModel .ExpandPoint;
+                  List<PointF> ch = rect .GetConvexHull(pm .OutModel .ExpandPoint);
 
                   Dictionary<string, object> diccombine = rect .Combine(p, ch, pnew, chnew, T, limit, type);
                   List<PointF> chcombine = (List<PointF>)diccombine["convexhull"];
@@ -68,7 +68,7 @@ namespace myCad .Utility
                   RotateAndMove(pm, pmnew, Convert .ToSingle(diccombine["angle"]));
 
                   PlateCombine pc = new PlateCombine(pm, pmnew);
-                  pc .Rect = pm .Rect = pmnew .Rect = GetRect(pm .OutModel .ListPoint, pmnew .OutModel .ListPoint);
+                  pc .Rect = pm .Rect = pmnew .Rect = GetRect(pm .OutModel .ExpandPoint, pmnew .OutModel .ExpandPoint);
                   return pc;
             }
             /// <summary>
@@ -160,7 +160,7 @@ namespace myCad .Utility
                         pmmove .Rect = new RectangleF(0, 0, pm .Rect .Height, pm .Rect .Width);
                   else if (angle == 0 || angle == 180)
                         pmmove .Rect = new RectangleF(0, 0, pm .Rect .Width, pm .Rect .Height);*/
-                  pmmove .Rect = GetRect(pmmove .OutModel .ListPoint);
+                  pmmove .Rect = GetRect(pmmove .OutModel .ExpandPoint);
                   return pmmove;
             }
             /// <summary>
@@ -179,33 +179,33 @@ namespace myCad .Utility
                   pm1 = ro .RotatePlate(pm1, new PointF(0, 0), angle);
                   pm2 = ro .RotatePlate(pm2, new PointF(0, 0), angle);
 
-                  float maxX = pm1 .OutModel .ListPoint[0] .X;
-                  float maxY = pm1 .OutModel .ListPoint[0] .Y;
-                  float minX = pm1 .OutModel .ListPoint[0] .X;
-                  float minY = pm1 .OutModel .ListPoint[0] .Y;
-                  for (int i = 0; i < pm1 .OutModel .ListPoint .Count; i++)
+                  float maxX = pm1 .OutModel .ExpandPoint[0] .X;
+                  float maxY = pm1 .OutModel .ExpandPoint[0] .Y;
+                  float minX = pm1 .OutModel .ExpandPoint[0] .X;
+                  float minY = pm1 .OutModel .ExpandPoint[0] .Y;
+                  for (int i = 0; i < pm1 .OutModel .ExpandPoint .Count; i++)
                   {
-                        if (maxX < pm1 .OutModel .ListPoint[i] .X)
-                              maxX = pm1 .OutModel .ListPoint[i] .X;
-                        if (maxY < pm1 .OutModel .ListPoint[i] .Y)
-                              maxY = pm1 .OutModel .ListPoint[i] .Y;
+                        if (maxX < pm1 .OutModel .ExpandPoint[i] .X)
+                              maxX = pm1 .OutModel .ExpandPoint[i] .X;
+                        if (maxY < pm1 .OutModel .ExpandPoint[i] .Y)
+                              maxY = pm1 .OutModel .ExpandPoint[i] .Y;
 
-                        if (minX > pm1 .OutModel .ListPoint[i] .X)
-                              minX = pm1 .OutModel .ListPoint[i] .X;
-                        if (minY > pm1 .OutModel .ListPoint[i] .Y)
-                              minY = pm1 .OutModel .ListPoint[i] .Y;
+                        if (minX > pm1 .OutModel .ExpandPoint[i] .X)
+                              minX = pm1 .OutModel .ExpandPoint[i] .X;
+                        if (minY > pm1 .OutModel .ExpandPoint[i] .Y)
+                              minY = pm1 .OutModel .ExpandPoint[i] .Y;
                   }
-                  for (int i = 0; i < pm2 .OutModel .ListPoint .Count; i++)
+                  for (int i = 0; i < pm2 .OutModel .ExpandPoint .Count; i++)
                   {
-                        if (maxX < pm2 .OutModel .ListPoint[i] .X)
-                              maxX = pm2 .OutModel .ListPoint[i] .X;
-                        if (maxY < pm2 .OutModel .ListPoint[i] .Y)
-                              maxY = pm2 .OutModel .ListPoint[i] .Y;
+                        if (maxX < pm2 .OutModel .ExpandPoint[i] .X)
+                              maxX = pm2 .OutModel .ExpandPoint[i] .X;
+                        if (maxY < pm2 .OutModel .ExpandPoint[i] .Y)
+                              maxY = pm2 .OutModel .ExpandPoint[i] .Y;
 
-                        if (minX > pm2 .OutModel .ListPoint[i] .X)
-                              minX = pm2 .OutModel .ListPoint[i] .X;
-                        if (minY > pm2 .OutModel .ListPoint[i] .Y)
-                              minY = pm2 .OutModel .ListPoint[i] .Y;
+                        if (minX > pm2 .OutModel .ExpandPoint[i] .X)
+                              minX = pm2 .OutModel .ExpandPoint[i] .X;
+                        if (minY > pm2 .OutModel .ExpandPoint[i] .Y)
+                              minY = pm2 .OutModel .ExpandPoint[i] .Y;
                   }
                   MoveOper mo = new MoveOper();
                   mo .MovePlate(pm1, -minX, -minY);
@@ -217,7 +217,7 @@ namespace myCad .Utility
                   //{
                   //      pcnew .Rect = new RectangleF(0, 0, pc .Rect .Height, pc .Rect .Width);
                   //}
-                  pcnew .Rect = GetRect(pm1 .OutModel .ListPoint, pm2 .OutModel .ListPoint);
+                  pcnew .Rect = GetRect(pm1 .OutModel .ExpandPoint, pm2 .OutModel .ExpandPoint);
                   return pcnew;
             }
 
@@ -231,39 +231,39 @@ namespace myCad .Utility
             {
                   pm1 = new RotateOper() .RotatePlate(pm1, new PointF(0, 0), angle);
                   pm2 = new RotateOper() .RotatePlate(pm2, new PointF(0, 0), angle);
-                  float maxX = pm1 .OutModel .ListPoint[0] .X;
-                  float maxY = pm1 .OutModel .ListPoint[0] .Y;
-                  float minX = pm1 .OutModel .ListPoint[0] .X;
-                  float minY = pm1 .OutModel .ListPoint[0] .Y;
-                  for (int i = 0; i < pm1 .OutModel .ListPoint .Count; i++)
+                  float maxX = pm1 .OutModel .ExpandPoint[0] .X;
+                  float maxY = pm1 .OutModel .ExpandPoint[0] .Y;
+                  float minX = pm1 .OutModel .ExpandPoint[0] .X;
+                  float minY = pm1 .OutModel .ExpandPoint[0] .Y;
+                  for (int i = 0; i < pm1 .OutModel .ExpandPoint .Count; i++)
                   {
-                        if (maxX < pm1 .OutModel .ListPoint[i] .X)
-                              maxX = pm1 .OutModel .ListPoint[i] .X;
-                        if (maxY < pm1 .OutModel .ListPoint[i] .Y)
-                              maxY = pm1 .OutModel .ListPoint[i] .Y;
+                        if (maxX < pm1 .OutModel .ExpandPoint[i] .X)
+                              maxX = pm1 .OutModel .ExpandPoint[i] .X;
+                        if (maxY < pm1 .OutModel .ExpandPoint[i] .Y)
+                              maxY = pm1 .OutModel .ExpandPoint[i] .Y;
 
-                        if (minX > pm1 .OutModel .ListPoint[i] .X)
-                              minX = pm1 .OutModel .ListPoint[i] .X;
-                        if (minY > pm1 .OutModel .ListPoint[i] .Y)
-                              minY = pm1 .OutModel .ListPoint[i] .Y;
+                        if (minX > pm1 .OutModel .ExpandPoint[i] .X)
+                              minX = pm1 .OutModel .ExpandPoint[i] .X;
+                        if (minY > pm1 .OutModel .ExpandPoint[i] .Y)
+                              minY = pm1 .OutModel .ExpandPoint[i] .Y;
                   }
-                  for (int i = 0; i < pm2 .OutModel .ListPoint .Count; i++)
+                  for (int i = 0; i < pm2 .OutModel .ExpandPoint .Count; i++)
                   {
-                        if (maxX < pm2 .OutModel .ListPoint[i] .X)
-                              maxX = pm2 .OutModel .ListPoint[i] .X;
-                        if (maxY < pm2 .OutModel .ListPoint[i] .Y)
-                              maxY = pm2 .OutModel .ListPoint[i] .Y;
+                        if (maxX < pm2 .OutModel .ExpandPoint[i] .X)
+                              maxX = pm2 .OutModel .ExpandPoint[i] .X;
+                        if (maxY < pm2 .OutModel .ExpandPoint[i] .Y)
+                              maxY = pm2 .OutModel .ExpandPoint[i] .Y;
 
-                        if (minX > pm2 .OutModel .ListPoint[i] .X)
-                              minX = pm2 .OutModel .ListPoint[i] .X;
-                        if (minY > pm2 .OutModel .ListPoint[i] .Y)
-                              minY = pm2 .OutModel .ListPoint[i] .Y;
+                        if (minX > pm2 .OutModel .ExpandPoint[i] .X)
+                              minX = pm2 .OutModel .ExpandPoint[i] .X;
+                        if (minY > pm2 .OutModel .ExpandPoint[i] .Y)
+                              minY = pm2 .OutModel .ExpandPoint[i] .Y;
                   }
                   new MoveOper() .MovePlate(pm1, -minX, -minY);
                   new MoveOper() .MovePlate(pm2, -minX, -minY);
 
-                  pm1 .Rect = GetRect(pm1 .OutModel .ListPoint);
-                  pm2 .Rect = GetRect(pm2 .OutModel .ListPoint);
+                  pm1 .Rect = GetRect(pm1 .OutModel .ExpandPoint);
+                  pm2 .Rect = GetRect(pm2 .OutModel .ExpandPoint);
             }
 
       }

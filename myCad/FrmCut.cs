@@ -2858,17 +2858,17 @@ namespace myCad
                   PlateModel pm = _part[0];
                   CopyOper co = new CopyOper();
                   PlateModel pmnew = co .CopyPlate(pm);
-                  RectHelper rh = new RectHelper();
-                  List<PointF> pnew = rh .Expand(pmnew .OutModel .ListPoint, Convert .ToSingle(txtDis .Text));
-                  List<Line> line = new List<Line>();
-                  for (int i = 0; i < pnew .Count; i++)
-                  {
-                        Line l = new Line(pnew[i], pnew[(i + 1) % pnew .Count]);
-                        line .Add(l);
-                  }
+                  //RectHelper rh = new RectHelper();
+                  //List<PointF> pnew = rh .Expand(pmnew .OutModel .ListPoint, Convert .ToSingle(txtDis .Text));
+                  //List<Line> line = new List<Line>();
+                  //for (int i = 0; i < pnew .Count; i++)
+                  //{
+                  //      Line l = new Line(pnew[i], pnew[(i + 1) % pnew .Count]);
+                  //      line .Add(l);
+                  //}
 
                   CADInterface .currentShapes .AddRange(pm .OutModel .ListShape);
-                  CADInterface .currentShapes .AddRange(line);
+                  CADInterface .currentShapes .AddRange(pm .OutModel .ExpandShape);
                   CADInterface .DrawShap();
             }
       }
