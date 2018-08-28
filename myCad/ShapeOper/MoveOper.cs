@@ -1,13 +1,8 @@
 ﻿using myCad .BaseShapeOper;
-using myCad .CADInterfaceCtrl;
 using myCad .Model;
 using myCad .Shape;
-using System;
 using System .Collections .Generic;
 using System .Drawing;
-using System .Linq;
-using System .Text;
-using System .Threading .Tasks;
 
 namespace myCad .ShapeOper
 {

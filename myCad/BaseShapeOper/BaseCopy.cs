@@ -55,7 +55,7 @@ namespace myCad.BaseShapeOper
             nLine.PenColor = line.PenColor;
             nLine.ShapeID = CADInterface.globalID;
             CADInterface.globalID = CADInterface.globalID + 1;
-            CADInterface.currentShapes.Add(nLine);
+            //CADInterface.currentShapes.Add(nLine);
             return nLine;
         }
 
@@ -71,7 +71,7 @@ namespace myCad.BaseShapeOper
             nCircle.ListPoint.AddRange(circle.ListPoint);
 
             CADInterface.globalID = CADInterface.globalID + 1;
-            CADInterface.currentShapes.Add(nCircle);
+            //CADInterface.currentShapes.Add(nCircle);
             return nCircle;
         }
 
@@ -96,7 +96,7 @@ namespace myCad.BaseShapeOper
             nEllipse.ListPoint.AddRange(ellipse.ListPoint);
 
             CADInterface.globalID = CADInterface.globalID + 1;
-            CADInterface.currentShapes.Add(nEllipse);
+            //CADInterface.currentShapes.Add(nEllipse);
 
             return nEllipse;
         }
@@ -113,7 +113,7 @@ namespace myCad.BaseShapeOper
             nArc.ListPoint.AddRange(arc.ListPoint);
 
             CADInterface.globalID = CADInterface.globalID + 1;
-            CADInterface.currentShapes.Add(nArc);
+            //CADInterface.currentShapes.Add(nArc);
             return nArc;
         }
 
@@ -138,7 +138,7 @@ namespace myCad.BaseShapeOper
             nEllipse.ListPoint.AddRange(ellipse.ListPoint);
 
             CADInterface.globalID = CADInterface.globalID + 1;
-            CADInterface.currentShapes.Add(nEllipse);
+            //CADInterface.currentShapes.Add(nEllipse);
             return nEllipse;
         }
     }
