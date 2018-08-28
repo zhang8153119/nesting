@@ -30,7 +30,7 @@ namespace myCad .ShapeOper
                         move(plate .OutModel .ExpandShape[i], moveX, moveY);
                   }
                   plate .OutModel .IsBound = false;
-                  plate .OutModel .Draw(CADInterface .bGrp .Graphics);
+                  //plate .OutModel .Draw(CADInterface .bGrp .Graphics);
                   if (plate .InnerModel .Count > 0)
                   {
                         for (int i = 0; i < plate .InnerModel .Count; i++)
@@ -40,7 +40,7 @@ namespace myCad .ShapeOper
                                     move(plate .InnerModel[i] .ListShape[i], moveX, moveY);
                               }
                               plate .InnerModel[i] .IsBound = false;
-                              plate .InnerModel[i] .Draw(CADInterface .bGrp .Graphics);
+                              //plate .InnerModel[i] .Draw(CADInterface .bGrp .Graphics);
                               for (int j = 0; j < plate .InnerModel[i] .ListPoint .Count; j++)
                               {
                                     plate .InnerModel[i] .ListPoint[i] = move(plate .InnerModel[i] .ListPoint[i], moveX, moveY);
