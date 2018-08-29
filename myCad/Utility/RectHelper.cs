@@ -878,11 +878,15 @@ namespace myCad .Utility
                         {
                               dicCombine = MinRect(chCombine);
                         }
-                        else
+                        else if (type == "para")
                         {
                               dicCombine = MinParallelogram(chCombine);
                         }
-
+                        else if (type == "mix")
+                        {
+                              Dictionary<string, object> dic1 = MinRect(chCombine);
+                              Dictionary<string, object> dic2 = MinParallelogram(chCombine);
+                        }
                         if ((area < 0 || area > Convert .ToSingle(dicCombine["area"]))
                               && (limit < 0 || (Convert .ToSingle(dicCombine["length"]) <= limit && Convert .ToSingle(dicCombine["height"]) <= limit))
                               )

@@ -472,8 +472,19 @@ namespace myCad
                         CADInterface .currentPlates .Clear();
 
                         string type = "";
-                        if (!chkParallelogram .Checked)
+                        if (cmbType .Text == "")
+                        {
+                              MessageBox .Show("请选择组合模型");
+                              return;
+                        }
+                        else if (cmbType .Text == "矩形")
                               type = "rect";
+                        else if (cmbType .Text == "平行四边形")
+                              type = "para";
+                        else if (cmbType .Text == "混合")
+                              type = "mix";
+                        else
+                              type = "";
                         if (inputPlate[i] .PlateCount > 1)
                         {
                               PlateCombine pc = ph .GetMinPlateCombine(pm, T, type);
