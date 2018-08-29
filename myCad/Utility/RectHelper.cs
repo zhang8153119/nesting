@@ -693,19 +693,24 @@ namespace myCad .Utility
                   Dictionary<string, object> dicUp = CombineUp(p, ch, pnew, chnew, T, limit, type);
                   Dictionary<string, object> dicDown = CombineDown(p, ch, pnew, chnew, T, limit, type);
 
-                  string result = "left";
-                  float minarea = Convert .ToSingle(dicLeft["area"]);
-                  if (Convert .ToSingle(dicRight["area"]) < minarea)
+                  float minarea = -1;
+                  string result = "";
+                  if (dicLeft["area"] != null && (Convert .ToSingle(dicLeft["area"]) < minarea || minarea < 0))
+                  {
+                        minarea = Convert .ToSingle(dicLeft["area"]);
+                        result = "left";
+                  }
+                  if (dicRight["area"] != null && (Convert .ToSingle(dicRight["area"]) < minarea || minarea < 0))
                   {
                         minarea = Convert .ToSingle(dicRight["area"]);
                         result = "right";
                   }
-                  if (Convert .ToSingle(dicUp["area"]) < minarea)
+                  if (dicUp["area"] != null && (Convert .ToSingle(dicUp["area"]) < minarea || minarea < 0))
                   {
                         minarea = Convert .ToSingle(dicUp["area"]);
                         result = "up";
                   }
-                  if (Convert .ToSingle(dicDown["area"]) < minarea)
+                  if (dicDown["area"] != null && (Convert .ToSingle(dicDown["area"]) < minarea || minarea < 0))
                   {
                         minarea = Convert .ToSingle(dicDown["area"]);
                         result = "down";
@@ -717,8 +722,9 @@ namespace myCad .Utility
                         return dicRight;
                   else if (result == "up")
                         return dicUp;
-                  else
+                  else if (result == "down")
                         return dicDown;
+                  return null;
             }
             //左下--左上
             public Dictionary<string, object> CombineLeft(List<PointF> p, List<PointF> ch, List<PointF> pnew, List<PointF> chnew
@@ -874,22 +880,64 @@ namespace myCad .Utility
                               return null;
                         }
                         Dictionary<string, object> dicCombine = new Dictionary<string, object>();
-                        if (type == "rect")
+                        bool accept = false;
+                        if (type == "rect" && limit < 0)
                         {
                               dicCombine = MinRect(chCombine);
+                              if (area < 0 || area > Convert .ToSingle(dicCombine["area"]))
+                              {
+                                    accept = true;
+                              }
                         }
-                        else if (type == "para")
+                        else if (type == "para" && limit < 0)
                         {
                               dicCombine = MinParallelogram(chCombine);
+                              if (area < 0 || area > Convert .ToSingle(dicCombine["area"]))
+                              {
+                                    accept = true;
+                              }
                         }
-                        else if (type == "mix")
+                        else if (type == "mix" || limit > 0)
                         {
                               Dictionary<string, object> dic1 = MinRect(chCombine);
                               Dictionary<string, object> dic2 = MinParallelogram(chCombine);
+                              float area1 = Convert .ToSingle(dic1["area"]);
+                              float area2 = Convert .ToSingle(dic2["area"]);
+                              float length1 = Convert .ToSingle(dic1["length"]);
+                              float length2 = Convert .ToSingle(dic2["length"]);
+                              float height1 = Convert .ToSingle(dic1["height"]);
+                              float height2 = Convert .ToSingle(dic2["height"]);
+                              if (length1 <= limit && height1 <= limit && !(length2 <= limit && height2 <= limit))
+                              {
+                                    if (area < 0 || area > area1)
+                                    {
+                                          accept = true;
+                                          dicCombine = dic1;
+                                    }
+                              }
+                              else if (length2 <= limit && height2 <= limit && !(length1 <= limit && height1 <= limit))
+                              {
+                                    if (area < 0 || area > area2)
+                                    {
+                                          accept = true;
+                                          dicCombine = dic2;
+                                    }
+                              }
+                              else if (length2 <= limit && height2 <= limit && length1 <= limit && height1 <= limit)
+                              {
+                                    if (area1 <= area2 && (area < 0 || area > area1))
+                                    {
+                                          accept = true;
+                                          dicCombine = dic1;
+                                    }
+                                    else if (area1 <= area2 && (area < 0 || area > area2))
+                                    {
+                                          accept = true;
+                                          dicCombine = dic2;
+                                    }
+                              }
                         }
-                        if ((area < 0 || area > Convert .ToSingle(dicCombine["area"]))
-                              && (limit < 0 || (Convert .ToSingle(dicCombine["length"]) <= limit && Convert .ToSingle(dicCombine["height"]) <= limit))
-                              )
+                        if (accept)
                         {
                               area = Convert .ToSingle(dicCombine["area"]);
                               movex = mindis;
@@ -1076,16 +1124,64 @@ namespace myCad .Utility
                               return null;
                         }
                         Dictionary<string, object> dicCombine = new Dictionary<string, object>();
-                        if (type == "rect")
+                        bool accept = false;
+                        if (type == "rect" && limit < 0)
                         {
                               dicCombine = MinRect(chCombine);
+                              if (area < 0 || area > Convert .ToSingle(dicCombine["area"]))
+                              {
+                                    accept = true;
+                              }
                         }
-                        else
+                        else if (type == "para" && limit < 0)
                         {
                               dicCombine = MinParallelogram(chCombine);
+                              if (area < 0 || area > Convert .ToSingle(dicCombine["area"]))
+                              {
+                                    accept = true;
+                              }
                         }
-                        if (area < 0 || area > Convert .ToSingle(dicCombine["area"])
-                              && (limit < 0 || (Convert .ToSingle(dicCombine["length"]) <= limit && Convert .ToSingle(dicCombine["height"]) <= limit)))
+                        else if (type == "mix" || limit > 0)
+                        {
+                              Dictionary<string, object> dic1 = MinRect(chCombine);
+                              Dictionary<string, object> dic2 = MinParallelogram(chCombine);
+                              float area1 = Convert .ToSingle(dic1["area"]);
+                              float area2 = Convert .ToSingle(dic2["area"]);
+                              float length1 = Convert .ToSingle(dic1["length"]);
+                              float length2 = Convert .ToSingle(dic2["length"]);
+                              float height1 = Convert .ToSingle(dic1["height"]);
+                              float height2 = Convert .ToSingle(dic2["height"]);
+                              if (length1 <= limit && height1 <= limit && !(length2 <= limit && height2 <= limit))
+                              {
+                                    if (area < 0 || area > area1)
+                                    {
+                                          accept = true;
+                                          dicCombine = dic1;
+                                    }
+                              }
+                              else if (length2 <= limit && height2 <= limit && !(length1 <= limit && height1 <= limit))
+                              {
+                                    if (area < 0 || area > area2)
+                                    {
+                                          accept = true;
+                                          dicCombine = dic2;
+                                    }
+                              }
+                              else if (length2 <= limit && height2 <= limit && length1 <= limit && height1 <= limit)
+                              {
+                                    if (area1 <= area2 && (area < 0 || area > area1))
+                                    {
+                                          accept = true;
+                                          dicCombine = dic1;
+                                    }
+                                    else if (area1 <= area2 && (area < 0 || area > area2))
+                                    {
+                                          accept = true;
+                                          dicCombine = dic2;
+                                    }
+                              }
+                        }
+                        if (accept)
                         {
                               area = Convert .ToSingle(dicCombine["area"]);
                               movex = l * 2 - mindis;
@@ -1260,16 +1356,64 @@ namespace myCad .Utility
                               return null;
                         }
                         Dictionary<string, object> dicCombine = new Dictionary<string, object>();
-                        if (type == "rect")
+                        bool accept = false;
+                        if (type == "rect" && limit < 0)
                         {
                               dicCombine = MinRect(chCombine);
+                              if (area < 0 || area > Convert .ToSingle(dicCombine["area"]))
+                              {
+                                    accept = true;
+                              }
                         }
-                        else
+                        else if (type == "para" && limit < 0)
                         {
                               dicCombine = MinParallelogram(chCombine);
+                              if (area < 0 || area > Convert .ToSingle(dicCombine["area"]))
+                              {
+                                    accept = true;
+                              }
                         }
-                        if (area < 0 || area > Convert .ToSingle(dicCombine["area"])
-                              && (limit < 0 || (Convert .ToSingle(dicCombine["length"]) <= limit && Convert .ToSingle(dicCombine["height"]) <= limit)))
+                        else if (type == "mix" || limit > 0)
+                        {
+                              Dictionary<string, object> dic1 = MinRect(chCombine);
+                              Dictionary<string, object> dic2 = MinParallelogram(chCombine);
+                              float area1 = Convert .ToSingle(dic1["area"]);
+                              float area2 = Convert .ToSingle(dic2["area"]);
+                              float length1 = Convert .ToSingle(dic1["length"]);
+                              float length2 = Convert .ToSingle(dic2["length"]);
+                              float height1 = Convert .ToSingle(dic1["height"]);
+                              float height2 = Convert .ToSingle(dic2["height"]);
+                              if (length1 <= limit && height1 <= limit && !(length2 <= limit && height2 <= limit))
+                              {
+                                    if (area < 0 || area > area1)
+                                    {
+                                          accept = true;
+                                          dicCombine = dic1;
+                                    }
+                              }
+                              else if (length2 <= limit && height2 <= limit && !(length1 <= limit && height1 <= limit))
+                              {
+                                    if (area < 0 || area > area2)
+                                    {
+                                          accept = true;
+                                          dicCombine = dic2;
+                                    }
+                              }
+                              else if (length2 <= limit && height2 <= limit && length1 <= limit && height1 <= limit)
+                              {
+                                    if (area1 <= area2 && (area < 0 || area > area1))
+                                    {
+                                          accept = true;
+                                          dicCombine = dic1;
+                                    }
+                                    else if (area1 <= area2 && (area < 0 || area > area2))
+                                    {
+                                          accept = true;
+                                          dicCombine = dic2;
+                                    }
+                              }
+                        }
+                        if (accept)
                         {
                               area = Convert .ToSingle(dicCombine["area"]);
                               movex = i * T;
@@ -1456,16 +1600,64 @@ namespace myCad .Utility
                               return null;
                         }
                         Dictionary<string, object> dicCombine = new Dictionary<string, object>();
-                        if (type == "rect")
+                        bool accept = false;
+                        if (type == "rect" && limit < 0)
                         {
                               dicCombine = MinRect(chCombine);
+                              if (area < 0 || area > Convert .ToSingle(dicCombine["area"]))
+                              {
+                                    accept = true;
+                              }
                         }
-                        else
+                        else if (type == "para" && limit < 0)
                         {
                               dicCombine = MinParallelogram(chCombine);
+                              if (area < 0 || area > Convert .ToSingle(dicCombine["area"]))
+                              {
+                                    accept = true;
+                              }
                         }
-                        if (area < 0 || area > Convert .ToSingle(dicCombine["area"])
-                              && (limit < 0 || (Convert .ToSingle(dicCombine["length"]) <= limit && Convert .ToSingle(dicCombine["height"]) <= limit)))
+                        else if (type == "mix" || limit > 0)
+                        {
+                              Dictionary<string, object> dic1 = MinRect(chCombine);
+                              Dictionary<string, object> dic2 = MinParallelogram(chCombine);
+                              float area1 = Convert .ToSingle(dic1["area"]);
+                              float area2 = Convert .ToSingle(dic2["area"]);
+                              float length1 = Convert .ToSingle(dic1["length"]);
+                              float length2 = Convert .ToSingle(dic2["length"]);
+                              float height1 = Convert .ToSingle(dic1["height"]);
+                              float height2 = Convert .ToSingle(dic2["height"]);
+                              if (length1 <= limit && height1 <= limit && !(length2 <= limit && height2 <= limit))
+                              {
+                                    if (area < 0 || area > area1)
+                                    {
+                                          accept = true;
+                                          dicCombine = dic1;
+                                    }
+                              }
+                              else if (length2 <= limit && height2 <= limit && !(length1 <= limit && height1 <= limit))
+                              {
+                                    if (area < 0 || area > area2)
+                                    {
+                                          accept = true;
+                                          dicCombine = dic2;
+                                    }
+                              }
+                              else if (length2 <= limit && height2 <= limit && length1 <= limit && height1 <= limit)
+                              {
+                                    if (area1 <= area2 && (area < 0 || area > area1))
+                                    {
+                                          accept = true;
+                                          dicCombine = dic1;
+                                    }
+                                    else if (area1 <= area2 && (area < 0 || area > area2))
+                                    {
+                                          accept = true;
+                                          dicCombine = dic2;
+                                    }
+                              }
+                        }
+                        if (accept)
                         {
                               area = Convert .ToSingle(dicCombine["area"]);
                               movex = i * T;

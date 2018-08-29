@@ -40,6 +40,7 @@ namespace myCad
             float _pnllen = 0;
             float _pnlwid = 0;
             float _rate = 1f;//缩放比例
+            List<PlateModel> _plate = new List<PlateModel>();
 
             int[,] _gridarray;
             List<GridData> _grid = new List<GridData>();
@@ -455,15 +456,15 @@ namespace myCad
                   _bgcad .Graphics .Clear(Color .Black);
                   //DrawStock();
                   DxfInputB di = new DxfInputB();
-                  List<PlateModel> inputPlate = di .mainmethod();
-                  for (int i = 0; i < inputPlate .Count; i++)
+                  _plate = di .mainmethod();
+                  for (int i = 0; i < _plate .Count; i++)
                   {
-                        txtpart .Text = inputPlate[0] .PlateName;
+                        txtpart .Text = _plate[0] .PlateName;
                         PlateHelper ph = new PlateHelper();
                         GridHelper gh = new GridHelper();
                         RectHelper rh = new RectHelper();
 
-                        PlateModel pm = ph .GetMinPlate(rh .Expand(inputPlate[i], dis));
+                        PlateModel pm = ph .GetMinPlate(rh .Expand(_plate[i], dis));
                         pm .GridValue = gh .GetGridValue(pm, T) .Grid;
                         pm .id = i;
                         _part .Add(pm);
@@ -485,7 +486,7 @@ namespace myCad
                               type = "mix";
                         else
                               type = "";
-                        if (inputPlate[i] .PlateCount > 1)
+                        if (_plate[i] .PlateCount > 1)
                         {
                               PlateCombine pc = ph .GetMinPlateCombine(pm, T, type);
                               //PlateCombine pc = ph .GetMinPlateCombine(inputPlate[i], T);
@@ -527,6 +528,7 @@ namespace myCad
                   //CutAdd();
                   DrawPart();
             }
+
             /// <summary>
             /// 旋转
             /// </summary>
