@@ -41,6 +41,7 @@ namespace myCad
             float _pnlwid = 0;
             float _rate = 1f;//缩放比例
             List<PlateModel> _plate = new List<PlateModel>();
+            string _type = "";
 
             int[,] _gridarray;
             List<GridData> _grid = new List<GridData>();
@@ -472,23 +473,22 @@ namespace myCad
                         CADInterface .currentShapes .Clear();
                         CADInterface .currentPlates .Clear();
 
-                        string type = "";
                         if (cmbType .Text == "")
                         {
                               MessageBox .Show("请选择组合模型");
                               return;
                         }
                         else if (cmbType .Text == "矩形")
-                              type = "rect";
+                              _type = "rect";
                         else if (cmbType .Text == "平行四边形")
-                              type = "para";
+                              _type = "para";
                         else if (cmbType .Text == "混合")
-                              type = "mix";
+                              _type = "mix";
                         else
-                              type = "";
+                              _type = "";
                         if (_plate[i] .PlateCount > 1)
                         {
-                              PlateCombine pc = ph .GetMinPlateCombine(pm, T, type);
+                              PlateCombine pc = ph .GetMinPlateCombine(pm, T, _type);
                               //PlateCombine pc = ph .GetMinPlateCombine(inputPlate[i], T);
                               pc .GridValue = gh .GetGridValueCombine(pc, T) .Grid;
                               pc .id = i;
@@ -1223,6 +1223,27 @@ namespace myCad
                   //所有库存初始化
                   for (int i = 0; i < dna .Stock .Count; i++)
                   {
+                        //检测组合模型大小
+                        float limit = dna .Stock[i] .Height;
+                        PlateHelper ph = new PlateHelper();
+                        //List<PlateCombine> pc = _partCombine .Where(t => t .Rect .Height >= limit || t .Rect .Width >= limit) .ToList();
+                        for (int t = 0; t < _partCombine .Count; t++)
+                        {
+                              if (_partCombine[t] .Rect .Height >= limit || _partCombine[t] .Rect .Width >= limit)
+                              {
+                                    PlateCombine pcold = _partCombine[t];
+                                    PlateModel pm = _part .Where(item => item .id == pcold .id) .ToList()[0];
+                                    PlateCombine pcnew = ph .GetMinPlateCombine(pm, T, _type, limit);
+                                    pcnew .id = pcold .id;
+                                    _partCombine[t] = pcnew;
+                                    var b = _basicLib .Keys .Where(item => item .Contains("C" + pcnew .id + "/")) .ToList();
+                                    for (int n = 0; n < b .Count; n++)
+                                    {
+                                          _basicLib .Remove(b[n]);
+                                    }
+                              }
+                        }
+
                         dna .Stock[i] .PartInfoList .Clear();
                         dna .Stock[i] .Use = 0;
                         for (int r = 0; r < dna .Stock[i] .Disable .GetLength(0); r++)
