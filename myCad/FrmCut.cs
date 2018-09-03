@@ -1,20 +1,15 @@
 ﻿using myCad .CADInterfaceCtrl;
 using myCad .DXFOper;
 using myCad .Model;
-using myCad .PaiYangSuanFa;
 using myCad .Shape;
 using myCad .ShapeOper;
 using myCad .Utility;
 using System;
 using System .Collections .Generic;
-using System .ComponentModel;
 using System .Data;
 using System .Drawing;
-using System .Drawing .Drawing2D;
 using System .Linq;
-using System .Text;
 using System .Threading;
-using System .Threading .Tasks;
 using System .Windows .Forms;
 using System .Windows .Forms .DataVisualization .Charting;
 
@@ -52,6 +47,15 @@ namespace myCad
 
             private void FrmCut_Shown(object sender, EventArgs e)
             {
+                  float rate = cad .Width / 10000f;
+                  CADInterface .scaleNum = rate;
+                  CADInterface .globalZoomNum *= rate;
+                  MouseShape .HitRect = new RectangleF(MouseShape .MousePoint .X - 3.5f / CADInterface .globalZoomNum, MouseShape .MousePoint .Y - 3.5f / CADInterface .globalZoomNum, 7 / CADInterface .globalZoomNum, 7 / CADInterface .globalZoomNum);
+                  CADInterface .bGrp .Graphics .Clear(this .BackColor);
+                  CADInterface .bGrp .Graphics .Transform = TransformMatrix .ScaleByPoint(CADInterface .scaleNum, MouseShape .MousePoint);
+                  //GetDrawRegionRect();
+                  CADInterface .DrawShap();
+
                   tabMain .SelectedIndex = 1;
                   InitChart();
                   txtscale .Text = "20";
@@ -1028,10 +1032,21 @@ namespace myCad
             /// <param name="e"></param>
             private void btnStop_Click(object sender, EventArgs e)
             {
-                  _stop = true;
-                  _watch .Stop();
-                  TimeSpan timespan = _watch .Elapsed;
-                  txttestvalue .AppendText((timespan .TotalMilliseconds / 1000d) .ToString() + "s\r\n");
+                  MethodInvoker stopInvoker = () =>
+                  {
+                        _stop = true;
+                        _watch .Stop();
+                        TimeSpan timespan = _watch .Elapsed;
+                        txttestvalue .AppendText((timespan .TotalMilliseconds / 1000d) .ToString() + "s\r\n");
+                  };
+                  if (btnStop .InvokeRequired)
+                  {
+                        btnStop .Invoke(stopInvoker);
+                  }
+                  else
+                  {
+                        stopInvoker();
+                  }
             }
             /// <summary>
             /// 生成初始种群
@@ -1182,7 +1197,7 @@ namespace myCad
                         if (pclist .Count > 0)
                         {
                               PlateCombine pc = pclist[0];
-                              gl2 = gh .GetGridValueCombine(ph .RotateAndMove(pc, Convert .ToSingle(angle)), T);
+                              gl2 = gh .GetGridValueCombine(ph .RotateAndMove(pc, Convert .ToSingle(anglecombine)), T);
                               _basicLib .Add(key2, gl2);
                         }
                   }
@@ -2563,6 +2578,7 @@ namespace myCad
             }
             private void DrawBest()
             {
+                  _pop .Sort(new CompareDNA());
                   Stock best = _pop[0] .Stock[0];
                   _bg .Graphics .Clear(Color .White);
                   DrawStock(best);

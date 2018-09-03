@@ -85,6 +85,7 @@ namespace myCad .Model
                   //g.Transform = old1;
                   #endregion
             }
+           
             public float Area
             {
                   get
