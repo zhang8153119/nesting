@@ -17,12 +17,14 @@ namespace myCad .Model
             public string Type { get; set; }
             public float Angle { get; set; }
             public Point Location { get; set; }
-            public PartInfo(int id, string type, float angle, Point location)
+            public int combineType { get; set; }
+            public PartInfo(int id, string type, float angle, Point location,int combinetype = 0)
             {
                   ID = id;
                   Type = type;
                   Angle = angle;
                   Location = location;
+                  combineType = combinetype;
             }
       }
       public class Stock

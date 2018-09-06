@@ -8,7 +8,7 @@ using System .Runtime .InteropServices;
 
 namespace myCad .Utility
 {
-      public class RectHelper
+      public class RectHelper3
       {
             float _RE = 0.0001f;
             float _angle = 0f;
@@ -838,7 +838,6 @@ namespace myCad .Utility
                   float movex = 0;
                   float movey = 0;
                   float angle = 0;
-                  float angle2 = 0;
                   float length = 0f;
                   float height = 0f;
                   List<PointF> chCombine = new List<PointF>();
@@ -950,14 +949,8 @@ namespace myCad .Utility
                               float length0 = Convert .ToSingle(dic0["length"]);
                               float height0 = Convert .ToSingle(dic0["height"]);
 
-                              ////test
-                              //if (limit > 0)
-                              //{
-                              //      if (length0 > height0)
-                              //            area0 = limit * height0;
-                              //      else
-                              //            area0 = limit * length0;
-                              //}
+                              //test
+                              Dictionary<string, object> dictest = MinParallelogram(chCombine);
 
                               if (limit < 0 ||
                                    (length0 <= limit && height0 <= limit))
@@ -1016,7 +1009,6 @@ namespace myCad .Utility
                               movex = mindis;
                               movey = i * T;
                               angle = Convert .ToSingle(dicCombine["angle"]);
-                              angle2 = Convert .ToSingle(dicCombine["angle2"]);
                               length = Convert .ToSingle(dicCombine["length"]);
                               height = Convert .ToSingle(dicCombine["height"]);
                               chCombine = (List<PointF>)dicCombine["convexhull"];
@@ -1026,8 +1018,7 @@ namespace myCad .Utility
                   dic .Add("area", area);
                   dic .Add("movex", movex);
                   dic .Add("movey", movey);
-                  dic .Add("angle", (angle + 90f) % 360f);
-                  dic .Add("angle2", (angle2 + 90f) % 360f);
+                  dic .Add("angle", angle);
                   dic .Add("length", length);
                   dic .Add("height", height);
                   dic .Add("convexhull", chCombine);
@@ -1112,7 +1103,6 @@ namespace myCad .Utility
                   float movex = 0;
                   float movey = 0;
                   float angle = 0;
-                  float angle2 = 0;
                   float length = 0;
                   float height = 0;
                   List<PointF> chCombine = new List<PointF>();
@@ -1223,16 +1213,6 @@ namespace myCad .Utility
                               float area0 = Convert .ToSingle(dic0["area"]);
                               float length0 = Convert .ToSingle(dic0["length"]);
                               float height0 = Convert .ToSingle(dic0["height"]);
-
-                              ////test
-                              //if (limit > 0)
-                              //{
-                              //      if (length0 > height0)
-                              //            area0 = limit * height0;
-                              //      else
-                              //            area0 = limit * length0;
-                              //}
-
                               if (limit < 0 ||
                                    (length0 <= limit && height0 <= limit))
                               {
@@ -1290,7 +1270,6 @@ namespace myCad .Utility
                               movex = l * 2 - mindis;
                               movey = i * T;
                               angle = Convert .ToSingle(dicCombine["angle"]);
-                              angle2 = Convert .ToSingle(dicCombine["angle2"]);
                               length = Convert .ToSingle(dicCombine["length"]);
                               height = Convert .ToSingle(dicCombine["height"]);
                               chCombine = (List<PointF>)dicCombine["convexhull"];
@@ -1300,8 +1279,7 @@ namespace myCad .Utility
                   dic .Add("area", area);
                   dic .Add("movex", movex);
                   dic .Add("movey", movey);
-                  dic .Add("angle", (angle + 90f) % 360f);
-                  dic .Add("angle2", (angle2 + 90f) % 360f);
+                  dic .Add("angle", angle);
                   dic .Add("length", length);
                   dic .Add("height", height);
                   dic .Add("convexhull", chCombine);
@@ -1374,7 +1352,6 @@ namespace myCad .Utility
                   float movex = 0;
                   float movey = 0;
                   float angle = 0;
-                  float angle2 = 0;
                   float length = 0;
                   float height = 0;
                   List<PointF> chCombine = new List<PointF>();
@@ -1485,16 +1462,6 @@ namespace myCad .Utility
                               float area0 = Convert .ToSingle(dic0["area"]);
                               float length0 = Convert .ToSingle(dic0["length"]);
                               float height0 = Convert .ToSingle(dic0["height"]);
-
-                              ////test
-                              //if (limit > 0)
-                              //{
-                              //      if (length0 > height0)
-                              //            area0 = limit * height0;
-                              //      else
-                              //            area0 = limit * length0;
-                              //}
-
                               if (limit < 0 ||
                                    (length0 <= limit && height0 <= limit))
                               {
@@ -1552,7 +1519,6 @@ namespace myCad .Utility
                               movex = i * T;
                               movey = mindis;
                               angle = Convert .ToSingle(dicCombine["angle"]);
-                              angle2 = Convert .ToSingle(dicCombine["angle2"]);
                               length = Convert .ToSingle(dicCombine["length"]);
                               height = Convert .ToSingle(dicCombine["height"]);
                               chCombine = (List<PointF>)dicCombine["convexhull"];
@@ -1562,8 +1528,7 @@ namespace myCad .Utility
                   dic .Add("area", area);
                   dic .Add("movex", movex);
                   dic .Add("movey", movey);
-                  dic .Add("angle", (angle + 90f) % 360f);
-                  dic .Add("angle2", (angle2 + 90f) % 360f);
+                  dic .Add("angle", angle);
                   dic .Add("length", length);
                   dic .Add("height", height);
                   dic .Add("convexhull", chCombine);
@@ -1648,7 +1613,6 @@ namespace myCad .Utility
                   float movex = 0;
                   float movey = 0;
                   float angle = 0;
-                  float angle2 = 0;
                   float length = 0;
                   float height = 0;
                   List<PointF> chCombine = new List<PointF>();
@@ -1759,15 +1723,8 @@ namespace myCad .Utility
                               float area0 = Convert .ToSingle(dic0["area"]);
                               float length0 = Convert .ToSingle(dic0["length"]);
                               float height0 = Convert .ToSingle(dic0["height"]);
-                              
-                              ////test
-                              //if (limit > 0)
-                              //{
-                              //      if (length0 > height0)
-                              //            area0 = limit * height0;
-                              //      else
-                              //            area0 = limit * length0;
-                              //}
+
+                              Dictionary<string, object> dic99 = MinParallelogram(chCombine);
 
                               if (limit < 0 ||
                                    (length0 <= limit && height0 <= limit))
@@ -1826,7 +1783,6 @@ namespace myCad .Utility
                               movex = i * T;
                               movey = h * 2 - mindis;
                               angle = Convert .ToSingle(dicCombine["angle"]);
-                              angle2 = Convert .ToSingle(dicCombine["angle2"]);
                               length = Convert .ToSingle(dicCombine["length"]);
                               height = Convert .ToSingle(dicCombine["height"]);
                               chCombine = (List<PointF>)dicCombine["convexhull"];
@@ -1836,8 +1792,7 @@ namespace myCad .Utility
                   dic .Add("area", area);
                   dic .Add("movex", movex);
                   dic .Add("movey", movey);
-                  dic .Add("angle", (angle + 90f) % 360f);
-                  dic .Add("angle2", (angle2 + 90f) % 360f);
+                  dic .Add("angle", angle);
                   dic .Add("length", length);
                   dic .Add("height", height);
                   dic .Add("convexhull", chCombine);

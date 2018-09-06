@@ -8,7 +8,7 @@ using System .Runtime .InteropServices;
 
 namespace myCad .Utility
 {
-      public class RectHelper
+      public class RectHelper2
       {
             float _RE = 0.0001f;
             float _angle = 0f;
@@ -771,7 +771,7 @@ namespace myCad .Utility
                         return dicDown;
                   return null;
             }
-            //左下--左上
+            //左下，向上移动
             public Dictionary<string, object> CombineLeft(List<PointF> p, List<PointF> ch, List<PointF> pnew, List<PointF> chnew
                   , float T, float limit, string type)
             {
@@ -838,12 +838,11 @@ namespace myCad .Utility
                   float movex = 0;
                   float movey = 0;
                   float angle = 0;
-                  float angle2 = 0;
                   float length = 0f;
                   float height = 0f;
                   List<PointF> chCombine = new List<PointF>();
                   //副图向上移动，计算最小平移距离，再向右移动与主图进行组合，求最小包络矩形
-                  for (int i = 1; i < Math .Floor(2 * h / T); i++)
+                  for (int i = 1; i <= Math .Floor(h / T); i++)
                   {
                         //上边界，下边界
                         float upy = Math .Min(maxy, maxy2 + i * T);
@@ -950,14 +949,8 @@ namespace myCad .Utility
                               float length0 = Convert .ToSingle(dic0["length"]);
                               float height0 = Convert .ToSingle(dic0["height"]);
 
-                              ////test
-                              //if (limit > 0)
-                              //{
-                              //      if (length0 > height0)
-                              //            area0 = limit * height0;
-                              //      else
-                              //            area0 = limit * length0;
-                              //}
+                              //test
+                              Dictionary<string, object> dictest = MinParallelogram(chCombine);
 
                               if (limit < 0 ||
                                    (length0 <= limit && height0 <= limit))
@@ -1016,7 +1009,6 @@ namespace myCad .Utility
                               movex = mindis;
                               movey = i * T;
                               angle = Convert .ToSingle(dicCombine["angle"]);
-                              angle2 = Convert .ToSingle(dicCombine["angle2"]);
                               length = Convert .ToSingle(dicCombine["length"]);
                               height = Convert .ToSingle(dicCombine["height"]);
                               chCombine = (List<PointF>)dicCombine["convexhull"];
@@ -1026,14 +1018,13 @@ namespace myCad .Utility
                   dic .Add("area", area);
                   dic .Add("movex", movex);
                   dic .Add("movey", movey);
-                  dic .Add("angle", (angle + 90f) % 360f);
-                  dic .Add("angle2", (angle2 + 90f) % 360f);
+                  dic .Add("angle", angle);
                   dic .Add("length", length);
                   dic .Add("height", height);
                   dic .Add("convexhull", chCombine);
                   return dic;
             }
-            //右下--右上
+            //右上向下移动
             public Dictionary<string, object> CombineRight(List<PointF> p, List<PointF> ch, List<PointF> pnew, List<PointF> chnew
                   , float T, float limit, string type)
             {
@@ -1112,19 +1103,18 @@ namespace myCad .Utility
                   float movex = 0;
                   float movey = 0;
                   float angle = 0;
-                  float angle2 = 0;
                   float length = 0;
                   float height = 0;
                   List<PointF> chCombine = new List<PointF>();
-                  //副图向上移动，计算最小平移距离，再向左移动与主图进行组合，求最小包络矩形
-                  for (int i = 1; i < Math .Floor(2 * h / T); i++)
+                  //副图向下移动
+                  for (int i = 1; i <= Math .Floor(h / T); i++)
                   {
                         //上边界，下边界
-                        float upy = Math .Min(maxy + i * T, maxy2);
-                        float downy = Math .Max(miny + i * T, miny2);
+                        float upy = Math .Min(maxy + h * 2 - i * T, maxy2);
+                        float downy = Math .Max(miny + h * 2 - i * T, miny2);
 
-                        List<PointF> chnew_move = Move(chnew, l * 2, i * T);
-                        List<PointF> pnew_move = Move(pnew, l * 2, i * T);
+                        List<PointF> chnew_move = Move(chnew, l * 2, h * 2 - i * T);
+                        List<PointF> pnew_move = Move(pnew, l * 2, h * 2 - i * T);
 
                         List<PointF> p1 = pnew_move .Where(t => t .Y <= upy && t .Y >= downy && t .X <= rightx) .ToList();
                         List<PointF> p2 = p .Where(t => t .Y <= upy && t .Y >= downy && t .X >= leftx) .ToList();
@@ -1223,16 +1213,6 @@ namespace myCad .Utility
                               float area0 = Convert .ToSingle(dic0["area"]);
                               float length0 = Convert .ToSingle(dic0["length"]);
                               float height0 = Convert .ToSingle(dic0["height"]);
-
-                              ////test
-                              //if (limit > 0)
-                              //{
-                              //      if (length0 > height0)
-                              //            area0 = limit * height0;
-                              //      else
-                              //            area0 = limit * length0;
-                              //}
-
                               if (limit < 0 ||
                                    (length0 <= limit && height0 <= limit))
                               {
@@ -1290,7 +1270,6 @@ namespace myCad .Utility
                               movex = l * 2 - mindis;
                               movey = i * T;
                               angle = Convert .ToSingle(dicCombine["angle"]);
-                              angle2 = Convert .ToSingle(dicCombine["angle2"]);
                               length = Convert .ToSingle(dicCombine["length"]);
                               height = Convert .ToSingle(dicCombine["height"]);
                               chCombine = (List<PointF>)dicCombine["convexhull"];
@@ -1300,14 +1279,13 @@ namespace myCad .Utility
                   dic .Add("area", area);
                   dic .Add("movex", movex);
                   dic .Add("movey", movey);
-                  dic .Add("angle", (angle + 90f) % 360f);
-                  dic .Add("angle2", (angle2 + 90f) % 360f);
+                  dic .Add("angle", angle);
                   dic .Add("length", length);
                   dic .Add("height", height);
                   dic .Add("convexhull", chCombine);
                   return dic;
             }
-            //左下--右下
+            //右下左移
             public Dictionary<string, object> CombineDown(List<PointF> p, List<PointF> ch, List<PointF> pnew, List<PointF> chnew
                   , float T, float limit, string type)
             {
@@ -1339,7 +1317,7 @@ namespace myCad .Utility
                         }
                   }
                   upy = Math .Max(miny, maxy);
-                  //左边界
+                  //下边界
                   float maxy2 = -99999;
                   float miny2 = 99999;
                   float maxx2 = -99999;
@@ -1374,19 +1352,18 @@ namespace myCad .Utility
                   float movex = 0;
                   float movey = 0;
                   float angle = 0;
-                  float angle2 = 0;
                   float length = 0;
                   float height = 0;
                   List<PointF> chCombine = new List<PointF>();
-                  //副图向上移动，计算最小平移距离，再向右移动与主图进行组合，求最小包络矩形
-                  for (int i = 1; i < Math .Floor(2 * l / T); i++)
+                  //副图从右下角向左移动
+                  for (int i = 1; i <= Math .Floor(l / T); i++)
                   {
                         //左右边界
-                        float rightx = Math .Min(maxx, maxx2 + i * T);
-                        float leftx = Math .Max(minx, minx2 + i * T);
+                        float rightx = Math .Min(maxx, maxx2 + 2 * l - i * T);
+                        float leftx = Math .Max(minx, minx2 + 2 * l - i * T);
 
-                        List<PointF> chnew_move = Move(chnew, i * T, 0);
-                        List<PointF> pnew_move = Move(pnew, i * T, 0);
+                        List<PointF> chnew_move = Move(chnew, 2 * l - i * T, 0);
+                        List<PointF> pnew_move = Move(pnew, 2 * l - i * T, 0);
 
                         List<PointF> p1 = p .Where(t => t .X <= rightx && t .X >= leftx && t .Y <= upy) .ToList();
                         List<PointF> p2 = pnew_move .Where(t => t .X <= rightx && t .X >= leftx && t .Y >= downy) .ToList();
@@ -1451,7 +1428,7 @@ namespace myCad .Utility
                                     }
                               }
                         }
-                        //副图凸包向右移动与主图组合
+
                         if (mindis > 0)
                         {
                               chnew_move = Move(chnew_move, 0, mindis);
@@ -1485,16 +1462,6 @@ namespace myCad .Utility
                               float area0 = Convert .ToSingle(dic0["area"]);
                               float length0 = Convert .ToSingle(dic0["length"]);
                               float height0 = Convert .ToSingle(dic0["height"]);
-
-                              ////test
-                              //if (limit > 0)
-                              //{
-                              //      if (length0 > height0)
-                              //            area0 = limit * height0;
-                              //      else
-                              //            area0 = limit * length0;
-                              //}
-
                               if (limit < 0 ||
                                    (length0 <= limit && height0 <= limit))
                               {
@@ -1552,7 +1519,6 @@ namespace myCad .Utility
                               movex = i * T;
                               movey = mindis;
                               angle = Convert .ToSingle(dicCombine["angle"]);
-                              angle2 = Convert .ToSingle(dicCombine["angle2"]);
                               length = Convert .ToSingle(dicCombine["length"]);
                               height = Convert .ToSingle(dicCombine["height"]);
                               chCombine = (List<PointF>)dicCombine["convexhull"];
@@ -1562,14 +1528,13 @@ namespace myCad .Utility
                   dic .Add("area", area);
                   dic .Add("movex", movex);
                   dic .Add("movey", movey);
-                  dic .Add("angle", (angle + 90f) % 360f);
-                  dic .Add("angle2", (angle2 + 90f) % 360f);
+                  dic .Add("angle", angle);
                   dic .Add("length", length);
                   dic .Add("height", height);
                   dic .Add("convexhull", chCombine);
                   return dic;
             }
-            //左上--右上
+            //左上右移
             public Dictionary<string, object> CombineUp(List<PointF> p, List<PointF> ch, List<PointF> pnew, List<PointF> chnew
                   , float T, float limit, string type)
             {
@@ -1648,19 +1613,18 @@ namespace myCad .Utility
                   float movex = 0;
                   float movey = 0;
                   float angle = 0;
-                  float angle2 = 0;
                   float length = 0;
                   float height = 0;
                   List<PointF> chCombine = new List<PointF>();
-                  //副图向上移动，计算最小平移距离，再向左移动与主图进行组合，求最小包络矩形
-                  for (int i = 1; i < Math .Floor(2 * l / T); i++)
+                  //右下向左移动
+                  for (int i = 1; i <= Math .Floor(l / T); i++)
                   {
                         //上边界，下边界
                         float rightx = Math .Min(maxx + i * T, maxx2);
                         float leftx = Math .Max(minx + i * T, minx2);
 
-                        List<PointF> chnew_move = Move(chnew, i * T, h * 2);
-                        List<PointF> pnew_move = Move(pnew, i * T, h * 2);
+                        List<PointF> chnew_move = Move(chnew, i * T, 2 * h);
+                        List<PointF> pnew_move = Move(pnew, i * T, 2 * h);
 
                         List<PointF> p1 = pnew_move .Where(t => t .X <= rightx && t .X >= leftx && t .Y <= upy) .ToList();
                         List<PointF> p2 = p .Where(t => t .X <= rightx && t .X >= leftx && t .Y >= downy) .ToList();
@@ -1759,15 +1723,8 @@ namespace myCad .Utility
                               float area0 = Convert .ToSingle(dic0["area"]);
                               float length0 = Convert .ToSingle(dic0["length"]);
                               float height0 = Convert .ToSingle(dic0["height"]);
-                              
-                              ////test
-                              //if (limit > 0)
-                              //{
-                              //      if (length0 > height0)
-                              //            area0 = limit * height0;
-                              //      else
-                              //            area0 = limit * length0;
-                              //}
+
+                              Dictionary<string, object> dic99 = MinParallelogram(chCombine);
 
                               if (limit < 0 ||
                                    (length0 <= limit && height0 <= limit))
@@ -1826,7 +1783,6 @@ namespace myCad .Utility
                               movex = i * T;
                               movey = h * 2 - mindis;
                               angle = Convert .ToSingle(dicCombine["angle"]);
-                              angle2 = Convert .ToSingle(dicCombine["angle2"]);
                               length = Convert .ToSingle(dicCombine["length"]);
                               height = Convert .ToSingle(dicCombine["height"]);
                               chCombine = (List<PointF>)dicCombine["convexhull"];
@@ -1836,8 +1792,7 @@ namespace myCad .Utility
                   dic .Add("area", area);
                   dic .Add("movex", movex);
                   dic .Add("movey", movey);
-                  dic .Add("angle", (angle + 90f) % 360f);
-                  dic .Add("angle2", (angle2 + 90f) % 360f);
+                  dic .Add("angle", angle);
                   dic .Add("length", length);
                   dic .Add("height", height);
                   dic .Add("convexhull", chCombine);
