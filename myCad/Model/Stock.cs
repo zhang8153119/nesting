@@ -18,13 +18,19 @@ namespace myCad .Model
             public float Angle { get; set; }
             public Point Location { get; set; }
             public int combineType { get; set; }
-            public PartInfo(int id, string type, float angle, Point location,int combinetype = 0)
+            public PartInfo(int id, string type, float angle, Point location, int combinetype = 0)
             {
                   ID = id;
                   Type = type;
                   Angle = angle;
                   Location = location;
                   combineType = combinetype;
+            }
+
+            public PartInfo Copy()
+            {
+                  PartInfo p = new PartInfo(ID, Type, Angle, Location, combineType);
+                  return p;
             }
       }
       public class Stock
@@ -52,6 +58,7 @@ namespace myCad .Model
             public List<PartInfo> PartInfoList = new List<PartInfo>();
             public Stock Copy()
             {
+                  CopyOper co = new CopyOper();
                   Stock s = new Stock();
                   s .height = height;
                   s .width = width;
@@ -59,13 +66,25 @@ namespace myCad .Model
                   s .minPoint = minPoint;
                   s .maxPoint = maxPoint;
                   s .stockForm = stockForm .ToList();
+                  for (int i = 0; i < StockForm .Count; i++)
+                  {
+                        s .StockForm .Add(co .CopyBaseShape(StockForm[i]));
+                  }
                   s .useNum = useNum;
                   s .stockId = stockId;
                   s .listModel = listModel .ToList();
+                  for (int i = 0; i < listModel .Count; i++)
+                  {
+                        s .listModel .Add(co .CopyModel(listModel[i]));
+                  }
                   s .Disable = Disable;
                   s .id = id;
                   s .Use = Use;
-                  s .PartInfoList = PartInfoList;
+
+                  for (int i = 0; i < PartInfoList .Count; i++)
+                  {
+                        s .PartInfoList .Add(PartInfoList[i] .Copy());
+                  }
                   return s;
             }
             public float Height

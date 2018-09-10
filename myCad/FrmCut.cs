@@ -5,11 +5,15 @@ using myCad .Shape;
 using myCad .ShapeOper;
 using myCad .Utility;
 using System;
+using System .Collections;
+using System .Collections .Concurrent;
 using System .Collections .Generic;
 using System .Data;
 using System .Drawing;
+using System .IO;
 using System .Linq;
 using System .Threading;
+using System .Threading .Tasks;
 using System .Windows .Forms;
 using System .Windows .Forms .DataVisualization .Charting;
 
@@ -35,6 +39,7 @@ namespace myCad
             float _pnllen = 0;
             float _pnlwid = 0;
             float _rate = 1f;//缩放比例
+            bool _matchwidth = false;
             List<PlateModel> _plate = new List<PlateModel>();
             string _type = "";
 
@@ -849,6 +854,7 @@ namespace myCad
             {
                   _watch .Start();
                   _stop = false;
+                  _matchwidth = chkwidth .Checked;
                   _pop .Clear();
                   LoadStock();
                   Thread t = new Thread(DoWork);
@@ -950,7 +956,8 @@ namespace myCad
                   _size = Convert .ToInt32(txtSize .Text);//种群大小
                   _pcrossover = Convert .ToDecimal(txtpcrossover .Text);
                   _pmutation = Convert .ToDecimal(txtmutation .Text);
-                  CreateNew(ShowProgress);
+                  //CreateNew(ShowProgress);
+                  CreateNewTest(false, ShowProgress);
                   int gen = 1;
                   while (!_stop)
                   {
@@ -1173,11 +1180,12 @@ namespace myCad
                         DNA dnathis = new DNA(dnastock, basiclist);
                         dnathis = CountFitness(dnathis);
                         _pop .Add(dnathis);
-                        ShowProgress?.Invoke(i .ToString(), _size .ToString());
+                        ShowProgress?.Invoke((i + 1) .ToString(), _size .ToString());
                   }
 
                   //Parallel .ForEach(_pop, item => item = CountFitnessRectangle(item));//, new ParallelOptions { MaxDegreeOfParallelism = 5 }
             }
+
             /// <summary>
             /// 创建基因库
             /// </summary>
@@ -1204,7 +1212,7 @@ namespace myCad
                         if (pm .PlateCount > 1)
                         {
                               List<PlateCombine> pc = new List<PlateCombine>();
-                              pc = ph .GetMinPlateCombineAll(pm, T, "para", limit);
+                              pc = ph .GetMinPlateCombineAll(pm, T, "para", limit, _matchwidth);
                               pm .Kind2 = pc .Count;
                               for (int i = 0; i < pc .Count; i++)
                               {
@@ -1334,7 +1342,7 @@ namespace myCad
                   GridLib gl = _basicLib[key];
                   GridLib gl2 = new GridLib();
                   if (basic .Count > 1)
-                        gl2 = _basicLib[key2];
+                        gl2 = _basicLib .ContainsKey(key2) ? _basicLib[key2] : null;
                   GridLib gl3 = _basicLib[key3];
                   GridLib gl4 = _basicLib[key4];
                   return new Tuple<GridLib, GridLib, GridLib, GridLib>(gl, gl2, gl3, gl4);
@@ -1349,6 +1357,153 @@ namespace myCad
                   return CountFitnessRectangle3(d);
             }
             #region 剩余矩形动态匹配算法
+            /// <summary>
+            /// 模拟移动
+            /// </summary>
+            /// <param name="s"></param>
+            /// <param name="r"></param>
+            /// <param name="array"></param>
+            /// <param name="grid"></param>
+            public Point VirtualMove(Stock s, List<MyRectangle> rect, int[,] array, List<GridData> grid, int index = 0)
+            {
+                  MyRectangle r = rect[0];
+                  if (index > 0)
+                  {
+                        r = rect[index];
+                  }
+                  int width = array .GetLength(0);
+                  int height = array .GetLength(1);
+
+                  //微调，向左向上移动
+                  int movex = 0;
+                  int movey = 0;
+                  string last = "first";
+                  while (1 == 1)
+                  {
+                        if (!chkPress .Checked)
+                              break;
+                        //搜索方式：先找到距边缘最近的栅格，再从栅格处，反向搜索找到板上距离最近的栅格，计算距离
+                        if (last == "first" || last == "up")//如果上一次移动是向上移动，则计算是否能向左移动。第一次都要计算，先向左移
+                        {
+                              int minx = -1;
+                              for (int h = 0; h < height; h++)
+                              {
+                                    if (r .Y + h - movey >= s .Disable .GetLength(1))
+                                          continue;
+                                    int right = 0;
+                                    while (right < width && array[right, h] <= 0)
+                                    {
+                                          right++;
+                                    }
+                                    int left = 0;
+                                    while (r .X + right - left - 1 - movex >= s .Disable .GetLength(0)
+                                          || (r .X + right - left - 1 - movex >= 0
+                                                      && r .Y + h - movey >= 0
+                                                      && s .Disable[r .X + right - left - 1 - movex, r .Y + h - movey] <= 0)
+                                          )
+                                    {
+                                          left++;
+                                    }
+                                    if (left < minx || minx < 0)
+                                    {
+                                          minx = left;
+                                    }
+                                    if (minx == 0)
+                                    {
+                                          break;
+                                    }
+                              }
+                              if (minx > 0)
+                                    movex += minx;
+                              if (last != "first" && minx == 0)
+                              {
+                                    break;
+                              }
+                              else if (last != "first")
+                              {
+                                    last = "left";
+                              }
+                        }
+                        if (last == "first" || last == "left")//如果上一次是向左移动，则计算是否可以向上移动，第一次都要计算
+                        {
+                              int miny = -1;
+                              for (int w = 0; w < width; w++)
+                              {
+                                    if (r .X + w - movex >= s .Disable .GetLength(0))
+                                          continue;
+                                    int down = 0;
+                                    while (down < height && array[w, down] <= 0)
+                                    {
+                                          down++;
+                                    }
+                                    int up = 0;
+                                    while (r .Y + down - up - 1 - movey >= s .Disable .GetLength(1)
+                                          || (r .Y + down - up - 1 - movey >= 0
+                                          && r .X + w - movex >= 0
+                                          && s .Disable[r .X + w - movex, r .Y + down - up - 1 - movey] <= 0)
+                                          )
+                                    {
+                                          up++;
+                                    }
+                                    if (up < miny || miny < 0)
+                                    {
+                                          miny = up;
+                                    }
+                                    if (miny == 0)
+                                    {
+                                          break;
+                                    }
+                              }
+                              if (miny > 0)
+                                    movey += miny;
+                              if (miny == 0)
+                              {
+                                    break;
+                              }
+                              else
+                              {
+                                    last = "up";
+                              }
+                        }
+                  }
+                  return new Point(movex, movey);
+            }
+            /// <summary>
+            /// 按左底原则排入
+            /// </summary>
+            /// <param name="s"></param>
+            /// <param name="r"></param>
+            /// <param name="array"></param>
+            /// <param name="grid"></param>
+            public Point ActionMove(Point pmove, ref Stock s, ref List<MyRectangle> rect, ref int[,] array, ref List<GridData> grid, int index = 0)
+            {
+                  MyRectangle r = rect[0];
+                  if (index > 0)
+                  {
+                        r = rect[index];
+                  }
+                  int width = array .GetLength(0);
+                  int height = array .GetLength(1);
+                  //微调，向左向上移动
+                  int movex = pmove .X;
+                  int movey = pmove .Y;
+                  //排入
+                  for (int j = 0; j < grid .Count; j++)
+                  {
+                        int row = grid[j] .Row;
+                        int col = grid[j] .Col;
+
+                        s .Disable[row + r .X - movex, col + r .Y - movey] = grid[j] .Value;
+                  }
+                  //Parallel .ForEach(gridCombine, item => s .Disable[item .Row + r .X, item .Col + r .Y] = item .Value);
+                  if ((r .X + width - movex) * T > s .Use)
+                  {
+                        s .Use = (r .X + width - movex) * T;
+                  }
+                  MyRectangle rpart = new MyRectangle(r .X - movex, r .Y - movey, width, height);
+                  rect = RectangleCreate(rect, rpart);
+                  return new Point(r .X - movex, r .Y - movey);
+            }
             /// <summary>
             /// 剩余矩形动态匹配算法解码,平行四边形
             /// </summary>
@@ -1392,12 +1547,15 @@ namespace myCad
                                     }
                                     var tp = GetBasicNew(b);
                                     List<GridData> grid = tp .Item1 .Grid;
-                                    List<GridData> gridCombine = tp .Item2 .Grid;
+                                    List<GridData> gridCombine = tp .Item2 == null ? null : tp .Item2 .Grid;
                                     int[,] array = tp .Item1 .GridArray;
-                                    int[,] arrayCombine = tp .Item2 .GridArray;
+                                    int[,] arrayCombine = tp .Item2 == null ? null : tp .Item2 .GridArray;
 
                                     List<GridData> grid90 = tp .Item3 .Grid;
                                     int[,] array90 = tp .Item3 .GridArray;
+
+                                    List<GridData> grid180 = tp .Item4 .Grid;//增加旋转180度排样
+                                    int[,] array180 = tp .Item4 .GridArray;
 
                                     float area = b .Area;
 
@@ -1407,12 +1565,27 @@ namespace myCad
                                     {
                                           int width = arrayCombine .GetLength(0);
                                           int height = arrayCombine .GetLength(1);
-                                          if (height <= r .Height
-                                                && width <= r .Width)// && (height > _small || width > _small)
+
+                                          bool big = false;
+                                          Point p = new Point(0, 0);
+                                          if (width + r .Width > s .Disable .GetLength(0)
+                                                || height + r .Height > s .Disable .GetLength(1))
+                                          {
+                                                p = VirtualMove(s, rect, arrayCombine, gridCombine);
+                                                big = true;
+                                          }
+
+                                          if (height - p .Y <= r .Height
+                                                && width - p .X <= r .Width)// && (height > _small || width > _small)
                                           {
                                                 find = true;
-                                                Point p = BottomLeftMove(ref s, ref rect, ref arrayCombine, ref gridCombine);
-                                                s .PartInfoList .Add(new PartInfo(b .Id, "2", b .AngleCombine, p, b .CombineType));
+                                                Point location;
+                                                if (big)
+                                                      location = ActionMove(p, ref s, ref rect, ref arrayCombine, ref gridCombine);
+                                                else
+                                                      location = BottomLeftMove(ref s, ref rect, ref arrayCombine, ref gridCombine);
+
+                                                s .PartInfoList .Add(new PartInfo(b .Id, "2", b .AngleCombine, location, b .CombineType));
 
                                                 dna .Basic[n] .Count -= 2;
                                                 sumArea += area * 2;
@@ -1425,12 +1598,27 @@ namespace myCad
                                     {
                                           int width = array .GetLength(0);
                                           int height = array .GetLength(1);
-                                          if (height <= r .Height
-                                                && width <= r .Width)//&& (height > _small || width > _small)
+
+                                          bool big = false;
+                                          Point p = new Point(0, 0);
+                                          if (width + r .Width > s .Disable .GetLength(0)
+                                                || height + r .Height > s .Disable .GetLength(1))
+                                          {
+                                                p = VirtualMove(s, rect, array, grid);
+                                                big = true;
+                                          }
+
+                                          if (height - p .Y <= r .Height
+                                                && width - p .X <= r .Width)// && (height > _small || width > _small)
                                           {
                                                 find = true;
-                                                Point p = BottomLeftMove(ref s, ref rect, ref array, ref grid);
-                                                s .PartInfoList .Add(new PartInfo(b .Id, "1", b .Angle, p));
+                                                Point location;
+                                                if (big)
+                                                      location = ActionMove(p, ref s, ref rect, ref array, ref grid);
+                                                else
+                                                      location = BottomLeftMove(ref s, ref rect, ref array, ref grid);
+
+                                                s .PartInfoList .Add(new PartInfo(b .Id, "1", b .Angle, location));
 
                                                 dna .Basic[n] .Count--;
                                                 if (_rotate)//单件排入后旋转180度
@@ -1447,12 +1635,63 @@ namespace myCad
                                     {
                                           int width = array90 .GetLength(0);
                                           int height = array90 .GetLength(1);
-                                          if (height <= r .Height
-                                                && width <= r .Width)//&& (height > _small || width > _small)
+
+                                          bool big = false;
+                                          Point p = new Point(0, 0);
+                                          if (width + r .Width > s .Disable .GetLength(0)
+                                                || height + r .Height > s .Disable .GetLength(1))
+                                          {
+                                                p = VirtualMove(s, rect, array90, grid90);
+                                                big = true;
+                                          }
+
+                                          if (height - p .Y <= r .Height
+                                               && width - p .X <= r .Width)// && (height > _small || width > _small)
                                           {
                                                 find = true;
-                                                Point p = BottomLeftMove(ref s, ref rect, ref array90, ref grid90);
-                                                s .PartInfoList .Add(new PartInfo(b .Id, "1", (b .Angle + 90) % 360, p));
+                                                Point location;
+                                                if (big)
+                                                      location = ActionMove(p, ref s, ref rect, ref array90, ref grid90);
+                                                else
+                                                      location = BottomLeftMove(ref s, ref rect, ref array90, ref grid90);
+
+                                                s .PartInfoList .Add(new PartInfo(b .Id, "1", (b .Angle + 90) % 360, location));
+                                                dna .Basic[n] .Count--;
+                                                if (_rotate)//单件排入后旋转180度
+                                                {
+                                                      dna .Basic[n] .Angle = (dna .Basic[n] .Angle + 180) % 360;
+                                                }
+                                                sumArea += area;
+                                                nestin = true;
+                                                break;
+                                          }
+                                    }
+                                    //单一图形旋转180 度后再次试排
+                                    if (!find)
+                                    {
+                                          int width = array180 .GetLength(0);
+                                          int height = array180 .GetLength(1);
+
+                                          bool big = false;
+                                          Point p = new Point(0, 0);
+                                          if (width + r .Width > s .Disable .GetLength(0)
+                                                || height + r .Height > s .Disable .GetLength(1))
+                                          {
+                                                p = VirtualMove(s, rect, array180, grid180);
+                                                big = true;
+                                          }
+
+                                          if (height - p .Y <= r .Height
+                                               && width - p .X <= r .Width)// && (height > _small || width > _small)
+                                          {
+                                                find = true;
+                                                Point location;
+                                                if (big)
+                                                      location = ActionMove(p, ref s, ref rect, ref array180, ref grid180);
+                                                else
+                                                      location = BottomLeftMove(ref s, ref rect, ref array180, ref grid180);
+
+                                                s .PartInfoList .Add(new PartInfo(b .Id, "1", (b .Angle + 180) % 360, location));
                                                 dna .Basic[n] .Count--;
                                                 if (_rotate)//单件排入后旋转180度
                                                 {
@@ -1479,20 +1718,30 @@ namespace myCad
                                                 }
                                                 var testtp = GetBasicNew(test);
                                                 List<GridData> testgrid = testtp .Item1 .Grid;
-                                                List<GridData> testgridCombine = testtp .Item2 .Grid;
+                                                List<GridData> testgridCombine = testtp .Item2 == null ? null : testtp .Item2 .Grid;
                                                 int[,] testarray = testtp .Item1 .GridArray;
-                                                int[,] testarrayCombine = testtp .Item2 .GridArray;
+                                                int[,] testarrayCombine = testtp .Item2 == null ? null : testtp .Item2 .GridArray;
 
                                                 List<GridData> testgrid90 = testtp .Item3 .Grid;
                                                 int[,] testarray90 = testtp .Item3 .GridArray;
 
+                                                List<GridData> testgrid180 = testtp .Item4 .Grid;
+                                                int[,] testarray180 = testtp .Item4 .GridArray;
                                                 bool testfind = false;
                                                 if (testcount > 1 && testgridCombine != null)
                                                 {
                                                       int testwidth = testarrayCombine .GetLength(0);
                                                       int testheight = testarrayCombine .GetLength(1);
-                                                      if (testheight <= r .Height
-                                                            && testwidth <= r .Width)//&& (testheight > _small || testwidth > _small)
+
+                                                      Point p = new Point(0, 0);
+                                                      if (testwidth + r .Width > s .Disable .GetLength(0)
+                                                            || testheight + r .Height > s .Disable .GetLength(1))
+                                                      {
+                                                            p = VirtualMove(s, rect, testarrayCombine, testgridCombine);
+                                                      }
+
+                                                      if (testheight - p .Y <= r .Height
+                                                            && testwidth - p .X <= r .Width)//&& (testheight > _small || testwidth > _small)
                                                       {
                                                             testfind = true;
                                                             if (testheight > bestheight)
@@ -1506,8 +1755,15 @@ namespace myCad
                                                 {
                                                       int testwidth = testarray .GetLength(0);
                                                       int testheight = testarray .GetLength(1);
-                                                      if (testheight <= r .Height
-                                                            && testwidth <= r .Width)//&& (testheight > _small || testwidth > _small)
+
+                                                      Point p = new Point(0, 0);
+                                                      if (testwidth + r .Width > s .Disable .GetLength(0)
+                                                            || testheight + r .Height > s .Disable .GetLength(1))
+                                                      {
+                                                            p = VirtualMove(s, rect, testarray, testgrid);
+                                                      }
+                                                      if (testheight - p .Y <= r .Height
+                                                            && testwidth - p .X <= r .Width)//&& (testheight > _small || testwidth > _small)
                                                       {
                                                             testfind = true;
                                                             if (testheight > bestheight)
@@ -1521,8 +1777,38 @@ namespace myCad
                                                 {
                                                       int testwidth = testarray90 .GetLength(0);
                                                       int testheight = testarray90 .GetLength(1);
-                                                      if (testheight <= r .Height
-                                                            && testwidth <= r .Width)//&& (testheight > _small || testwidth > _small)
+
+                                                      Point p = new Point(0, 0);
+                                                      if (testwidth + r .Width > s .Disable .GetLength(0)
+                                                            || testheight + r .Height > s .Disable .GetLength(1))
+                                                      {
+                                                            p = VirtualMove(s, rect, testarray90, testgrid90);
+                                                      }
+                                                      if (testheight - p .Y <= r .Height
+                                                            && testwidth - p .X <= r .Width)//&& (testheight > _small || testwidth > _small)
+                                                      {
+                                                            testfind = true;
+                                                            if (testheight > bestheight)
+                                                            {
+                                                                  bestheight = testheight;
+                                                                  bestindex = t;
+                                                            }
+                                                      }
+                                                }
+                                                //旋转180度试
+                                                if (!testfind)
+                                                {
+                                                      int testwidth = testarray180 .GetLength(0);
+                                                      int testheight = testarray180 .GetLength(1);
+
+                                                      Point p = new Point(0, 0);
+                                                      if (testwidth + r .Width > s .Disable .GetLength(0)
+                                                            || testheight + r .Height > s .Disable .GetLength(1))
+                                                      {
+                                                            p = VirtualMove(s, rect, testarray180, testgrid180);
+                                                      }
+                                                      if (testheight - p .Y <= r .Height
+                                                            && testwidth - p .X <= r .Width)//&& (testheight > _small || testwidth > _small)
                                                       {
                                                             testfind = true;
                                                             if (testheight > bestheight)
@@ -1554,7 +1840,7 @@ namespace myCad
                                     rect .RemoveAt(0);//若无法排入任何件号，则删除该矩形
                               }
                         }//end while (rect .Count > 0)
-
+                        
                         #region 剩余零件插孔排入
                         for (int b = 0; b < dna .Basic .Count; b++)
                         {
@@ -1564,9 +1850,9 @@ namespace myCad
                                     Basic basic = dna .Basic[b];
                                     var tp = GetBasicNew(basic);
                                     List<GridData> grid = tp .Item1 .Grid;
-                                    List<GridData> gridCombine = tp .Item2 .Grid;
+                                    List<GridData> gridCombine = tp .Item2 == null ? null : tp .Item2 .Grid;
                                     int[,] array = tp .Item1 .GridArray;
-                                    int[,] arrayCombine = tp .Item2 .GridArray;
+                                    int[,] arrayCombine = tp .Item2 == null ? null : tp .Item2 .GridArray;
                                     List<GridData> grid90 = tp .Item3 .Grid;
                                     int[,] array90 = tp .Item3 .GridArray;
                                     List<GridData> grid180 = tp .Item4 .Grid;
@@ -1743,6 +2029,7 @@ namespace myCad
                               }
                         }
                         #endregion
+                        
                         dna .Stock[i] = s;
                   }
                   d .Stock = dna .Stock .ToList();
@@ -2919,10 +3206,10 @@ namespace myCad
                         int col = grid[j] .Col;
                         //test
 
-                        if (s .Disable[row + r .X, col + r .Y] != 0)
-                        {
-                              int test = 1;
-                        }
+                        //if (s .Disable[row + r .X, col + r .Y] != 0)
+                        //{
+                        //      int test = 1;
+                        //}
 
                         s .Disable[row + r .X - movex, col + r .Y - movey] = grid[j] .Value;
                   }
@@ -3619,7 +3906,7 @@ namespace myCad
                         _best = _pop[0] .Stock[0];
                   }
                   */
-                  CreateNew(ShowProgress);
+                  CreateNewTest(chkbinxing .Checked, ShowProgress);
                   _best = _pop[0] .Stock[0];
 
                   //DrawBest();
@@ -3628,7 +3915,79 @@ namespace myCad
                   TimeSpan timespan = watch .Elapsed;  //获取当前实例测量得出的总时间
                   lblinfo .Text = "耗时：" + timespan .TotalMilliseconds .ToString() + "ms" + ",利用率:" + _pop[0] .Fitness .ToString();
             }
+            /// <summary>
+            /// 适应度排序
+            /// </summary>
+            public class CompareArea : IComparer<PlateModel>
+            {
+                  public int Compare(PlateModel pm1, PlateModel pm2)
+                  {
+                        return pm2 .Area .CompareTo(pm1 .Area);
+                  }
+            }
+            /// <summary>
+            /// 生成初始种群
+            /// </summary>
+            private void CreateNewTest(bool bx, Action<string, string> ShowProgress)
+            {
+                  _basicLib .Clear();
+                  int c = _part .Count;
+                  int sc = _stock .Count;
+                  CreateLib(_stock[0] .Height);
+                  _part .Sort(new CompareArea());
+                  for (int i = 0; i < _size; i++)
+                  {
+                        List<Basic> basiclist = new List<Basic>();
+                        for (int s = 0; s < _part .Count; s++)
+                        {
+                              Random r = new Random(GetRandomSeed());
+                              int id = _part[s] .id;
+                              int angle = _anglelist[r .Next(0, _anglelist .Count)];
+                              int angleCombine = 0;
+                              int combinetype = r .Next(0, _part[s] .Kind2);
 
+                              basiclist .Add(new Basic(id, angle, angleCombine, _part[s] .Area, _part[s] .PlateCount, combinetype));
+                        }
+
+                        List<Stock> dnastock = new List<Stock>();
+                        int[] sortstock = new int[c];
+                        sortstock = RandomSort(sc);
+                        for (int k = 0; k < sortstock .Length; k++)
+                        {
+                              int s = sortstock[k];
+                              dnastock .Add(_stock[s] .Copy());
+                        }
+                        DNA dnathis = new DNA(dnastock, basiclist);
+                        //dnathis = CountFitness(dnathis);
+                        _pop .Add(dnathis);
+                        ShowProgress?.Invoke(i .ToString(), _size .ToString());
+                  }
+                  ConcurrentBag<DNA> bag = new ConcurrentBag<DNA>();
+                  for (int i = 0; i < _pop .Count; i++)
+                  {
+                        bag .Add(_pop[i]);
+                  }
+                  if (bx)
+                  {
+                        ConcurrentBag<DNA> bagnew = new ConcurrentBag<DNA>();
+                        Parallel .For(0, bag .Count, (i) =>
+                           {
+                                 DNA dna = new DNA();
+                                 bag .TryTake(out dna);
+                                 dna = CountFitness(dna);
+                                 bagnew .Add(dna);
+                           });
+                        _pop = bagnew .ToList();
+                        //Parallel .ForEach(_pop, item => item = CountFitness(item));//, new ParallelOptions { MaxDegreeOfParallelism = 5 }
+                  }
+                  else
+                  {
+                        for (int i = 0; i < _pop .Count; i++)
+                        {
+                              _pop[i] = CountFitness(_pop[i]);
+                        }
+                  }
+            }
             private void btnchongxinjiema_Click(object sender, EventArgs e)
             {
                   if (_pop .Count == 0)
@@ -3730,7 +4089,7 @@ namespace myCad
                               pm = ph .Move(pm, p .X, p .Y);
                               new RotateOper() .RotateCSYS(pm, s .Height);//旋转坐标系
                               CADInterface .currentShapes .AddRange(pm .OutModel .ListShape);
-                              CADInterface .currentShapes .Add(new Text(pm .PlateName .ToString(), pm .PowCenter, 0, 20));
+                              CADInterface .currentShapes .Add(new Text(pm .PlateName .ToString(), pm .PowCenter, 0, 40));
                               for (int j = 0; j < pm .InnerModel .Count; i++)
                               {
                                     CADInterface .currentShapes .AddRange(pm .InnerModel[i] .ListShape);
@@ -3756,14 +4115,14 @@ namespace myCad
                               new RotateOper() .RotateCSYS(pm1, s .Height);
                               new RotateOper() .RotateCSYS(pm2, s .Height);
                               CADInterface .currentShapes .AddRange(pm1 .OutModel .ListShape);
-                              CADInterface .currentShapes .Add(new Text(pm1 .PlateName .ToString(), pm1 .PowCenter, 0, 20));
+                              CADInterface .currentShapes .Add(new Text(pm1 .PlateName .ToString(), pm1 .PowCenter, 0, 40));
                               for (int j = 0; j < pm1 .InnerModel .Count; i++)
                               {
                                     CADInterface .currentShapes .AddRange(pm1 .InnerModel[i] .ListShape);
                               }
 
                               CADInterface .currentShapes .AddRange(pm2 .OutModel .ListShape);
-                              CADInterface .currentShapes .Add(new Text(pm2 .PlateName .ToString(), pm2 .PowCenter, 0, 20));
+                              CADInterface .currentShapes .Add(new Text(pm2 .PlateName .ToString(), pm2 .PowCenter, 0, 40));
                               for (int j = 0; j < pm2 .InnerModel .Count; i++)
                               {
                                     CADInterface .currentShapes .AddRange(pm2 .InnerModel[i] .ListShape);
@@ -3900,7 +4259,7 @@ namespace myCad
                   List<PointF> p = pm .OutModel .ExpandPoint;
                   List<PointF> ch = rh .GetConvexHull(pm .OutModel .ExpandPoint);
 
-                  var tp = rh .CombineAll(p, ch, pnew, chnew, T, height, type);
+                  var tp = rh .CombineAll(p, ch, pnew, chnew, T, height, type, chkwidth .Checked);
                   string areastr = "";
                   string rectstr = "";
 
@@ -3967,6 +4326,54 @@ namespace myCad
 
                   lblpara .Text = areastr;
                   lblrect .Text = rectstr;
+            }
+
+            private void btnexport_Click(object sender, EventArgs e)
+            {
+                  _pop .Sort(new CompareDNA());
+                  Stock best = _pop[0] .Stock[0];
+
+                  SaveFileDialog sfd = new SaveFileDialog();
+                  sfd .Title = "";
+                  sfd .FileName = best .Width .ToString() + "_" + best .Height .ToString();
+                  sfd .Filter = "dxf文件| *.dxf";
+                  if (sfd .ShowDialog() == DialogResult .OK)
+                  {
+                        string path = sfd .FileName;
+                        ExportDXF(best, path);
+                  }
+            }
+
+            /// <summary>
+            /// 画排料图，线图
+            /// </summary>
+            /// <param name="s"></param>
+            private void ExportDXF(Stock s, string filepath)
+            {
+
+                  List<BaseShape> bs = CADInterface .currentShapes;
+                  DXFLibrary .Document doc = new DXFLibrary .Document();
+
+                  for (int i = 0; i < bs .Count; i++)
+                  {
+                        if (bs[i] .ShapeClass == "Line")
+                        {
+                              Line l = (Line)bs[i];
+                              DXFLibrary .Line line = new DXFLibrary .Line("Doors"
+                                    , l .StartPoint .X, l .StartPoint .Y
+                                    , l .EndPoint .X, l .EndPoint .Y);
+                              doc .add(line);
+                        }
+                        if (bs[i] .ShapeClass == "Text")
+                        {
+                              Text t = (Text)bs[i];
+                              DXFLibrary .Text text = new DXFLibrary .Text(t .TextString, t .LocadPoint .X, t .LocadPoint .Y, 30, "Doors");
+                              doc .add(text);
+                        }
+                  }
+                  FileStream f1 = new FileStream(filepath, System .IO .FileMode .Create);
+                  DXFLibrary .Writer .Write(doc, f1);
+                  f1 .Close();
             }
       }
 }

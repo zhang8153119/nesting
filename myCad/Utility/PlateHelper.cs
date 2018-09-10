@@ -78,7 +78,7 @@ namespace myCad .Utility
                   pc .Rect = pm .Rect = pmnew .Rect = GetRect(pm .OutModel .ExpandPoint, pmnew .OutModel .ExpandPoint);
                   return pc;
             }
-            public List<PlateCombine> GetMinPlateCombineAll(PlateModel source, float T, string type, float limit = -1)
+            public List<PlateCombine> GetMinPlateCombineAll(PlateModel source, float T, string type, float limit = -1,bool _mathwidth = false)
             {
                   RectHelper rect = new RectHelper();
                   CopyOper co = new CopyOper();
@@ -91,7 +91,7 @@ namespace myCad .Utility
 
                   List<PointF> p = pm .OutModel .ExpandPoint;
                   List<PointF> ch = rect .GetConvexHull(pm .OutModel .ExpandPoint);
-                  var tp = rect .CombineAll(p, ch, pnew, chnew, T, limit, "para");
+                  var tp = rect .CombineAll(p, ch, pnew, chnew, T, limit, "para",_mathwidth);
                   List<PlateCombine> pc = new List<PlateCombine>();
 
                   if (Convert .ToSingle(tp .Item1["area"] .ToString()) > 0)

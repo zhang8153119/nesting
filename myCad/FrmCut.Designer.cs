@@ -46,10 +46,13 @@
                   this.sLength = new System.Windows.Forms.DataGridViewTextBoxColumn();
                   this.sWidth = new System.Windows.Forms.DataGridViewTextBoxColumn();
                   this.panel1 = new System.Windows.Forms.Panel();
+                  this.cmbsuanfa = new FZYK.WinCtrl.YKComboBox();
                   this.cmbType = new FZYK.WinCtrl.YKComboBox();
                   this.chkGrid = new FZYK.WinCtrl.YKCheckBox(this.components);
                   this.chkPress = new FZYK.WinCtrl.YKCheckBox(this.components);
                   this.chkDrawRect = new FZYK.WinCtrl.YKCheckBox(this.components);
+                  this.lblrect = new FZYK.WinCtrl.YKLabel(this.components);
+                  this.lblpara = new FZYK.WinCtrl.YKLabel(this.components);
                   this.lblinfo = new FZYK.WinCtrl.YKLabel(this.components);
                   this.txtheight = new FZYK.WinCtrl.YKTextBox(this.components);
                   this.txtwidth = new FZYK.WinCtrl.YKTextBox(this.components);
@@ -63,6 +66,7 @@
                   this.txtpart = new System.Windows.Forms.TextBox();
                   this.btndel = new System.Windows.Forms.Button();
                   this.btnDXF = new System.Windows.Forms.Button();
+                  this.btnpara = new System.Windows.Forms.Button();
                   this.btnprint = new System.Windows.Forms.Button();
                   this.btncreate = new System.Windows.Forms.Button();
                   this.btnchongxinjiema = new System.Windows.Forms.Button();
@@ -95,13 +99,12 @@
                   this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
                   this.txttestvalue = new FZYK.WinCtrl.YKRichTextBox(this.components);
                   this.tabPage3 = new System.Windows.Forms.TabPage();
-                  this.cmbsuanfa = new FZYK.WinCtrl.YKComboBox();
-                  this.btnpara = new System.Windows.Forms.Button();
-                  this.lblpara = new FZYK.WinCtrl.YKLabel(this.components);
-                  this.lblrect = new FZYK.WinCtrl.YKLabel(this.components);
                   this.ykSplitContainer2 = new FZYK.WinCtrl.YKSplitContainer(this.components);
                   this.pnlcad = new FZYK.WinCtrl.YKPanel(this.components);
+                  this.btnexport = new FZYK.WinCtrl.YKButton(this.components);
+                  this.chkwidth = new FZYK.WinCtrl.YKCheckBox(this.components);
                   this.cad = new myCad.CADInterfaceCtrl.CADInterface();
+                  this.chkbinxing = new FZYK.WinCtrl.YKCheckBox(this.components);
                   ((System.ComponentModel.ISupportInitialize)(this.dgvStock)).BeginInit();
                   this.panel1.SuspendLayout();
                   ((System.ComponentModel.ISupportInitialize)(this.ykSplitContainer1)).BeginInit();
@@ -196,8 +199,11 @@
                   // 
                   // panel1
                   // 
+                  this.panel1.Controls.Add(this.btnexport);
                   this.panel1.Controls.Add(this.cmbsuanfa);
                   this.panel1.Controls.Add(this.cmbType);
+                  this.panel1.Controls.Add(this.chkwidth);
+                  this.panel1.Controls.Add(this.chkbinxing);
                   this.panel1.Controls.Add(this.chkGrid);
                   this.panel1.Controls.Add(this.chkPress);
                   this.panel1.Controls.Add(this.chkDrawRect);
@@ -240,6 +246,24 @@
                   this.panel1.Name = "panel1";
                   this.panel1.Size = new System.Drawing.Size(1351, 119);
                   this.panel1.TabIndex = 3;
+                  // 
+                  // cmbsuanfa
+                  // 
+                  this.cmbsuanfa.BackColor = System.Drawing.Color.White;
+                  this.cmbsuanfa.BorderColor = System.Drawing.Color.Black;
+                  this.cmbsuanfa.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+                  this.cmbsuanfa.FormattingEnabled = true;
+                  this.cmbsuanfa.Items.AddRange(new object[] {
+            "算法1",
+            "算法2"});
+                  this.cmbsuanfa.Location = new System.Drawing.Point(1085, 7);
+                  this.cmbsuanfa.Name = "cmbsuanfa";
+                  this.cmbsuanfa.PromptFont = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+                  this.cmbsuanfa.PromptForeColor = System.Drawing.SystemColors.GrayText;
+                  this.cmbsuanfa.PromptText = "";
+                  this.cmbsuanfa.Size = new System.Drawing.Size(115, 20);
+                  this.cmbsuanfa.TabIndex = 7;
+                  this.cmbsuanfa.Text = "算法1";
                   // 
                   // cmbType
                   // 
@@ -297,11 +321,31 @@
                   this.chkDrawRect.Text = "定位框";
                   this.chkDrawRect.UseVisualStyleBackColor = false;
                   // 
+                  // lblrect
+                  // 
+                  this.lblrect.AutoSize = true;
+                  this.lblrect.IsTitle = false;
+                  this.lblrect.Location = new System.Drawing.Point(366, 103);
+                  this.lblrect.Name = "lblrect";
+                  this.lblrect.Size = new System.Drawing.Size(41, 12);
+                  this.lblrect.TabIndex = 4;
+                  this.lblrect.Text = "框面积";
+                  // 
+                  // lblpara
+                  // 
+                  this.lblpara.AutoSize = true;
+                  this.lblpara.IsTitle = false;
+                  this.lblpara.Location = new System.Drawing.Point(367, 84);
+                  this.lblpara.Name = "lblpara";
+                  this.lblpara.Size = new System.Drawing.Size(29, 12);
+                  this.lblpara.TabIndex = 4;
+                  this.lblpara.Text = "面积";
+                  // 
                   // lblinfo
                   // 
                   this.lblinfo.AutoSize = true;
                   this.lblinfo.IsTitle = false;
-                  this.lblinfo.Location = new System.Drawing.Point(1014, 64);
+                  this.lblinfo.Location = new System.Drawing.Point(1085, 39);
                   this.lblinfo.Name = "lblinfo";
                   this.lblinfo.Size = new System.Drawing.Size(23, 12);
                   this.lblinfo.TabIndex = 4;
@@ -349,7 +393,7 @@
                   this.txtDis.Name = "txtDis";
                   this.txtDis.Size = new System.Drawing.Size(81, 21);
                   this.txtDis.TabIndex = 2;
-                  this.txtDis.Text = "10";
+                  this.txtDis.Text = "8.5";
                   // 
                   // txtprogress
                   // 
@@ -423,6 +467,16 @@
                   this.btnDXF.Text = "提取DXF";
                   this.btnDXF.UseVisualStyleBackColor = true;
                   this.btnDXF.Click += new System.EventHandler(this.btnDXF_Click);
+                  // 
+                  // btnpara
+                  // 
+                  this.btnpara.Location = new System.Drawing.Point(450, 56);
+                  this.btnpara.Name = "btnpara";
+                  this.btnpara.Size = new System.Drawing.Size(75, 23);
+                  this.btnpara.TabIndex = 1;
+                  this.btnpara.Text = "组合";
+                  this.btnpara.UseVisualStyleBackColor = true;
+                  this.btnpara.Click += new System.EventHandler(this.btnpara_Click);
                   // 
                   // btnprint
                   // 
@@ -837,54 +891,6 @@
                   this.tabPage3.Text = "tabPage3";
                   this.tabPage3.UseVisualStyleBackColor = true;
                   // 
-                  // cmbsuanfa
-                  // 
-                  this.cmbsuanfa.BackColor = System.Drawing.Color.White;
-                  this.cmbsuanfa.BorderColor = System.Drawing.Color.Black;
-                  this.cmbsuanfa.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-                  this.cmbsuanfa.FormattingEnabled = true;
-                  this.cmbsuanfa.Items.AddRange(new object[] {
-            "算法1",
-            "算法2"});
-                  this.cmbsuanfa.Location = new System.Drawing.Point(1195, 28);
-                  this.cmbsuanfa.Name = "cmbsuanfa";
-                  this.cmbsuanfa.PromptFont = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-                  this.cmbsuanfa.PromptForeColor = System.Drawing.SystemColors.GrayText;
-                  this.cmbsuanfa.PromptText = "";
-                  this.cmbsuanfa.Size = new System.Drawing.Size(115, 20);
-                  this.cmbsuanfa.TabIndex = 7;
-                  this.cmbsuanfa.Text = "算法1";
-                  // 
-                  // btnpara
-                  // 
-                  this.btnpara.Location = new System.Drawing.Point(450, 56);
-                  this.btnpara.Name = "btnpara";
-                  this.btnpara.Size = new System.Drawing.Size(75, 23);
-                  this.btnpara.TabIndex = 1;
-                  this.btnpara.Text = "组合";
-                  this.btnpara.UseVisualStyleBackColor = true;
-                  this.btnpara.Click += new System.EventHandler(this.btnpara_Click);
-                  // 
-                  // lblpara
-                  // 
-                  this.lblpara.AutoSize = true;
-                  this.lblpara.IsTitle = false;
-                  this.lblpara.Location = new System.Drawing.Point(443, 82);
-                  this.lblpara.Name = "lblpara";
-                  this.lblpara.Size = new System.Drawing.Size(29, 12);
-                  this.lblpara.TabIndex = 4;
-                  this.lblpara.Text = "面积";
-                  // 
-                  // lblrect
-                  // 
-                  this.lblrect.AutoSize = true;
-                  this.lblrect.IsTitle = false;
-                  this.lblrect.Location = new System.Drawing.Point(442, 101);
-                  this.lblrect.Name = "lblrect";
-                  this.lblrect.Size = new System.Drawing.Size(41, 12);
-                  this.lblrect.TabIndex = 4;
-                  this.lblrect.Text = "框面积";
-                  // 
                   // ykSplitContainer2
                   // 
                   this.ykSplitContainer2.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
@@ -922,6 +928,38 @@
                   this.pnlcad.TabIndex = 8;
                   this.pnlcad.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlcad_Paint);
                   // 
+                  // btnexport
+                  // 
+                  this.btnexport.A_BorderColor = System.Drawing.SystemColors.Desktop;
+                  this.btnexport.A_GotFocusColor = System.Drawing.SystemColors.ActiveCaption;
+                  this.btnexport.A_MouseDownBackColor = System.Drawing.Color.SteelBlue;
+                  this.btnexport.A_MouseOverBackColor = System.Drawing.Color.LightSteelBlue;
+                  this.btnexport.DisplayFocusCues = false;
+                  this.btnexport.FlatAppearance.BorderColor = System.Drawing.SystemColors.Desktop;
+                  this.btnexport.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
+                  this.btnexport.FlatAppearance.MouseOverBackColor = System.Drawing.Color.LightSteelBlue;
+                  this.btnexport.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+                  this.btnexport.ForeColor = System.Drawing.Color.Black;
+                  this.btnexport.Location = new System.Drawing.Point(872, 84);
+                  this.btnexport.Name = "btnexport";
+                  this.btnexport.Size = new System.Drawing.Size(73, 23);
+                  this.btnexport.TabIndex = 8;
+                  this.btnexport.Text = "导出dxf";
+                  this.btnexport.TextType = FZYK.WinCtrl.YKButton.YKBtnTextType.Normal;
+                  this.btnexport.UseVisualStyleBackColor = true;
+                  this.btnexport.Click += new System.EventHandler(this.btnexport_Click);
+                  // 
+                  // chkwidth
+                  // 
+                  this.chkwidth.AutoSize = true;
+                  this.chkwidth.BackColor = System.Drawing.Color.Transparent;
+                  this.chkwidth.Location = new System.Drawing.Point(1015, 62);
+                  this.chkwidth.Name = "chkwidth";
+                  this.chkwidth.Size = new System.Drawing.Size(72, 16);
+                  this.chkwidth.TabIndex = 6;
+                  this.chkwidth.Text = "匹配板宽";
+                  this.chkwidth.UseVisualStyleBackColor = false;
+                  // 
                   // cad
                   // 
                   this.cad.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -930,6 +968,17 @@
                   this.cad.Name = "cad";
                   this.cad.Size = new System.Drawing.Size(1333, 459);
                   this.cad.TabIndex = 7;
+                  // 
+                  // chkbinxing
+                  // 
+                  this.chkbinxing.AutoSize = true;
+                  this.chkbinxing.BackColor = System.Drawing.Color.Transparent;
+                  this.chkbinxing.Location = new System.Drawing.Point(1070, 84);
+                  this.chkbinxing.Name = "chkbinxing";
+                  this.chkbinxing.Size = new System.Drawing.Size(48, 16);
+                  this.chkbinxing.TabIndex = 6;
+                  this.chkbinxing.Text = "并行";
+                  this.chkbinxing.UseVisualStyleBackColor = false;
                   // 
                   // FrmCut
                   // 
@@ -1031,5 +1080,8 @@
             private System .Windows .Forms .Button btnpara;
             private FZYK .WinCtrl .YKLabel lblpara;
             private FZYK .WinCtrl .YKLabel lblrect;
+            private FZYK .WinCtrl .YKButton btnexport;
+            private FZYK .WinCtrl .YKCheckBox chkwidth;
+            private FZYK .WinCtrl .YKCheckBox chkbinxing;
       }
 }

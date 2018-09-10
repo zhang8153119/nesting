@@ -16,6 +16,8 @@ namespace myCad .Utility
             float _area = -1f;
             float _length = 0f;
             float _height = 0f;
+            float _length2 = 0f;
+            float _height2 = 0f;
             #region 卡壳算法计算最小包络矩形
             public Dictionary<string, object> MinRect(List<PointF> p)
             {
@@ -30,6 +32,8 @@ namespace myCad .Utility
                   dic .Add("area", _area);
                   dic .Add("length", _length);
                   dic .Add("height", _height);
+                  dic .Add("length2", _length2);
+                  dic .Add("height2", _height2);
                   dic .Add("convexhull", pConvexhull);
                   return dic;
             }
@@ -105,6 +109,8 @@ namespace myCad .Utility
                   dic .Add("area", _area);
                   dic .Add("length", _length);
                   dic .Add("height", _height);
+                  dic .Add("length2", _length2);
+                  dic .Add("height2", _height2);
                   dic .Add("convexhull", pConvexhull);
                   return dic;
             }
@@ -156,7 +162,9 @@ namespace myCad .Utility
                         Vector a0a1 = Sub(a0, a1);
                         float s = Math .Abs(Dis(p2, p0, p1) * Dis(a2, a0, a1) / (Cross(p0p1, a0a1) / Len(p0p1) / Len(a0a1)));
                         float h1 = Dis(p2, p0, p1);
+                        float l1 = Math .Abs(Dis(a2, a0, a1) / (Cross(p0p1, a0a1) / Len(p0p1) / Len(a0a1)));
                         float h2 = Dis(a2, a0, a1);
+                        float l2 = Math .Abs(Dis(p2, p0, p1) / (Cross(p0p1, a0a1) / Len(p0p1) / Len(a0a1)));
                         if (mins < 0 || s < mins)
                         {
                               mins = s;
@@ -170,14 +178,18 @@ namespace myCad .Utility
                                     _angle = Angle(ch[i], ch[i + 1]);
                                     _angle2 = Angle(ch[index], ch[(index + 1) % n]);
                                     _height = h2;
-                                    _length = h1;
+                                    _length = l2;
+                                    _height2 = h1;
+                                    _length2 = l1;
                               }
                               else
                               {
                                     _angle = Angle(ch[index], ch[(index + 1) % n]);
                                     _angle2 = Angle(ch[i], ch[i + 1]);
                                     _height = h1;
-                                    _length = h2;
+                                    _length = l1;
+                                    _height2 = h2;
+                                    _length2 = l2;
                               }
                         }
                   }
@@ -709,12 +721,12 @@ namespace myCad .Utility
             /// <param name="T"></param>
             /// <returns></returns>
             public Tuple<Dictionary<string, object>, Dictionary<string, object>, Dictionary<string, object>, Dictionary<string, object>> CombineAll(List<PointF> p, List<PointF> ch, List<PointF> pnew, List<PointF> chnew, float T
-                 , float limit, string type)
+                 , float limit, string type, bool matchwidth)
             {
-                  Dictionary<string, object> dicLeft = CombineLeft(p, ch, pnew, chnew, T, limit, type);
-                  Dictionary<string, object> dicRight = CombineRight(p, ch, pnew, chnew, T, limit, type);
-                  Dictionary<string, object> dicUp = CombineUp(p, ch, pnew, chnew, T, limit, type);
-                  Dictionary<string, object> dicDown = CombineDown(p, ch, pnew, chnew, T, limit, type);
+                  Dictionary<string, object> dicLeft = CombineLeft(p, ch, pnew, chnew, T, limit, type, matchwidth);
+                  Dictionary<string, object> dicRight = CombineRight(p, ch, pnew, chnew, T, limit, type, matchwidth);
+                  Dictionary<string, object> dicUp = CombineUp(p, ch, pnew, chnew, T, limit, type, matchwidth);
+                  Dictionary<string, object> dicDown = CombineDown(p, ch, pnew, chnew, T, limit, type, matchwidth);
                   return new Tuple<Dictionary<string, object>, Dictionary<string, object>, Dictionary<string, object>, Dictionary<string, object>>(dicLeft, dicRight, dicUp, dicDown);
             }
             /// <summary>
@@ -729,10 +741,10 @@ namespace myCad .Utility
             public Dictionary<string, object> Combine(List<PointF> p, List<PointF> ch, List<PointF> pnew, List<PointF> chnew, float T
                   , float limit, string type)
             {
-                  Dictionary<string, object> dicLeft = CombineLeft(p, ch, pnew, chnew, T, limit, type);
-                  Dictionary<string, object> dicRight = CombineRight(p, ch, pnew, chnew, T, limit, type);
-                  Dictionary<string, object> dicUp = CombineUp(p, ch, pnew, chnew, T, limit, type);
-                  Dictionary<string, object> dicDown = CombineDown(p, ch, pnew, chnew, T, limit, type);
+                  Dictionary<string, object> dicLeft = CombineLeft(p, ch, pnew, chnew, T, limit, type, false);
+                  Dictionary<string, object> dicRight = CombineRight(p, ch, pnew, chnew, T, limit, type, false);
+                  Dictionary<string, object> dicUp = CombineUp(p, ch, pnew, chnew, T, limit, type, false);
+                  Dictionary<string, object> dicDown = CombineDown(p, ch, pnew, chnew, T, limit, type, false);
 
                   float minarea = -1;
                   string result = "";
@@ -773,7 +785,7 @@ namespace myCad .Utility
             }
             //左下--左上
             public Dictionary<string, object> CombineLeft(List<PointF> p, List<PointF> ch, List<PointF> pnew, List<PointF> chnew
-                  , float T, float limit, string type)
+                  , float T, float limit, string type, bool matchwidth)
             {
                   //右边界
                   float maxy = -99999;
@@ -949,18 +961,26 @@ namespace myCad .Utility
                               float area0 = Convert .ToSingle(dic0["area"]);
                               float length0 = Convert .ToSingle(dic0["length"]);
                               float height0 = Convert .ToSingle(dic0["height"]);
+                              float length02 = Convert .ToSingle(dic0["length2"]);
+                              float height02 = Convert .ToSingle(dic0["height2"]);
 
-                              ////test
-                              //if (limit > 0)
-                              //{
-                              //      if (length0 > height0)
-                              //            area0 = limit * height0;
-                              //      else
-                              //            area0 = limit * length0;
-                              //}
+                              //test
+                              if (limit > 0 && matchwidth)
+                              {
+                                    if (height02 > height0)
+                                    {
+                                          area0 = limit * length02;
+                                          dic0["area"] = area0;
+                                    }
+                                    else
+                                    {
+                                          area0 = limit * length0;
+                                          dic0["area"] = area0;
+                                    }
+                              }
 
                               if (limit < 0 ||
-                                   (length0 <= limit && height0 <= limit))
+                                   (height02 <= limit && height0 <= limit))
                               {
                                     if (area < 0 || area > area0)
                                     {
@@ -1035,7 +1055,7 @@ namespace myCad .Utility
             }
             //右下--右上
             public Dictionary<string, object> CombineRight(List<PointF> p, List<PointF> ch, List<PointF> pnew, List<PointF> chnew
-                  , float T, float limit, string type)
+                  , float T, float limit, string type, bool matchwidth)
             {
                   //左边界
                   float maxy2 = -99999;
@@ -1223,15 +1243,22 @@ namespace myCad .Utility
                               float area0 = Convert .ToSingle(dic0["area"]);
                               float length0 = Convert .ToSingle(dic0["length"]);
                               float height0 = Convert .ToSingle(dic0["height"]);
+                              float length02 = Convert .ToSingle(dic0["length2"]);
+                              float height02 = Convert .ToSingle(dic0["height2"]);
 
-                              ////test
-                              //if (limit > 0)
-                              //{
-                              //      if (length0 > height0)
-                              //            area0 = limit * height0;
-                              //      else
-                              //            area0 = limit * length0;
-                              //}
+                              if (limit > 0 && matchwidth)
+                              {
+                                    if (height02 > height0)
+                                    {
+                                          area0 = limit * length02;
+                                          dic0["area"] = area0;
+                                    }
+                                    else
+                                    {
+                                          area0 = limit * length0;
+                                          dic0["area"] = area0;
+                                    }
+                              }
 
                               if (limit < 0 ||
                                    (length0 <= limit && height0 <= limit))
@@ -1309,7 +1336,7 @@ namespace myCad .Utility
             }
             //左下--右下
             public Dictionary<string, object> CombineDown(List<PointF> p, List<PointF> ch, List<PointF> pnew, List<PointF> chnew
-                  , float T, float limit, string type)
+                  , float T, float limit, string type, bool matchwidth)
             {
                   //上边界
                   float maxy = -99999;
@@ -1485,15 +1512,22 @@ namespace myCad .Utility
                               float area0 = Convert .ToSingle(dic0["area"]);
                               float length0 = Convert .ToSingle(dic0["length"]);
                               float height0 = Convert .ToSingle(dic0["height"]);
+                              float length02 = Convert .ToSingle(dic0["length2"]);
+                              float height02 = Convert .ToSingle(dic0["height2"]);
 
-                              ////test
-                              //if (limit > 0)
-                              //{
-                              //      if (length0 > height0)
-                              //            area0 = limit * height0;
-                              //      else
-                              //            area0 = limit * length0;
-                              //}
+                              if (limit > 0 && matchwidth)
+                              {
+                                    if (height02 > height0)
+                                    {
+                                          area0 = limit * length02;
+                                          dic0["area"] = area0;
+                                    }
+                                    else
+                                    {
+                                          area0 = limit * length0;
+                                          dic0["area"] = area0;
+                                    }
+                              }
 
                               if (limit < 0 ||
                                    (length0 <= limit && height0 <= limit))
@@ -1571,7 +1605,7 @@ namespace myCad .Utility
             }
             //左上--右上
             public Dictionary<string, object> CombineUp(List<PointF> p, List<PointF> ch, List<PointF> pnew, List<PointF> chnew
-                  , float T, float limit, string type)
+                  , float T, float limit, string type, bool matchwidth)
             {
                   //下边界
                   float maxy2 = -99999;
@@ -1759,15 +1793,22 @@ namespace myCad .Utility
                               float area0 = Convert .ToSingle(dic0["area"]);
                               float length0 = Convert .ToSingle(dic0["length"]);
                               float height0 = Convert .ToSingle(dic0["height"]);
-                              
-                              ////test
-                              //if (limit > 0)
-                              //{
-                              //      if (length0 > height0)
-                              //            area0 = limit * height0;
-                              //      else
-                              //            area0 = limit * length0;
-                              //}
+                              float length02 = Convert .ToSingle(dic0["length2"]);
+                              float height02 = Convert .ToSingle(dic0["height2"]);
+
+                              if (limit > 0 && matchwidth)
+                              {
+                                    if (height02 > height0)
+                                    {
+                                          area0 = limit * length02;
+                                          dic0["area"] = area0;
+                                    }
+                                    else
+                                    {
+                                          area0 = limit * length0;
+                                          dic0["area"] = area0;
+                                    }
+                              }
 
                               if (limit < 0 ||
                                    (length0 <= limit && height0 <= limit))

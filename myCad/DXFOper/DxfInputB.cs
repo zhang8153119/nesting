@@ -48,10 +48,15 @@ namespace myCad .DXFOper
 
                   PlateModel plate = new PlateModel();
                   string[] urlStr = url .Split('\\');
-                  string[] nameAndNum = urlStr[urlStr .Length - 1] .Split('-');
-                  plate .PlateName = nameAndNum[0];
-                  plate .PlateCode = nameAndNum[0];
-                  plate .PlateCount = int .Parse(nameAndNum[1] .Substring(0, nameAndNum[1] .Length - 4));
+                  string namestr = urlStr[urlStr .Length - 1] .Split('.')[0];
+                  int index = namestr .LastIndexOf('-');
+                  plate .PlateName = plate .PlateCode = namestr .Substring(0, index);
+                  plate .PlateCount = Convert .ToInt32(namestr .Substring(index + 1, namestr .Length - index - 1));
+
+                  //string[] nameAndNum = urlStr[urlStr .Length - 1] .Split('-');
+                  //plate .PlateName = nameAndNum[0];
+                  //plate .PlateCode = nameAndNum[0];
+                  //plate .PlateCount = int .Parse(nameAndNum[1] .Substring(0, nameAndNum[1] .Length - 4));
 
                   #region 加载dxf文件，获取文件每行的内容
                   List<string> listDxfInfo = new List<string>();
