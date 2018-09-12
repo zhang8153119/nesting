@@ -46,8 +46,11 @@
                   this.sLength = new System.Windows.Forms.DataGridViewTextBoxColumn();
                   this.sWidth = new System.Windows.Forms.DataGridViewTextBoxColumn();
                   this.panel1 = new System.Windows.Forms.Panel();
+                  this.btnexport = new FZYK.WinCtrl.YKButton(this.components);
                   this.cmbsuanfa = new FZYK.WinCtrl.YKComboBox();
                   this.cmbType = new FZYK.WinCtrl.YKComboBox();
+                  this.chkwidth = new FZYK.WinCtrl.YKCheckBox(this.components);
+                  this.chkbinxing = new FZYK.WinCtrl.YKCheckBox(this.components);
                   this.chkGrid = new FZYK.WinCtrl.YKCheckBox(this.components);
                   this.chkPress = new FZYK.WinCtrl.YKCheckBox(this.components);
                   this.chkDrawRect = new FZYK.WinCtrl.YKCheckBox(this.components);
@@ -67,6 +70,7 @@
                   this.btndel = new System.Windows.Forms.Button();
                   this.btnDXF = new System.Windows.Forms.Button();
                   this.btnpara = new System.Windows.Forms.Button();
+                  this.btnGPU = new System.Windows.Forms.Button();
                   this.btnprint = new System.Windows.Forms.Button();
                   this.btncreate = new System.Windows.Forms.Button();
                   this.btnchongxinjiema = new System.Windows.Forms.Button();
@@ -101,10 +105,8 @@
                   this.tabPage3 = new System.Windows.Forms.TabPage();
                   this.ykSplitContainer2 = new FZYK.WinCtrl.YKSplitContainer(this.components);
                   this.pnlcad = new FZYK.WinCtrl.YKPanel(this.components);
-                  this.btnexport = new FZYK.WinCtrl.YKButton(this.components);
-                  this.chkwidth = new FZYK.WinCtrl.YKCheckBox(this.components);
                   this.cad = new myCad.CADInterfaceCtrl.CADInterface();
-                  this.chkbinxing = new FZYK.WinCtrl.YKCheckBox(this.components);
+                  this.btncpu = new System.Windows.Forms.Button();
                   ((System.ComponentModel.ISupportInitialize)(this.dgvStock)).BeginInit();
                   this.panel1.SuspendLayout();
                   ((System.ComponentModel.ISupportInitialize)(this.ykSplitContainer1)).BeginInit();
@@ -225,6 +227,8 @@
                   this.panel1.Controls.Add(this.btndel);
                   this.panel1.Controls.Add(this.btnDXF);
                   this.panel1.Controls.Add(this.btnpara);
+                  this.panel1.Controls.Add(this.btncpu);
+                  this.panel1.Controls.Add(this.btnGPU);
                   this.panel1.Controls.Add(this.btnprint);
                   this.panel1.Controls.Add(this.btncreate);
                   this.panel1.Controls.Add(this.btnchongxinjiema);
@@ -246,6 +250,27 @@
                   this.panel1.Name = "panel1";
                   this.panel1.Size = new System.Drawing.Size(1351, 119);
                   this.panel1.TabIndex = 3;
+                  // 
+                  // btnexport
+                  // 
+                  this.btnexport.A_BorderColor = System.Drawing.SystemColors.Desktop;
+                  this.btnexport.A_GotFocusColor = System.Drawing.SystemColors.ActiveCaption;
+                  this.btnexport.A_MouseDownBackColor = System.Drawing.Color.SteelBlue;
+                  this.btnexport.A_MouseOverBackColor = System.Drawing.Color.LightSteelBlue;
+                  this.btnexport.DisplayFocusCues = false;
+                  this.btnexport.FlatAppearance.BorderColor = System.Drawing.SystemColors.Desktop;
+                  this.btnexport.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
+                  this.btnexport.FlatAppearance.MouseOverBackColor = System.Drawing.Color.LightSteelBlue;
+                  this.btnexport.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+                  this.btnexport.ForeColor = System.Drawing.Color.Black;
+                  this.btnexport.Location = new System.Drawing.Point(872, 84);
+                  this.btnexport.Name = "btnexport";
+                  this.btnexport.Size = new System.Drawing.Size(73, 23);
+                  this.btnexport.TabIndex = 8;
+                  this.btnexport.Text = "导出dxf";
+                  this.btnexport.TextType = FZYK.WinCtrl.YKButton.YKBtnTextType.Normal;
+                  this.btnexport.UseVisualStyleBackColor = true;
+                  this.btnexport.Click += new System.EventHandler(this.btnexport_Click);
                   // 
                   // cmbsuanfa
                   // 
@@ -283,6 +308,28 @@
                   this.cmbType.Size = new System.Drawing.Size(82, 20);
                   this.cmbType.TabIndex = 7;
                   this.cmbType.Text = "矩形";
+                  // 
+                  // chkwidth
+                  // 
+                  this.chkwidth.AutoSize = true;
+                  this.chkwidth.BackColor = System.Drawing.Color.Transparent;
+                  this.chkwidth.Location = new System.Drawing.Point(1015, 62);
+                  this.chkwidth.Name = "chkwidth";
+                  this.chkwidth.Size = new System.Drawing.Size(72, 16);
+                  this.chkwidth.TabIndex = 6;
+                  this.chkwidth.Text = "匹配板宽";
+                  this.chkwidth.UseVisualStyleBackColor = false;
+                  // 
+                  // chkbinxing
+                  // 
+                  this.chkbinxing.AutoSize = true;
+                  this.chkbinxing.BackColor = System.Drawing.Color.Transparent;
+                  this.chkbinxing.Location = new System.Drawing.Point(1070, 84);
+                  this.chkbinxing.Name = "chkbinxing";
+                  this.chkbinxing.Size = new System.Drawing.Size(48, 16);
+                  this.chkbinxing.TabIndex = 6;
+                  this.chkbinxing.Text = "并行";
+                  this.chkbinxing.UseVisualStyleBackColor = false;
                   // 
                   // chkGrid
                   // 
@@ -477,6 +524,16 @@
                   this.btnpara.Text = "组合";
                   this.btnpara.UseVisualStyleBackColor = true;
                   this.btnpara.Click += new System.EventHandler(this.btnpara_Click);
+                  // 
+                  // btnGPU
+                  // 
+                  this.btnGPU.Location = new System.Drawing.Point(615, 31);
+                  this.btnGPU.Name = "btnGPU";
+                  this.btnGPU.Size = new System.Drawing.Size(75, 23);
+                  this.btnGPU.TabIndex = 1;
+                  this.btnGPU.Text = "GPU测试";
+                  this.btnGPU.UseVisualStyleBackColor = true;
+                  this.btnGPU.Click += new System.EventHandler(this.btnGPU_Click);
                   // 
                   // btnprint
                   // 
@@ -928,38 +985,6 @@
                   this.pnlcad.TabIndex = 8;
                   this.pnlcad.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlcad_Paint);
                   // 
-                  // btnexport
-                  // 
-                  this.btnexport.A_BorderColor = System.Drawing.SystemColors.Desktop;
-                  this.btnexport.A_GotFocusColor = System.Drawing.SystemColors.ActiveCaption;
-                  this.btnexport.A_MouseDownBackColor = System.Drawing.Color.SteelBlue;
-                  this.btnexport.A_MouseOverBackColor = System.Drawing.Color.LightSteelBlue;
-                  this.btnexport.DisplayFocusCues = false;
-                  this.btnexport.FlatAppearance.BorderColor = System.Drawing.SystemColors.Desktop;
-                  this.btnexport.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
-                  this.btnexport.FlatAppearance.MouseOverBackColor = System.Drawing.Color.LightSteelBlue;
-                  this.btnexport.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-                  this.btnexport.ForeColor = System.Drawing.Color.Black;
-                  this.btnexport.Location = new System.Drawing.Point(872, 84);
-                  this.btnexport.Name = "btnexport";
-                  this.btnexport.Size = new System.Drawing.Size(73, 23);
-                  this.btnexport.TabIndex = 8;
-                  this.btnexport.Text = "导出dxf";
-                  this.btnexport.TextType = FZYK.WinCtrl.YKButton.YKBtnTextType.Normal;
-                  this.btnexport.UseVisualStyleBackColor = true;
-                  this.btnexport.Click += new System.EventHandler(this.btnexport_Click);
-                  // 
-                  // chkwidth
-                  // 
-                  this.chkwidth.AutoSize = true;
-                  this.chkwidth.BackColor = System.Drawing.Color.Transparent;
-                  this.chkwidth.Location = new System.Drawing.Point(1015, 62);
-                  this.chkwidth.Name = "chkwidth";
-                  this.chkwidth.Size = new System.Drawing.Size(72, 16);
-                  this.chkwidth.TabIndex = 6;
-                  this.chkwidth.Text = "匹配板宽";
-                  this.chkwidth.UseVisualStyleBackColor = false;
-                  // 
                   // cad
                   // 
                   this.cad.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -969,16 +994,15 @@
                   this.cad.Size = new System.Drawing.Size(1333, 459);
                   this.cad.TabIndex = 7;
                   // 
-                  // chkbinxing
+                  // btncpu
                   // 
-                  this.chkbinxing.AutoSize = true;
-                  this.chkbinxing.BackColor = System.Drawing.Color.Transparent;
-                  this.chkbinxing.Location = new System.Drawing.Point(1070, 84);
-                  this.chkbinxing.Name = "chkbinxing";
-                  this.chkbinxing.Size = new System.Drawing.Size(48, 16);
-                  this.chkbinxing.TabIndex = 6;
-                  this.chkbinxing.Text = "并行";
-                  this.chkbinxing.UseVisualStyleBackColor = false;
+                  this.btncpu.Location = new System.Drawing.Point(615, 73);
+                  this.btncpu.Name = "btncpu";
+                  this.btncpu.Size = new System.Drawing.Size(75, 23);
+                  this.btncpu.TabIndex = 1;
+                  this.btncpu.Text = "CPU测试";
+                  this.btncpu.UseVisualStyleBackColor = true;
+                  this.btncpu.Click += new System.EventHandler(this.btncpu_Click);
                   // 
                   // FrmCut
                   // 
@@ -1083,5 +1107,7 @@
             private FZYK .WinCtrl .YKButton btnexport;
             private FZYK .WinCtrl .YKCheckBox chkwidth;
             private FZYK .WinCtrl .YKCheckBox chkbinxing;
+            private System .Windows .Forms .Button btnGPU;
+            private System .Windows .Forms .Button btncpu;
       }
 }

@@ -59,5 +59,25 @@ namespace myCad.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   查找 System.Byte[] 类型的本地化资源。
+        /// </summary>
+        internal static byte[] function_vis {
+            get {
+                object obj = ResourceManager.GetObject("function_vis", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Byte[] 类型的本地化资源。
+        /// </summary>
+        internal static byte[] nest {
+            get {
+                object obj = ResourceManager.GetObject("nest", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

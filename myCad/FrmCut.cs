@@ -1,4 +1,6 @@
-﻿using myCad .CADInterfaceCtrl;
+﻿using Cloo;
+using GPU;
+using myCad .CADInterfaceCtrl;
 using myCad .DXFOper;
 using myCad .Model;
 using myCad .Shape;
@@ -1354,7 +1356,7 @@ namespace myCad
             /// <returns></returns>
             private DNA CountFitness(DNA d)
             {
-                  return CountFitnessRectangle3(d);
+                  return CountFitnessRectangle2(d);
             }
             #region 剩余矩形动态匹配算法
             /// <summary>
@@ -1840,7 +1842,7 @@ namespace myCad
                                     rect .RemoveAt(0);//若无法排入任何件号，则删除该矩形
                               }
                         }//end while (rect .Count > 0)
-                        
+
                         #region 剩余零件插孔排入
                         for (int b = 0; b < dna .Basic .Count; b++)
                         {
@@ -2029,7 +2031,7 @@ namespace myCad
                               }
                         }
                         #endregion
-                        
+
                         dna .Stock[i] = s;
                   }
                   d .Stock = dna .Stock .ToList();
@@ -2084,7 +2086,7 @@ namespace myCad
                         float limit = dna .Stock[i] .Height;
                         PlateHelper ph = new PlateHelper();
                         //List<PlateCombine> pc = _partCombine .Where(t => t .Rect .Height >= limit || t .Rect .Width >= limit) .ToList();
-                        for (int t = 0; t < _partCombine .Count; t++)
+                        /*for (int t = 0; t < _partCombine .Count; t++)
                         {
                               if (_partCombine[t] .Rect .Height >= limit || _partCombine[t] .Rect .Width >= limit)
                               {
@@ -2099,7 +2101,7 @@ namespace myCad
                                           _basicLib .Remove(b[n]);
                                     }
                               }
-                        }
+                        }*/
 
                         dna .Stock[i] .PartInfoList .Clear();
                         dna .Stock[i] .Use = 0;
@@ -4374,6 +4376,68 @@ namespace myCad
                   FileStream f1 = new FileStream(filepath, System .IO .FileMode .Create);
                   DXFLibrary .Writer .Write(doc, f1);
                   f1 .Close();
+            }
+
+            private IGpuHelper gpu;
+            private void btnGPU_Click(object sender, EventArgs e)
+            {
+                  IniHelper ih = new IniHelper();
+                  string config = "";
+                  if (ih .ExistINIFile())
+                  {
+                        config = ih .IniReadValue("GPUConfig", "Platform");
+                  }
+                  if (config == "")
+                  {
+                        OpenClSetting oclSetting = new OpenClSetting();
+                        if (oclSetting .ShowDialog(this) == DialogResult .OK)
+                        {
+                              gpu = oclSetting .Gpu;
+                        }
+                  }
+                  else
+                  {
+                        string platformstr = ih .IniReadValue("GPUConfig", "Platform");
+                        string devicestr = ih .IniReadValue("GPUConfig", "Device");
+                        string fpTypestr = ih .IniReadValue("GPUConfig", "FpType");
+
+                        FPType fpType;
+                        if (fpTypestr == "Double Precision (AMD)")
+                        {
+                              fpType = FPType .FP64AMD;
+                        }
+                        else if (fpTypestr == "Double Precision")
+                        {
+                              fpType = FPType .FP64;
+                        }
+                        else
+                        {
+                              fpType = FPType .Single;
+                        }
+                        var platforms = ComputePlatform .Platforms;
+                        ComputePlatform platform = platforms .TakeWhile(t => t .Name == platformstr) .ToList()[0];
+                        ComputeDevice device = platform .Devices .Where(t => t .Name == devicestr) .ToList()[0];
+                        gpu = GpuHelperFactory .CreateHelper(platform
+                              , device
+                              , fpType);
+                  }
+                  if (gpu != null)
+                  {
+                        float num = Convert .ToSingle(txtSize .Text);
+                        float result = 0f;
+                        gpu .GetHello(num, ref result);
+                        MessageBox .Show(result .ToString());
+                  }
+            }
+
+            private void btncpu_Click(object sender, EventArgs e)
+            {
+                  float c = 0;
+                  while(c< 10000000)
+                  {
+                        c +=0.5f;
+                  }
+                  MessageBox .Show(c .ToString());
             }
       }
 }
