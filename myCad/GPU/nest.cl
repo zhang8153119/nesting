@@ -22,8 +22,5 @@ typedef float fp_t;
 kernel void hello(global write_only fp_t* result,float num)
 {
 	int i = get_global_id(0);
-	while(result[i] <10000000)
-	{
-		result[i] = result[i] + 1001;
-	}
+	result[i]=num*1000;
 }
