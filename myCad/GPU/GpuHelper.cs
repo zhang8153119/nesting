@@ -6,6 +6,8 @@ using Cloo;
 using System .Diagnostics;
 using System .Collections .ObjectModel;
 using System .Runtime .InteropServices;
+using System .Drawing;
+using System .ComponentModel;
 
 namespace GPU
 {
@@ -23,7 +25,7 @@ namespace GPU
                   commands = new ComputeCommandQueue(context, context .Devices[0], ComputeCommandQueueFlags .None);
                   this .fpType = fptype;
             }
-
+            #region hello
             public void GetHello(float num, ref float result)
             {
                   TFP t = Hello(num);
@@ -76,5 +78,131 @@ namespace GPU
                   arrCHandle .Free();
                   return myresult;
             }
+            #endregion
+            #region ArrayTest
+            public int ArrayTest(int[,] a1, int[,] b)
+            {
+                  Point f;
+                  int[,] a = new int[2, 2];
+                  MyPoint[] plist = new MyPoint[100000];
+                  MyPoint p1 = new MyPoint() { X = 1, Y = 1 };
+                  MyPoint p2 = new MyPoint() { X = 2, Y = 2 };
+                  plist[0] = p1;
+                  plist[1] = p2;
+
+
+                  IntPtr dataaddr_a = Marshal .UnsafeAddrOfPinnedArrayElement(plist, 0);
+                  ComputeBuffer<MyPoint> abuffer = new ComputeBuffer<MyPoint>(context, ComputeMemoryFlags .ReadOnly | ComputeMemoryFlags .CopyHostPointer, plist);
+
+                  string source = Encoding .ASCII .GetString(myCad .Properties .Resources .nest);
+                  ComputeProgram program = new ComputeProgram(context, source);
+                  try
+                  {
+                        program .Build(null, null, null, IntPtr .Zero);
+                  }
+                  catch (Exception)
+                  {
+                        var log = program .GetBuildLog(context .Devices[0]);
+                        Debugger .Break();
+                  }
+
+                  ComputeKernel kernel = program .CreateKernel("Sum");
+
+                  ComputeBuffer<MyPoint> outdata = new ComputeBuffer<MyPoint>(context, ComputeMemoryFlags .ReadWrite, plist .Length);
+                  kernel .SetMemoryArgument(0, abuffer);
+                  kernel .SetMemoryArgument(1, outdata);
+
+                  commands .Execute(kernel, null, new long[] { 2 }, null, events);
+
+                  MyPoint[] myresult = new MyPoint[2];
+
+                  GCHandle arrCHandle = GCHandle .Alloc(myresult, GCHandleType .Pinned);
+                  commands .Read(outdata, true, 0, 2, arrCHandle .AddrOfPinnedObject(), events);
+                  MyPoint[] test = myresult;
+                  arrCHandle .Free();
+
+                  return 0;
+            }
+
+            #endregion
+
+            #region GetGridValue
+            public int[,] GetGridValue(List<PointF> pointlist, float W, float H, float T)
+            {
+                  int WI = Convert .ToInt32(Math .Ceiling(W / T));
+                  int HI = Convert .ToInt32(Math .Ceiling(H / T));
+                  int pc = pointlist .Count;
+                  MyPoint[] plist = new MyPoint[pc];
+                  for (int i = 0; i < pointlist .Count; i++)
+                  {
+                        plist[i] .X = pointlist[i] .X;
+                        plist[i] .Y = pointlist[i] .Y;
+                  }
+                  ComputeBuffer<MyPoint> pbuffer = new ComputeBuffer<MyPoint>(context, ComputeMemoryFlags .ReadOnly | ComputeMemoryFlags .CopyHostPointer, plist);
+
+                  string source = Encoding .ASCII .GetString(myCad .Properties .Resources .nest);
+                  source = "#define PCOUNT " + pc .ToString() + "\n" + source;
+                  //source = source .Replace("\r", "") .Replace("\t", "");
+                  ComputeProgram program = new ComputeProgram(context, source);
+                  try
+                  {
+                        program .Build(null, null, null, IntPtr .Zero);
+                  }
+                  catch (Exception)
+                  {
+                        var log = program .GetBuildLog(context .Devices[0]);
+                        Debugger .Break();
+                  }
+
+                  ComputeKernel kernel = program .CreateKernel("GetGridValue");
+
+                  ComputeBuffer<int> outdata = new ComputeBuffer<int>(context, ComputeMemoryFlags .WriteOnly, WI * HI);
+                  ComputeBuffer<MyPoint> testdata = new ComputeBuffer<MyPoint>(context, ComputeMemoryFlags .WriteOnly, WI * HI);
+                  kernel .SetMemoryArgument(0, pbuffer);
+                  kernel .SetValueArgument(1, W);
+                  kernel .SetValueArgument(2, H);
+                  kernel .SetValueArgument(3, T);
+                  kernel .SetValueArgument(4, WI);
+                  kernel .SetValueArgument(5, HI);
+                  kernel .SetMemoryArgument(6, outdata);
+                  kernel .SetMemoryArgument(7, testdata);
+
+                  commands .Execute(kernel, null, new long[] { WI + HI }, null, events);
+
+                  int[,] myresult = new int[WI, HI];
+                  for (int i = 0; i < WI; i++)
+                  {
+                        for (int j = 0; j < HI; j++)
+                        {
+                              myresult[i, j] = 0;
+                        }
+                  }
+                  MyPoint[,] test = new MyPoint[WI, HI];
+                  for (int i = 0; i < WI; i++)
+                  {
+                        for (int j = 0; j < HI; j++)
+                        {
+                              test[i, j] .X = 0;
+                              test[i, j] .Y = 0;
+                        }
+                  }
+                  GCHandle arrCHandle = GCHandle .Alloc(test, GCHandleType .Pinned);
+                  commands .Read(testdata, true, 0, WI * HI, arrCHandle .AddrOfPinnedObject(), events);
+
+                  arrCHandle .Free();
+                  kernel .Dispose();
+                  program .Dispose();
+                  pbuffer .Dispose();
+                  outdata .Dispose();
+                  return myresult;
+            }
+            #endregion
+      }
+
+
+      public struct MyPoint
+      {
+            public float X { get; set; }
+            public float Y { get; set; }
       }
 }

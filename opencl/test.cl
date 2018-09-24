@@ -6,7 +6,7 @@ typedef struct
 	float Y; 
 } MyPoint; 
 
-/* XÉ¨ÃèÏß
+/* Xæ‰«æçº¿
 */
 void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global int* result,__global MyPoint* test)
 {
@@ -25,7 +25,7 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 		int index2;
 		int nodecount = 0;
 		bool ifend = false;
-		//ÖØºÏ
+		//é‡åˆ
 		if(fabs(plist[m].Y-y) < RE && fabs(plist[mnext].Y-y)<RE)
 		{
 			p1 = plist[m];
@@ -35,18 +35,18 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 			nodecount =2;
 			ifend = true;
 		}
-		//Æ½ĞĞ²»ÖØºÏ
+		//å¹³è¡Œä¸é‡åˆ
 		else if(fabs(plist[m].Y-plist[mnext].Y)<RE)
 		{
 			nodecount = 0;
 		}
-		//²»Ïà½»
+		//ä¸ç›¸äº¤
 		else if((y-plist[m].Y<-RE &&y-plist[mnext].Y<-RE)
 			|| (y-plist[m].Y>RE &&y-plist[mnext].Y>RE))
 		{
 			nodecount = 0;
 		}
-		//¹ıÆğµã
+		//è¿‡èµ·ç‚¹
 		else if (fabs(plist[m].Y -y) < RE)
 		{
 			p1.X = plist[m].X;
@@ -55,7 +55,7 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 			nodecount =1;
 			ifend = true;
 		}
-		//¹ıÖÕµã
+		//è¿‡ç»ˆç‚¹
 		else if (fabs(plist[mnext].Y -y) < RE)
 		{
 			p1.X =plist[mnext].X;
@@ -64,7 +64,7 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 			nodecount =1;
 			ifend = true;
 		}
-		//´¹Ö±
+		//å‚ç›´
 		else if(fabs(plist[m].X - plist[mnext].X) < RE)
 		{
 			p1.X = plist[m].X;
@@ -72,7 +72,7 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 			nodecount =1;
 			ifend = false;
 		}
-		//ÆÕÍ¨Ïà½»
+		//æ™®é€šç›¸äº¤
 		else
 		{
 			float xielv = (plist[mnext].Y - plist[m].Y) / (plist[mnext].X - plist[m].X);
@@ -97,7 +97,7 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 			testc+=2;
 		}
 		/*
-		//·Ç¶Ëµã
+		//éç«¯ç‚¹
 		if(!ifend)
 		{
 			if(nodecount >= 1)
@@ -157,7 +157,7 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 				}
 			}//end if nodecount == 2
 		}//end if !ifend
-		//¶Ëµã
+		//ç«¯ç‚¹
 		else
 		{
 			if(nodecount >=1)
@@ -428,7 +428,7 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 	*/
 	}//end for int m = 0;m<PCOUNT;m++
 	/*
-	//Á½Á½Åä¶Ô½øĞĞÕ¤¸ñ»¯
+	//ä¸¤ä¸¤é…å¯¹è¿›è¡Œæ …æ ¼åŒ–
 	for(int g = 0;g<c;g+=2)
 	{
 		int t1 = (int)parray[g].X/T;
@@ -457,7 +457,7 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 	}*/
 }
 
-/* YÉ¨ÃèÏß
+/* Yæ‰«æçº¿
  */
 void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global int* result)
 {
@@ -477,7 +477,7 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global 
 		int index2;
 		int nodecount = 0;
 		bool ifend = false;
-		//ÖØºÏ
+		//é‡åˆ
 		if(fabs(plist[m].X-x) < RE && fabs(plist[mnext].X-x)<RE)
 		{
 			p1 = plist[m];
@@ -487,18 +487,18 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global 
 			nodecount =2;
 			ifend = true;
 		}
-		//Æ½ĞĞ²»ÖØºÏ
+		//å¹³è¡Œä¸é‡åˆ
 		else if(fabs(plist[m].X-plist[mnext].X)<RE)
 		{
 			nodecount = 0;
 		}
-		//²»Ïà½»
+		//ä¸ç›¸äº¤
 		else if((x-plist[m].X<-RE && x-plist[mnext].X<-RE)
 			|| (x-plist[m].X>RE && x-plist[mnext].X>RE))
 		{
 			nodecount = 0;
 		}
-		//¹ıÆğµã
+		//è¿‡èµ·ç‚¹
 		else if (fabs(plist[m].X -x) < RE)
 		{
 			p1.X = x; 
@@ -507,7 +507,7 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global 
 			nodecount =1;
 			ifend = true;
 		}
-		//¹ıÖÕµã
+		//è¿‡ç»ˆç‚¹
 		else if (fabs(plist[mnext].X -x) < RE)
 		{
 			p1.X = x;
@@ -516,7 +516,7 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global 
 			nodecount =1;
 			ifend = true;
 		}
-		//´¹Ö±
+		//å‚ç›´
 		else if(fabs(plist[m].Y - plist[mnext].Y) < RE)
 		{
 			p1.X = x;
@@ -524,7 +524,7 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global 
 			nodecount =1;
 			ifend = false;
 		}
-		//ÆÕÍ¨Ïà½»
+		//æ™®é€šç›¸äº¤
 		else
 		{
 			float xielv = (plist[mnext].Y - plist[m].Y) / (plist[mnext].X - plist[m].X);
@@ -534,7 +534,7 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global 
 			nodecount = 1;
 			ifend = false;
 		}
-		//·Ç¶Ëµã
+		//éç«¯ç‚¹
 		if(!ifend)
 		{
 			if(nodecount >= 1)
@@ -594,7 +594,7 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global 
 				}
 			}//end if nodecount == 2
 		}//end if !ifend
-		//¶Ëµã
+		//ç«¯ç‚¹
 		else
 		{
 			if(nodecount >=1)
@@ -863,7 +863,7 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global 
 			}//end if nodecount ==2
 		}//end else
 	}//end for int m = 0;m<PCOUNT;m++
-	//Á½Á½Åä¶Ô½øĞĞÕ¤¸ñ»¯
+	//ä¸¤ä¸¤é…å¯¹è¿›è¡Œæ …æ ¼åŒ–
 	for(int g = 0;g<c;g+=2)
 	{
 		int t1 = (int)parray[g].Y/T;

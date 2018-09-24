@@ -14,6 +14,7 @@ using System .Data;
 using System .Drawing;
 using System .IO;
 using System .Linq;
+using System .Runtime .InteropServices;
 using System .Threading;
 using System .Threading .Tasks;
 using System .Windows .Forms;
@@ -4414,8 +4415,18 @@ namespace myCad
                         {
                               fpType = FPType .Single;
                         }
+
+                        ComputePlatform platform = null;
                         var platforms = ComputePlatform .Platforms;
-                        ComputePlatform platform = platforms .TakeWhile(t => t .Name == platformstr) .ToList()[0];
+                        foreach (var p in platforms)
+                        {
+                              if (p .Name == platformstr)
+                              {
+                                    platform = p;
+                                    break;
+                              }
+                        }
+                        //ComputePlatform platform = platforms .TakeWhile(t => t .Name .Equals(platformstr)) .ToList()[0];
                         ComputeDevice device = platform .Devices .Where(t => t .Name == devicestr) .ToList()[0];
                         gpu = GpuHelperFactory .CreateHelper(platform
                               , device
@@ -4423,21 +4434,81 @@ namespace myCad
                   }
                   if (gpu != null)
                   {
-                        float num = Convert .ToSingle(txtSize .Text);
-                        float result = 0f;
-                        gpu .GetHello(num, ref result);
-                        MessageBox .Show(result .ToString());
+                        //float num = Convert .ToSingle(txtSize .Text);
+                        //float result = 0f;
+                        //gpu .GetHello(num, ref result);
+                        //MessageBox .Show(result .ToString());
+
+                        var tp = CreateTest();
+
+                        System .Diagnostics .Stopwatch watch = new System .Diagnostics .Stopwatch();
+                        watch .Start();  //开始监视代码运行时间
+
+                        PlateModel pm = _part[0];
+                        int[,] gridvalue;
+                        gridvalue = gpu .GetGridValue(pm .OutModel .ExpandPoint, pm .Rect .Width, pm .Rect .Height, T);
+
+                        frmtext frm = new frmtext(gridvalue);
+                        frm .Show();
+                        watch .Stop();  //停止监视
+                        TimeSpan timespan = watch .Elapsed;  //获取当前实例测量得出的总时间
+                        lblinfo .Text = "耗时：" + timespan .TotalMilliseconds .ToString() + "ms";
+
+                        //MessageBox .Show(c .ToString());
                   }
             }
 
             private void btncpu_Click(object sender, EventArgs e)
             {
-                  float c = 0;
-                  while(c< 10000000)
-                  {
-                        c +=0.5f;
-                  }
+                  var tp = CreateTest();
+                  System .Diagnostics .Stopwatch watch = new System .Diagnostics .Stopwatch();
+                  watch .Start();  //开始监视代码运行时间
+
+                  int c = TestCPU(tp .Item1, tp .Item2);
+
+                  watch .Stop();  //停止监视
+                  TimeSpan timespan = watch .Elapsed;  //获取当前实例测量得出的总时间
+                  lblinfo .Text = "耗时：" + timespan .TotalMilliseconds .ToString() + "ms";
+
                   MessageBox .Show(c .ToString());
+
             }
+
+            private Tuple<int[,], int[,]> CreateTest()
+            {
+                  int m = 10;
+                  int n = 5;
+                  int[,] a = new int[m, n];
+                  int[,] b = new int[m, n];
+                  for (int i = 0; i < m; i++)
+                  {
+                        for (int j = 0; j < n; j++)
+                        {
+                              a[i, j] = 1;
+                              b[i, j] = 1;
+                        }
+                  }
+                  return new Tuple<int[,], int[,]>(a, b);
+            }
+            //private int TestGPU(int[,] a, int[,] b)
+            //{
+            //      int c = gpu .ArrayTest(a, b);
+            //      return c;
+            //}
+            private int TestCPU(int[,] a, int[,] b)
+            {
+                  int m = a .GetLength(0);
+                  int n = a .GetLength(1);
+                  int sum = 0;
+                  for (int i = 0; i < m; i++)
+                  {
+                        for (int j = 0; j < n; j++)
+                        {
+                              sum += a[i, j] * b[i, j];
+                        }
+                  }
+                  return sum;
+            }
+
       }
 }

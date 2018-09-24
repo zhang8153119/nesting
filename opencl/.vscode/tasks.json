@@ -1,0 +1,36 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "opencl:custom build [kernel] {spirv64}",
+            "type": "shell",
+            "command": "ioc64",
+            "args": [
+                "-cmd=bulid",
+                "-input=\"C:\\nesting\\opencl\\GetGridValue.cl\"",
+                "-spirv64=kernel.sporv64"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$ioc"
+        },
+        {
+            "type": "shell",
+            "label": "opencl: custom build [GetGridValue] {ir}",
+            "task": "build",
+            "command": "ioc64",
+            "args": [
+                "-cmd=build",
+                "-input=\"c:\\nesting\\opencl\\GetGridValue.cl\"",
+                "-ir=GetGridValue.ir"
+            ],
+            "problemMatcher": [
+                "$ioc"
+            ]
+        }
+    ]
+}

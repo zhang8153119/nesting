@@ -402,7 +402,7 @@ namespace myCad .Utility
                                     }
                               }
                               else if ((pl .Y > p .Y && pn .Y > p .Y)//不重合，为极值点
-                                    || (pl .Y < p .Y && pl .Y < p .Y))
+                                    || (pl .Y < p .Y && pn .Y < p .Y))
                               {
                                     plist .Add(plist[i]);
                               }
