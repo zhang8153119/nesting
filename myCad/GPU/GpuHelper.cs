@@ -157,7 +157,30 @@ namespace GPU
                   ComputeKernel kernel = program .CreateKernel("GetGridValue");
 
                   ComputeBuffer<int> outdata = new ComputeBuffer<int>(context, ComputeMemoryFlags .WriteOnly, WI * HI);
-                  ComputeBuffer<MyPoint> testdata = new ComputeBuffer<MyPoint>(context, ComputeMemoryFlags .WriteOnly, WI * HI);
+                  kernel .SetMemoryArgument(0, pbuffer);
+                  kernel .SetValueArgument(1, W);
+                  kernel .SetValueArgument(2, H);
+                  kernel .SetValueArgument(3, T);
+                  kernel .SetValueArgument(4, WI);
+                  kernel .SetValueArgument(5, HI);
+                  kernel .SetMemoryArgument(6, outdata);
+
+                  commands .Execute(kernel, null, new long[] { WI + HI }, null, events);
+
+                  int[,] myresult = new int[WI, HI];
+                  for (int i = 0; i < WI; i++)
+                  {
+                        for (int j = 0; j < HI; j++)
+                        {
+                              myresult[i, j] = 0;
+                        }
+                  }
+                  GCHandle arrCHandle = GCHandle .Alloc(myresult, GCHandleType .Pinned);
+                  commands .Read(outdata, true, 0, WI * HI, arrCHandle .AddrOfPinnedObject(), events);
+                  
+                  //
+                  /*ComputeBuffer<MyPoint> testdata = new ComputeBuffer<MyPoint>(context, ComputeMemoryFlags .WriteOnly, WI * HI);
+                  ComputeBuffer<MyPoint> parray = new ComputeBuffer<MyPoint>(context, ComputeMemoryFlags .WriteOnly, pc);
                   kernel .SetMemoryArgument(0, pbuffer);
                   kernel .SetValueArgument(1, W);
                   kernel .SetValueArgument(2, H);
@@ -166,6 +189,7 @@ namespace GPU
                   kernel .SetValueArgument(5, HI);
                   kernel .SetMemoryArgument(6, outdata);
                   kernel .SetMemoryArgument(7, testdata);
+                  kernel .SetMemoryArgument(8, parray);
 
                   commands .Execute(kernel, null, new long[] { WI + HI }, null, events);
 
@@ -186,9 +210,17 @@ namespace GPU
                               test[i, j] .Y = 0;
                         }
                   }
-                  GCHandle arrCHandle = GCHandle .Alloc(test, GCHandleType .Pinned);
-                  commands .Read(testdata, true, 0, WI * HI, arrCHandle .AddrOfPinnedObject(), events);
+                  int[] thisresult = new int[WI * HI];
+                  MyPoint[] test3 = new MyPoint[pc];
 
+                  GCHandle arrCHandle = GCHandle .Alloc(thisresult, GCHandleType .Pinned);
+                  commands .Read(outdata, true, 0, WI * HI, arrCHandle .AddrOfPinnedObject(), events);
+
+                  GCHandle arrCHandle2 = GCHandle .Alloc(test, GCHandleType .Pinned);
+                  commands .Read(testdata, true, 0, WI * HI, arrCHandle2 .AddrOfPinnedObject(), events);
+
+                  GCHandle arrCHandle3 = GCHandle .Alloc(test3, GCHandleType .Pinned);
+                  commands .Read(parray, true, 0, pc, arrCHandle3 .AddrOfPinnedObject(), events);*/
                   arrCHandle .Free();
                   kernel .Dispose();
                   program .Dispose();

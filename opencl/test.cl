@@ -8,7 +8,7 @@ typedef struct
 
 /* X扫描线
 */
-void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global int* result,__global MyPoint* test)
+void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global int* result,__global MyPoint* test,__global MyPoint* parray1)
 {
 	MyPoint parray[PCOUNT];
 	int c = 0;
@@ -82,11 +82,23 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 			nodecount = 1;
 			ifend = false;
 		}
-		if(nodecount == 1)
+		/*if(nodecount == 1)
 		{
 			test[j*HI+testc].X = p1.X;
 			test[j*HI+testc].Y = p1.Y;
 			testc++;
+			if(ifend)
+			{
+				test[j*HI+testc].X = 1;
+				test[j*HI+testc].Y = 1;
+				testc++;
+			}
+			else
+			{
+				test[j*HI+testc].X = -1;
+				test[j*HI+testc].Y = -1;
+				testc++;
+			}
 		}
 		else if(nodecount == 2)
 		{
@@ -95,8 +107,20 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 			test[j*HI+testc+1].X = p2.X;
 			test[j*HI+testc+1].Y = p2.Y;
 			testc+=2;
-		}
-		/*
+			if(ifend)
+			{
+				test[j*HI+testc].X = 1;
+				test[j*HI+testc].Y = 1;
+				testc++;
+			}
+			else
+			{
+				test[j*HI+testc].X = -1;
+				test[j*HI+testc].Y = -1;
+				testc++;
+			}
+		}*/
+		
 		//非端点
 		if(!ifend)
 		{
@@ -122,9 +146,11 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 				{
 					for(int k = c-1;k>=insertindex;k--)
 					{
-						parray[k+1] = parray[k];
+						parray[k+1].X = parray[k].X;
+						parray[k+1].Y = parray[k].Y;
 					}
-					parray[insertindex] = p1;
+					parray[insertindex].X = p1.X;
+					parray[insertindex].Y = p1.Y;
 					c++;
 				}
 			}//end if nodecount >=1
@@ -425,20 +451,23 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 				}//end else if (...)
 			}//end if nodecount ==2
 		}//end else
-	*/
+	
 	}//end for int m = 0;m<PCOUNT;m++
-	/*
 	//两两配对进行栅格化
+	for(int k = 0;k<c;k++)
+	{
+		parray1[k] = parray[k];
+	}
 	for(int g = 0;g<c;g+=2)
 	{
 		int t1 = (int)parray[g].X/T;
 		int t2 = (int)parray[g+1].X/T;
 		for(int xx = t1;xx<=t2;xx++)
 		{
-			result[xx*HI+j] =1;
-			if(xx*HI+j-1>=0)
+			result[j*HI+xx] =1;
+			if(j*HI+xx-1>=0)
 			{
-				result[xx*HI+j-1] = 1;
+				result[j*HI+xx-1] = 1;
 			}
 		}
 	}
@@ -448,13 +477,13 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 		int t2 = (int)line[g+1].X/T;
 		for(int xx = t1;xx<=t2;xx++)
 		{
-			result[xx*HI+j] =1;
-			if(xx*HI+j-1>=0)
+			result[j*HI+xx] =1;
+			if(j*HI+xx-1>=0)
 			{
-				result[xx*HI+j-1] = 1;
+				result[j*HI+xx-1] = 1;
 			}
 		}
-	}*/
+	}
 }
 
 /* Y扫描线
@@ -892,17 +921,17 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global 
 	}
 }
 
-__kernel void GetGridValue(__global MyPoint* plist,float W,float H,float T,int WI,int HI,__global int* result,__global MyPoint* test)
+__kernel void GetGridValue(__global MyPoint* plist,float W,float H,float T,int WI,int HI,__global int* result,__global MyPoint* test,__global MyPoint* parray)
 {
 	int i = get_global_id(0);
-    if(i < HI)
+    if(i == 1)
     {
         int y = i*T;
         if(y > H)
         {
             y = H;
         }
-        SetGridValueX(plist,i,y,HI,T,result,test);
+        SetGridValueX(plist,i,y,HI,T,result,test,parray);
     }
     else
     {

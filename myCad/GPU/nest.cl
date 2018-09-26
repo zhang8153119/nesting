@@ -8,13 +8,14 @@ typedef struct
 
 /* X扫描线
 */
-void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global int* result,__global MyPoint* test)
+void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global int* result)
 {
+    int testcount = 0;
 	MyPoint parray[PCOUNT];
 	int c = 0;
 	MyPoint line[PCOUNT];
 	int lc = 0;
-	int testc = 0;
+	
 	for(int m = 0;m<PCOUNT;m++)
 	{
 		int mnext = (m+1)%PCOUNT;
@@ -82,27 +83,12 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 			nodecount = 1;
 			ifend = false;
 		}
-		if(nodecount == 1)
-		{
-			test[j*HI+testc].X = p1.X;
-			test[j*HI+testc].Y = p1.Y;
-			testc++;
-		}
-		else if(nodecount == 2)
-		{
-			test[j*HI+testc].X =p1.X;
-			test[j*HI+testc].Y = p1.Y;
-			test[j*HI+testc+1].X = p2.X;
-			test[j*HI+testc+1].Y = p2.Y;
-			testc+=2;
-		}
-		/*
 		//非端点
 		if(!ifend)
 		{
 			if(nodecount >= 1)
 			{			
-				int insertindex = 0;
+				int insertindex = c;
 				bool ifinsert = true;
 				for(int n = 0;n<c;n++)
 				{
@@ -130,7 +116,7 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 			}//end if nodecount >=1
 			if(nodecount == 2)
 			{			
-				int insertindex = 0;
+				int insertindex = c;
 				bool ifinsert = true;
 				for(int n = 0;n<c;n++)
 				{
@@ -177,7 +163,7 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 						}
 						if(find)
 						{
-							int insertindex = 0;
+							int insertindex = lc;
 							bool ifinsert = true;
 							for(int n = 0;n<lc;n++)
 							{
@@ -206,7 +192,7 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 				}//end if plist[index1].Y == plist[lastindex].Y
 				else if(plist[index1].Y == plist[nextindex].Y)
 				{
-					int insertindex = 0;
+					int insertindex = lc;
 					bool ifinsert = true;
 					for(int n = 0;n<lc;n++)
 					{
@@ -234,7 +220,7 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 					if(!((plist[lastindex].Y > plist[index1].Y && plist[nextindex2].Y > plist[nextindex].Y)
 						|| (plist[lastindex].Y < plist[index1].Y && plist[nextindex2].Y < plist[nextindex].Y)))
 					{
-							int insertindex = 0;
+							int insertindex = c;
 							bool ifinsert = true;
 							for(int n = 0;n<c;n++)
 							{
@@ -264,7 +250,7 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 				else if ((plist[lastindex] .Y > plist[index1] .Y && plist[nextindex].Y > plist[index1].Y)
 					|| (plist[lastindex] .Y < plist[index1] .Y && plist[nextindex].Y < plist[index1].Y) )
 				{
-					int insertindex = 0;
+					int insertindex = c;
 					bool ifinsert = true;
 					for(int n = 0;n<c;n++)
 					{
@@ -309,7 +295,7 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 						}
 						if(find)
 						{
-							int insertindex = 0;
+							int insertindex = lc;
 							bool ifinsert = true;
 							for(int n = 0;n<lc;n++)
 							{
@@ -338,7 +324,7 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 				}//end if plist[index1].Y == plist[lastindex].Y
 				else if(plist[index2].Y == plist[nextindex].Y)
 				{
-					int insertindex = 0;
+					int insertindex = lc;
 					bool ifinsert = true;
 					for(int n = 0;n<lc;n++)
 					{
@@ -366,7 +352,7 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 					if(!((plist[lastindex].Y > plist[index2].Y && plist[nextindex2].Y > plist[nextindex].Y)
 						|| (plist[lastindex].Y < plist[index2].Y && plist[nextindex2].Y < plist[nextindex].Y)))
 					{
-							int insertindex = 0;
+							int insertindex = c;
 							bool ifinsert = true;
 							for(int n = 0;n<c;n++)
 							{
@@ -396,7 +382,7 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 				else if ((plist[lastindex] .Y > plist[index2] .Y && plist[nextindex].Y > plist[index2].Y)
 					|| (plist[lastindex] .Y < plist[index2] .Y && plist[nextindex].Y < plist[index2].Y) )
 				{
-					int insertindex = 0;
+					int insertindex = c;
 					bool ifinsert = true;
 					for(int n = 0;n<c;n++)
 					{
@@ -425,9 +411,7 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 				}//end else if (...)
 			}//end if nodecount ==2
 		}//end else
-	*/
 	}//end for int m = 0;m<PCOUNT;m++
-	/*
 	//两两配对进行栅格化
 	for(int g = 0;g<c;g+=2)
 	{
@@ -454,12 +438,11 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 				result[xx*HI+j-1] = 1;
 			}
 		}
-	}*/
+	}
 }
-
 /* Y扫描线
  */
-void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global int* result)
+void SetGridValueY(__global MyPoint* plist,int i ,float x,int HI,int T,__global int* result)
 {
     
 	MyPoint parray[PCOUNT];
@@ -539,7 +522,7 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global 
 		{
 			if(nodecount >= 1)
 			{			
-				int insertindex = 0;
+				int insertindex = c;
 				bool ifinsert = true;
 				for(int n = 0;n<c;n++)
 				{
@@ -567,7 +550,7 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global 
 			}//end if nodecount >=1
 			if(nodecount == 2)
 			{			
-				int insertindex = 0;
+				int insertindex = c;
 				bool ifinsert = true;
 				for(int n = 0;n<c;n++)
 				{
@@ -614,7 +597,7 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global 
 						}
 						if(find)
 						{
-							int insertindex = 0;
+							int insertindex = lc;
 							bool ifinsert = true;
 							for(int n = 0;n<lc;n++)
 							{
@@ -643,7 +626,7 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global 
 				}//end if plist[index1].Y == plist[lastindex].Y
 				else if(plist[index1].X == plist[nextindex].X)
 				{
-					int insertindex = 0;
+					int insertindex = lc;
 					bool ifinsert = true;
 					for(int n = 0;n<lc;n++)
 					{
@@ -671,7 +654,7 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global 
 					if(!((plist[lastindex].X > plist[index1].X && plist[nextindex2].X > plist[nextindex].X)
 						|| (plist[lastindex].X < plist[index1].X && plist[nextindex2].X < plist[nextindex].X)))
 					{
-							int insertindex = 0;
+							int insertindex = c;
 							bool ifinsert = true;
 							for(int n = 0;n<c;n++)
 							{
@@ -701,7 +684,7 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global 
 				else if ((plist[lastindex] .X > plist[index1] .X && plist[nextindex].X > plist[index1].X)
 					|| (plist[lastindex] .X < plist[index1] .X && plist[nextindex].X < plist[index1].X) )
 				{
-					int insertindex = 0;
+					int insertindex = c;
 					bool ifinsert = true;
 					for(int n = 0;n<c;n++)
 					{
@@ -746,7 +729,7 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global 
 						}
 						if(find)
 						{
-							int insertindex = 0;
+							int insertindex = lc;
 							bool ifinsert = true;
 							for(int n = 0;n<lc;n++)
 							{
@@ -775,7 +758,7 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global 
 				}//end if plist[index1].Y == plist[lastindex].Y
 				else if(plist[index2].X == plist[nextindex].X)
 				{
-					int insertindex = 0;
+					int insertindex = lc;
 					bool ifinsert = true;
 					for(int n = 0;n<lc;n++)
 					{
@@ -803,7 +786,7 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global 
 					if(!((plist[lastindex].X > plist[index2].X && plist[nextindex2].X > plist[nextindex].X)
 						|| (plist[lastindex].X < plist[index2].X && plist[nextindex2].X < plist[nextindex].X)))
 					{
-							int insertindex = 0;
+							int insertindex = c;
 							bool ifinsert = true;
 							for(int n = 0;n<c;n++)
 							{
@@ -833,7 +816,7 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global 
 				else if ((plist[lastindex] .X > plist[index2] .X && plist[nextindex].X > plist[index2].X)
 					|| (plist[lastindex] .X < plist[index2] .X && plist[nextindex].X < plist[index2].X) )
 				{
-					int insertindex = 0;
+					int insertindex = c;
 					bool ifinsert = true;
 					for(int n = 0;n<c;n++)
 					{
@@ -870,29 +853,29 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int WI,int T,__global 
 		int t2 = (int)parray[g+1].Y/T;
 		for(int yy = t1;yy<=t2;yy++)
 		{
-			result[yy*WI+i] =1;
-			if(yy*WI+i-1>=0)
+			result[i*HI+yy] =1;
+			if(i-1>=0)
 			{
-				result[yy*WI+i-1] = 1;
+				result[(i-1)*HI+yy] = 1;
 			}
 		}
 	}
-	for(int g = 0;g<c;g+=2)
+	for(int g = 0;g<lc;g+=2)
 	{
 		int t1 = (int)line[g].Y/T;
 		int t2 = (int)line[g+1].Y/T;
 		for(int yy = t1;yy<=t2;yy++)
 		{
-			result[yy*WI+i] =1;
-			if(yy*WI+i-1>=0)
+			result[i*HI+yy] =1;
+			if(i-1>=0)
 			{
-				result[yy*WI+i-1] = 1;
+				result[(i-1)*HI+yy] = 1;
 			}
 		}
 	}
 }
 
-__kernel void GetGridValue(__global MyPoint* plist,float W,float H,float T,int WI,int HI,__global int* result,__global MyPoint* test)
+__kernel void GetGridValue(__global MyPoint* plist,float W,float H,float T,int WI,int HI,__global int* result)
 {
 	int i = get_global_id(0);
     if(i < HI)
@@ -902,16 +885,17 @@ __kernel void GetGridValue(__global MyPoint* plist,float W,float H,float T,int W
         {
             y = H;
         }
-        SetGridValueX(plist,i,y,HI,T,result,test);
+        SetGridValueX(plist,i,y,HI,T,result);
     }
     else
     {
-        /*int j = i-HI;
+        int j = i-HI;
         int x = j*T;
         if(x > W)
 	    {
 		    x = W;
 	    }
-        SetGridValueY(plist,j,x,WI,T,result);*/
+        SetGridValueY(plist,j,x,HI,T,result);
     }
 }
+
