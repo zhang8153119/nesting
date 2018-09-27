@@ -8,12 +8,12 @@ typedef struct
 
 /* X扫描线
 */
-void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global int* result)
+void SetGridValueX(__global MyPoint* plist,int PCOUNT,int j ,float y,int HI,int T,__global int* result)
 {
     int testcount = 0;
-	MyPoint parray[PCOUNT];
+	MyPoint parray[100];
 	int c = 0;
-	MyPoint line[PCOUNT];
+	MyPoint line[100];
 	int lc = 0;
 	
 	for(int m = 0;m<PCOUNT;m++)
@@ -442,12 +442,12 @@ void SetGridValueX(__global MyPoint* plist,int j ,float y,int HI,int T,__global 
 }
 /* Y扫描线
  */
-void SetGridValueY(__global MyPoint* plist,int i ,float x,int HI,int T,__global int* result)
+void SetGridValueY(__global MyPoint* plist,int PCOUNT,int i ,float x,int HI,int T,__global int* result)
 {
     
-	MyPoint parray[PCOUNT];
+	MyPoint parray[100];
 	int c = 0;
-	MyPoint line[PCOUNT];
+	MyPoint line[100];
 	int lc = 0;
 	
 	for(int m = 0;m<PCOUNT;m++)
@@ -875,7 +875,7 @@ void SetGridValueY(__global MyPoint* plist,int i ,float x,int HI,int T,__global 
 	}
 }
 
-__kernel void GetGridValue(__global MyPoint* plist,float W,float H,float T,int WI,int HI,__global int* result)
+__kernel void GetGridValue(__global MyPoint* plist,int pcount,float W,float H,float T,int WI,int HI,__global int* result)
 {
 	int i = get_global_id(0);
     if(i < HI)
@@ -885,7 +885,7 @@ __kernel void GetGridValue(__global MyPoint* plist,float W,float H,float T,int W
         {
             y = H;
         }
-        SetGridValueX(plist,i,y,HI,T,result);
+        SetGridValueX(plist,pcount,i,y,HI,T,result);
     }
     else
     {
@@ -895,7 +895,7 @@ __kernel void GetGridValue(__global MyPoint* plist,float W,float H,float T,int W
 	    {
 		    x = W;
 	    }
-        SetGridValueY(plist,j,x,HI,T,result);
+        SetGridValueY(plist,pcount,j,x,HI,T,result);
     }
 }
 

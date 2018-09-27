@@ -125,13 +125,136 @@ namespace GPU
             }
 
             #endregion
+            /// <summary>
+            /// 编译cl程序
+            /// </summary>
+            /// <returns></returns>
+            public ComputeProgram Build()
+            {
+                  string source = Encoding .ASCII .GetString(myCad .Properties .Resources .nest);
+                  ComputeProgram program = new ComputeProgram(context, source);
+                  try
+                  {
+                        program .Build(null, null, null, IntPtr .Zero);
+                  }
+                  catch (Exception)
+                  {
+                        var log = program .GetBuildLog(context .Devices[0]);
+                        Debugger .Break();
+                  }
 
+                  return program;
+            }
             #region GetGridValue
+            public int[,] GetGridValue(List<PointF> pointlist, float W, float H, float T, ComputeProgram program)
+            {
+                  int WI = Convert .ToInt32(Math .Ceiling(W / T));
+                  int HI = Convert .ToInt32(Math .Ceiling(H / T));
+                  int pc = pointlist .Count;
+                  MyPoint[] plist = new MyPoint[pc];
+                  for (int i = 0; i < pointlist .Count; i++)
+                  {
+                        plist[i] .X = pointlist[i] .X;
+                        plist[i] .Y = pointlist[i] .Y;
+                  }
+                  ComputeBuffer<MyPoint> pbuffer = new ComputeBuffer<MyPoint>(context, ComputeMemoryFlags .ReadOnly | ComputeMemoryFlags .CopyHostPointer, plist);
+
+                  /*string source = Encoding .ASCII .GetString(myCad .Properties .Resources .nest);
+                  source = "#define PCOUNT " + pc .ToString() + "\n" + source;
+                  //source = source .Replace("\r", "") .Replace("\t", "");
+                  ComputeProgram program = new ComputeProgram(context, source);
+                  try
+                  {
+                        program .Build(null, null, null, IntPtr .Zero);
+                  }
+                  catch (Exception)
+                  {
+                        var log = program .GetBuildLog(context .Devices[0]);
+                        Debugger .Break();
+                  }*/
+
+                  ComputeKernel kernel = program .CreateKernel("GetGridValue");
+
+                  ComputeBuffer<int> outdata = new ComputeBuffer<int>(context, ComputeMemoryFlags .WriteOnly, WI * HI);
+                  kernel .SetMemoryArgument(0, pbuffer);
+                  kernel .SetValueArgument(1, pc);
+                  kernel .SetValueArgument(2, W);
+                  kernel .SetValueArgument(3, H);
+                  kernel .SetValueArgument(4, T);
+                  kernel .SetValueArgument(5, WI);
+                  kernel .SetValueArgument(6, HI);
+                  kernel .SetMemoryArgument(7, outdata);
+
+                  commands .Execute(kernel, null, new long[] { WI + HI }, null, events);
+
+                  int[,] myresult = new int[WI, HI];
+                  for (int i = 0; i < WI; i++)
+                  {
+                        for (int j = 0; j < HI; j++)
+                        {
+                              myresult[i, j] = 0;
+                        }
+                  }
+                  GCHandle arrCHandle = GCHandle .Alloc(myresult, GCHandleType .Pinned);
+                  commands .Read(outdata, true, 0, WI * HI, arrCHandle .AddrOfPinnedObject(), events);
+
+                  //
+                  /*ComputeBuffer<MyPoint> testdata = new ComputeBuffer<MyPoint>(context, ComputeMemoryFlags .WriteOnly, WI * HI);
+                  ComputeBuffer<MyPoint> parray = new ComputeBuffer<MyPoint>(context, ComputeMemoryFlags .WriteOnly, pc);
+                  kernel .SetMemoryArgument(0, pbuffer);
+                  kernel .SetValueArgument(1, W);
+                  kernel .SetValueArgument(2, H);
+                  kernel .SetValueArgument(3, T);
+                  kernel .SetValueArgument(4, WI);
+                  kernel .SetValueArgument(5, HI);
+                  kernel .SetMemoryArgument(6, outdata);
+                  kernel .SetMemoryArgument(7, testdata);
+                  kernel .SetMemoryArgument(8, parray);
+
+                  commands .Execute(kernel, null, new long[] { WI + HI }, null, events);
+
+                  int[,] myresult = new int[WI, HI];
+                  for (int i = 0; i < WI; i++)
+                  {
+                        for (int j = 0; j < HI; j++)
+                        {
+                              myresult[i, j] = 0;
+                        }
+                  }
+                  MyPoint[,] test = new MyPoint[WI, HI];
+                  for (int i = 0; i < WI; i++)
+                  {
+                        for (int j = 0; j < HI; j++)
+                        {
+                              test[i, j] .X = 0;
+                              test[i, j] .Y = 0;
+                        }
+                  }
+                  int[] thisresult = new int[WI * HI];
+                  MyPoint[] test3 = new MyPoint[pc];
+
+                  GCHandle arrCHandle = GCHandle .Alloc(thisresult, GCHandleType .Pinned);
+                  commands .Read(outdata, true, 0, WI * HI, arrCHandle .AddrOfPinnedObject(), events);
+
+                  GCHandle arrCHandle2 = GCHandle .Alloc(test, GCHandleType .Pinned);
+                  commands .Read(testdata, true, 0, WI * HI, arrCHandle2 .AddrOfPinnedObject(), events);
+
+                  GCHandle arrCHandle3 = GCHandle .Alloc(test3, GCHandleType .Pinned);
+                  commands .Read(parray, true, 0, pc, arrCHandle3 .AddrOfPinnedObject(), events);*/
+                  arrCHandle .Free();
+                  kernel .Dispose();
+                  //program .Dispose();
+                  pbuffer .Dispose();
+                  outdata .Dispose();
+                  return myresult;
+            }
+
             public int[,] GetGridValue(List<PointF> pointlist, float W, float H, float T)
             {
                   int WI = Convert .ToInt32(Math .Ceiling(W / T));
                   int HI = Convert .ToInt32(Math .Ceiling(H / T));
                   int pc = pointlist .Count;
+                  pc = 100;
                   MyPoint[] plist = new MyPoint[pc];
                   for (int i = 0; i < pointlist .Count; i++)
                   {
@@ -158,12 +281,13 @@ namespace GPU
 
                   ComputeBuffer<int> outdata = new ComputeBuffer<int>(context, ComputeMemoryFlags .WriteOnly, WI * HI);
                   kernel .SetMemoryArgument(0, pbuffer);
-                  kernel .SetValueArgument(1, W);
-                  kernel .SetValueArgument(2, H);
-                  kernel .SetValueArgument(3, T);
-                  kernel .SetValueArgument(4, WI);
-                  kernel .SetValueArgument(5, HI);
-                  kernel .SetMemoryArgument(6, outdata);
+                  kernel .SetValueArgument(1, pc);
+                  kernel .SetValueArgument(2, W);
+                  kernel .SetValueArgument(3, H);
+                  kernel .SetValueArgument(4, T);
+                  kernel .SetValueArgument(5, WI);
+                  kernel .SetValueArgument(6, HI);
+                  kernel .SetMemoryArgument(7, outdata);
 
                   commands .Execute(kernel, null, new long[] { WI + HI }, null, events);
 
@@ -177,7 +301,7 @@ namespace GPU
                   }
                   GCHandle arrCHandle = GCHandle .Alloc(myresult, GCHandleType .Pinned);
                   commands .Read(outdata, true, 0, WI * HI, arrCHandle .AddrOfPinnedObject(), events);
-                  
+
                   //
                   /*ComputeBuffer<MyPoint> testdata = new ComputeBuffer<MyPoint>(context, ComputeMemoryFlags .WriteOnly, WI * HI);
                   ComputeBuffer<MyPoint> parray = new ComputeBuffer<MyPoint>(context, ComputeMemoryFlags .WriteOnly, pc);

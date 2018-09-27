@@ -4380,9 +4380,10 @@ namespace myCad
             }
 
             private IGpuHelper gpu;
+            private ComputeProgram gpuprogram;
             private void btnGPU_Click(object sender, EventArgs e)
             {
-                  IniHelper ih = new IniHelper();
+                  /*IniHelper ih = new IniHelper();
                   string config = "";
                   if (ih .ExistINIFile())
                   {
@@ -4431,22 +4432,15 @@ namespace myCad
                         gpu = GpuHelperFactory .CreateHelper(platform
                               , device
                               , fpType);
-                  }
+                  }*/
                   if (gpu != null)
                   {
-                        //float num = Convert .ToSingle(txtSize .Text);
-                        //float result = 0f;
-                        //gpu .GetHello(num, ref result);
-                        //MessageBox .Show(result .ToString());
-
-                        var tp = CreateTest();
-
                         System .Diagnostics .Stopwatch watch = new System .Diagnostics .Stopwatch();
                         watch .Start();  //开始监视代码运行时间
 
                         PlateModel pm = _part[0];
                         int[,] gridvalue;
-                        gridvalue = gpu .GetGridValue(pm .OutModel .ExpandPoint, pm .Rect .Width, pm .Rect .Height, T);
+                        gridvalue = gpu .GetGridValue(pm .OutModel .ExpandPoint, pm .Rect .Width, pm .Rect .Height, T, gpuprogram);
 
                         frmtext frm = new frmtext(gridvalue);
                         frm .Show();
@@ -4510,5 +4504,132 @@ namespace myCad
                   return sum;
             }
 
+            private void btnby_Click(object sender, EventArgs e)
+            {
+                  IniHelper ih = new IniHelper();
+                  string config = "";
+                  if (ih .ExistINIFile())
+                  {
+                        config = ih .IniReadValue("GPUConfig", "Platform");
+                  }
+                  if (config == "")
+                  {
+                        OpenClSetting oclSetting = new OpenClSetting();
+                        if (oclSetting .ShowDialog(this) == DialogResult .OK)
+                        {
+                              gpu = oclSetting .Gpu;
+                        }
+                  }
+                  else
+                  {
+                        string platformstr = ih .IniReadValue("GPUConfig", "Platform");
+                        string devicestr = ih .IniReadValue("GPUConfig", "Device");
+                        string fpTypestr = ih .IniReadValue("GPUConfig", "FpType");
+
+                        FPType fpType;
+                        if (fpTypestr == "Double Precision (AMD)")
+                        {
+                              fpType = FPType .FP64AMD;
+                        }
+                        else if (fpTypestr == "Double Precision")
+                        {
+                              fpType = FPType .FP64;
+                        }
+                        else
+                        {
+                              fpType = FPType .Single;
+                        }
+
+                        ComputePlatform platform = null;
+                        var platforms = ComputePlatform .Platforms;
+                        foreach (var p in platforms)
+                        {
+                              if (p .Name == platformstr)
+                              {
+                                    platform = p;
+                                    break;
+                              }
+                        }
+                        //ComputePlatform platform = platforms .TakeWhile(t => t .Name .Equals(platformstr)) .ToList()[0];
+                        ComputeDevice device = platform .Devices .Where(t => t .Name == devicestr) .ToList()[0];
+                        gpu = GpuHelperFactory .CreateHelper(platform
+                              , device
+                              , fpType);
+                  }
+
+                  gpuprogram = gpu .Build();
+                  MessageBox .Show("build complete");
+            }
+
+            private void btnby_cs_Click(object sender, EventArgs e)
+            {
+                  IniHelper ih = new IniHelper();
+                 string config = "";
+                 if (ih .ExistINIFile())
+                 {
+                       config = ih .IniReadValue("GPUConfig", "Platform");
+                 }
+                 if (config == "")
+                 {
+                       OpenClSetting oclSetting = new OpenClSetting();
+                       if (oclSetting .ShowDialog(this) == DialogResult .OK)
+                       {
+                             gpu = oclSetting .Gpu;
+                       }
+                 }
+                 else
+                 {
+                       string platformstr = ih .IniReadValue("GPUConfig", "Platform");
+                       string devicestr = ih .IniReadValue("GPUConfig", "Device");
+                       string fpTypestr = ih .IniReadValue("GPUConfig", "FpType");
+
+                       FPType fpType;
+                       if (fpTypestr == "Double Precision (AMD)")
+                       {
+                             fpType = FPType .FP64AMD;
+                       }
+                       else if (fpTypestr == "Double Precision")
+                       {
+                             fpType = FPType .FP64;
+                       }
+                       else
+                       {
+                             fpType = FPType .Single;
+                       }
+
+                       ComputePlatform platform = null;
+                       var platforms = ComputePlatform .Platforms;
+                       foreach (var p in platforms)
+                       {
+                             if (p .Name == platformstr)
+                             {
+                                   platform = p;
+                                   break;
+                             }
+                       }
+                       //ComputePlatform platform = platforms .TakeWhile(t => t .Name .Equals(platformstr)) .ToList()[0];
+                       ComputeDevice device = platform .Devices .Where(t => t .Name == devicestr) .ToList()[0];
+                       gpu = GpuHelperFactory .CreateHelper(platform
+                             , device
+                             , fpType);
+                 }
+                  if (gpu != null)
+                  {
+                        System .Diagnostics .Stopwatch watch = new System .Diagnostics .Stopwatch();
+                        watch .Start();  //开始监视代码运行时间
+
+                        PlateModel pm = _part[0];
+                        int[,] gridvalue;
+                        gridvalue = gpu .GetGridValue(pm .OutModel .ExpandPoint, pm .Rect .Width, pm .Rect .Height, T);
+
+                        frmtext frm = new frmtext(gridvalue);
+                        frm .Show();
+                        watch .Stop();  //停止监视
+                        TimeSpan timespan = watch .Elapsed;  //获取当前实例测量得出的总时间
+                        lblinfo .Text = "耗时：" + timespan .TotalMilliseconds .ToString() + "ms";
+
+                        //MessageBox .Show(c .ToString());
+                  }
+            }
       }
 }
