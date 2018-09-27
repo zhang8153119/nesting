@@ -880,12 +880,12 @@ __kernel void GetGridValue(__global MyPoint* plist,float W,float H,float T,int W
 	int i = get_global_id(0);
     if(i < HI)
     {
-        /*int y = i*T;
+        int y = i*T;
         if(y > H)
         {
             y = H;
         }
-        SetGridValueX(plist,i,y,HI,T,result);*/
+        SetGridValueX(plist,i,y,HI,T,result);
     }
     else
     {
