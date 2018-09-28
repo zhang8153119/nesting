@@ -10,7 +10,6 @@ typedef struct
 */
 void SetGridValueX(__global MyPoint* plist,int PCOUNT,int j ,float y,int HI,int T,__global int* result)
 {
-    int testcount = 0;
 	MyPoint parray[100];
 	int c = 0;
 	MyPoint line[100];
@@ -887,7 +886,7 @@ __kernel void GetGridValue(__global MyPoint* plist,int pcount,float W,float H,fl
         }
         SetGridValueX(plist,pcount,i,y,HI,T,result);
     }
-    else
+    else if(i >= HI && i < WI+HI)
     {
         int j = i-HI;
         int x = j*T;

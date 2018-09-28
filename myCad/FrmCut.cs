@@ -35,7 +35,7 @@ namespace myCad
             public BufferedGraphics _bgcad;
             public BufferedGraphics _bgtest;
             const float SIDE = 20f;
-            const float T = 10f;//栅格精度
+            const float T = 1f;//栅格精度
             float _small = 800 / T;//长或宽大于此数字时，为大件
             bool _rotate = true;//单件排入后，下一个单件是否旋转180度
             float _scale = 1f;
@@ -4441,9 +4441,9 @@ namespace myCad
                         PlateModel pm = _part[0];
                         int[,] gridvalue;
                         gridvalue = gpu .GetGridValue(pm .OutModel .ExpandPoint, pm .Rect .Width, pm .Rect .Height, T, gpuprogram);
-
-                        frmtext frm = new frmtext(gridvalue);
-                        frm .Show();
+                        
+                        //frmtext frm = new frmtext(gridvalue);
+                        //frm .Show();
                         watch .Stop();  //停止监视
                         TimeSpan timespan = watch .Elapsed;  //获取当前实例测量得出的总时间
                         lblinfo .Text = "耗时：" + timespan .TotalMilliseconds .ToString() + "ms";
@@ -4458,13 +4458,14 @@ namespace myCad
                   System .Diagnostics .Stopwatch watch = new System .Diagnostics .Stopwatch();
                   watch .Start();  //开始监视代码运行时间
 
-                  int c = TestCPU(tp .Item1, tp .Item2);
+                  GridHelper gh = new GridHelper();
+                  PlateModel pm = _part[0];
+                  gh .GetGridValue(pm, T);
 
                   watch .Stop();  //停止监视
                   TimeSpan timespan = watch .Elapsed;  //获取当前实例测量得出的总时间
                   lblinfo .Text = "耗时：" + timespan .TotalMilliseconds .ToString() + "ms";
-
-                  MessageBox .Show(c .ToString());
+                  
 
             }
 
@@ -4564,55 +4565,55 @@ namespace myCad
             private void btnby_cs_Click(object sender, EventArgs e)
             {
                   IniHelper ih = new IniHelper();
-                 string config = "";
-                 if (ih .ExistINIFile())
-                 {
-                       config = ih .IniReadValue("GPUConfig", "Platform");
-                 }
-                 if (config == "")
-                 {
-                       OpenClSetting oclSetting = new OpenClSetting();
-                       if (oclSetting .ShowDialog(this) == DialogResult .OK)
-                       {
-                             gpu = oclSetting .Gpu;
-                       }
-                 }
-                 else
-                 {
-                       string platformstr = ih .IniReadValue("GPUConfig", "Platform");
-                       string devicestr = ih .IniReadValue("GPUConfig", "Device");
-                       string fpTypestr = ih .IniReadValue("GPUConfig", "FpType");
+                  string config = "";
+                  if (ih .ExistINIFile())
+                  {
+                        config = ih .IniReadValue("GPUConfig", "Platform");
+                  }
+                  if (config == "")
+                  {
+                        OpenClSetting oclSetting = new OpenClSetting();
+                        if (oclSetting .ShowDialog(this) == DialogResult .OK)
+                        {
+                              gpu = oclSetting .Gpu;
+                        }
+                  }
+                  else
+                  {
+                        string platformstr = ih .IniReadValue("GPUConfig", "Platform");
+                        string devicestr = ih .IniReadValue("GPUConfig", "Device");
+                        string fpTypestr = ih .IniReadValue("GPUConfig", "FpType");
 
-                       FPType fpType;
-                       if (fpTypestr == "Double Precision (AMD)")
-                       {
-                             fpType = FPType .FP64AMD;
-                       }
-                       else if (fpTypestr == "Double Precision")
-                       {
-                             fpType = FPType .FP64;
-                       }
-                       else
-                       {
-                             fpType = FPType .Single;
-                       }
+                        FPType fpType;
+                        if (fpTypestr == "Double Precision (AMD)")
+                        {
+                              fpType = FPType .FP64AMD;
+                        }
+                        else if (fpTypestr == "Double Precision")
+                        {
+                              fpType = FPType .FP64;
+                        }
+                        else
+                        {
+                              fpType = FPType .Single;
+                        }
 
-                       ComputePlatform platform = null;
-                       var platforms = ComputePlatform .Platforms;
-                       foreach (var p in platforms)
-                       {
-                             if (p .Name == platformstr)
-                             {
-                                   platform = p;
-                                   break;
-                             }
-                       }
-                       //ComputePlatform platform = platforms .TakeWhile(t => t .Name .Equals(platformstr)) .ToList()[0];
-                       ComputeDevice device = platform .Devices .Where(t => t .Name == devicestr) .ToList()[0];
-                       gpu = GpuHelperFactory .CreateHelper(platform
-                             , device
-                             , fpType);
-                 }
+                        ComputePlatform platform = null;
+                        var platforms = ComputePlatform .Platforms;
+                        foreach (var p in platforms)
+                        {
+                              if (p .Name == platformstr)
+                              {
+                                    platform = p;
+                                    break;
+                              }
+                        }
+                        //ComputePlatform platform = platforms .TakeWhile(t => t .Name .Equals(platformstr)) .ToList()[0];
+                        ComputeDevice device = platform .Devices .Where(t => t .Name == devicestr) .ToList()[0];
+                        gpu = GpuHelperFactory .CreateHelper(platform
+                              , device
+                              , fpType);
+                  }
                   if (gpu != null)
                   {
                         System .Diagnostics .Stopwatch watch = new System .Diagnostics .Stopwatch();

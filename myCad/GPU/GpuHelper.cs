@@ -188,16 +188,17 @@ namespace GPU
                   commands .Execute(kernel, null, new long[] { WI + HI }, null, events);
 
                   int[,] myresult = new int[WI, HI];
+
+                  GCHandle arrCHandle = GCHandle .Alloc(myresult, GCHandleType .Pinned);
+                  commands .Read(outdata, true, 0, WI * HI, arrCHandle .AddrOfPinnedObject(), events);
                   for (int i = 0; i < WI; i++)
                   {
                         for (int j = 0; j < HI; j++)
                         {
-                              myresult[i, j] = 0;
+                              if (myresult[i, j] != 1)
+                                    myresult[i, j] = 0;
                         }
                   }
-                  GCHandle arrCHandle = GCHandle .Alloc(myresult, GCHandleType .Pinned);
-                  commands .Read(outdata, true, 0, WI * HI, arrCHandle .AddrOfPinnedObject(), events);
-
                   //
                   /*ComputeBuffer<MyPoint> testdata = new ComputeBuffer<MyPoint>(context, ComputeMemoryFlags .WriteOnly, WI * HI);
                   ComputeBuffer<MyPoint> parray = new ComputeBuffer<MyPoint>(context, ComputeMemoryFlags .WriteOnly, pc);
@@ -296,7 +297,8 @@ namespace GPU
                   {
                         for (int j = 0; j < HI; j++)
                         {
-                              myresult[i, j] = 0;
+                              if (myresult[i, j] != 1)
+                                    myresult[i, j] = 0;
                         }
                   }
                   GCHandle arrCHandle = GCHandle .Alloc(myresult, GCHandleType .Pinned);
