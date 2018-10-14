@@ -35,8 +35,9 @@ namespace myCad
             public BufferedGraphics _bgcad;
             public BufferedGraphics _bgtest;
             const float SIDE = 20f;
-            const float T = 1f;//栅格精度
-            float _small = 800 / T;//长或宽大于此数字时，为大件
+            float T = 5f;//栅格精度
+            float _smallsize = 800f;
+            float _small = 0; //长或宽大于此数字时，为大件
             bool _rotate = true;//单件排入后，下一个单件是否旋转180度
             float _scale = 1f;
             float _pnllen = 0;
@@ -56,6 +57,7 @@ namespace myCad
             List<int> _anglelist = new List<int>();
             private void FrmCut_Shown(object sender, EventArgs e)
             {
+                  _small = _smallsize / T;
                   float rate = cad .Width / 10000f;
                   CADInterface .scaleNum = rate;
                   CADInterface .globalZoomNum *= rate;
@@ -486,7 +488,7 @@ namespace myCad
                         RectHelper rh = new RectHelper();
 
                         PlateModel pm = ph .GetMinPlate(rh .Expand(_plate[i], dis));
-                        pm .GridValue = gh .GetGridValue(pm, T) .Grid;
+                        //pm .GridValue = gh .GetGridValue(pm, T) .Grid;
                         pm .id = i;
                         _part .Add(pm);
 
@@ -3911,9 +3913,9 @@ namespace myCad
                   */
                   CreateNewTest(chkbinxing .Checked, ShowProgress);
                   _best = _pop[0] .Stock[0];
+                  DrawStockLine(_pop[0] .Stock[0]);
 
                   //DrawBest();
-                  DrawStockLine(_pop[0] .Stock[0]);
                   watch .Stop();  //停止监视
                   TimeSpan timespan = watch .Elapsed;  //获取当前实例测量得出的总时间
                   lblinfo .Text = "耗时：" + timespan .TotalMilliseconds .ToString() + "ms" + ",利用率:" + _pop[0] .Fitness .ToString();
@@ -3933,6 +3935,7 @@ namespace myCad
             /// </summary>
             private void CreateNewTest(bool bx, Action<string, string> ShowProgress)
             {
+                  _size = 1;
                   _basicLib .Clear();
                   int c = _part .Count;
                   int sc = _stock .Count;
@@ -3993,6 +3996,8 @@ namespace myCad
             }
             private void btnchongxinjiema_Click(object sender, EventArgs e)
             {
+                  System .Diagnostics .Stopwatch watch = new System .Diagnostics .Stopwatch();
+                  watch .Start();  //开始监视代码运行时间
                   if (_pop .Count == 0)
                   {
                         MessageBox .Show("未配料");
@@ -4024,7 +4029,9 @@ namespace myCad
                               }
                         }
                   }
-                  lblinfo .Text = "利用率:" + _pop[0] .Fitness .ToString();
+                  watch .Stop();  //停止监视
+                  TimeSpan timespan = watch .Elapsed;  //获取当前实例测量得出的总时间
+                  lblinfo .Text = "耗时：" + timespan .TotalMilliseconds .ToString() + "ms" + ",利用率:" + _pop[0] .Fitness .ToString();
                   _bg .Render();
             }
 
@@ -4439,11 +4446,13 @@ namespace myCad
                         watch .Start();  //开始监视代码运行时间
 
                         PlateModel pm = _part[0];
-                        int[,] gridvalue;
-                        gridvalue = gpu .GetGridValue(pm .OutModel .ExpandPoint, pm .Rect .Width, pm .Rect .Height, T, gpuprogram);
-                        
-                        //frmtext frm = new frmtext(gridvalue);
-                        //frm .Show();
+                        GridLib gl = gpu .GetGridValue(pm .OutModel .ExpandPoint, pm .Rect .Width, pm .Rect .Height, T, gpuprogram);
+
+                        if (chkPrintvalue .Checked)
+                        {
+                              frmtext frm = new frmtext(gl .GridArray);
+                              frm .Show();
+                        }
                         watch .Stop();  //停止监视
                         TimeSpan timespan = watch .Elapsed;  //获取当前实例测量得出的总时间
                         lblinfo .Text = "耗时：" + timespan .TotalMilliseconds .ToString() + "ms";
@@ -4460,12 +4469,17 @@ namespace myCad
 
                   GridHelper gh = new GridHelper();
                   PlateModel pm = _part[0];
-                  gh .GetGridValue(pm, T);
+                  GridLib gl = gh .GetGridValue(pm, T);
 
+                  if (chkPrintvalue .Checked)
+                  {
+                        frmtext frm = new frmtext(gl .GridArray);
+                        frm .Show();
+                  }
                   watch .Stop();  //停止监视
                   TimeSpan timespan = watch .Elapsed;  //获取当前实例测量得出的总时间
                   lblinfo .Text = "耗时：" + timespan .TotalMilliseconds .ToString() + "ms";
-                  
+
 
             }
 
@@ -4630,6 +4644,72 @@ namespace myCad
                         lblinfo .Text = "耗时：" + timespan .TotalMilliseconds .ToString() + "ms";
 
                         //MessageBox .Show(c .ToString());
+                  }
+            }
+
+            private void btnsetT_Click(object sender, EventArgs e)
+            {
+                  T = Convert .ToSingle(txtT .Text);
+                  _small = _smallsize / T;
+            }
+
+            private void btncpu2_Click(object sender, EventArgs e)
+            {
+                  int[] test = new int[20000000];
+                  for (int i = 0; i < 20000000; i++)
+                  {
+                        test[i] = i;
+                  }
+                  System .Diagnostics .Stopwatch watch = new System .Diagnostics .Stopwatch();
+                  watch .Start();  //开始监视代码运行时间
+
+                  int a = 0;
+                  for (int i = 0; i < 20000000; i++)
+                  {
+                        if (test[i] > 19999997)
+                        {
+                              a = i;
+                              break;
+                        }
+                  }
+
+                  watch .Stop();  //停止监视
+                  TimeSpan timespan = watch .Elapsed;  //获取当前实例测量得出的总时间
+                  lblinfo .Text = "耗时：" + timespan .TotalMilliseconds .ToString() + "ms";
+
+                  MessageBox .Show(a .ToString());
+
+            }
+
+            private void btngpu2_Click(object sender, EventArgs e)
+            {
+                  if (gpu != null)
+                  {
+                        int[] test = new int[20000000];
+                        for (int i = 0; i < 20000000; i++)
+                        {
+                              test[i] = i;
+                        }
+
+                        System .Diagnostics .Stopwatch watch = new System .Diagnostics .Stopwatch();
+                        watch .Start();  //开始监视代码运行时间
+
+                        int[] a = gpu .Insert(test, 19999997, gpuprogram);
+                        int indexa = 0;
+                        for (int i = 0; i < 20000000; i++)
+                        {
+                              if (a[i] == 1)
+                              {
+                                    indexa = i;
+                                    break;
+                              }
+                        }
+
+                        watch .Stop();  //停止监视
+                        TimeSpan timespan = watch .Elapsed;  //获取当前实例测量得出的总时间
+                        lblinfo .Text = "耗时：" + timespan .TotalMilliseconds .ToString() + "ms";
+
+                        MessageBox .Show(indexa .ToString());
                   }
             }
       }

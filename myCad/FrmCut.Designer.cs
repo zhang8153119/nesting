@@ -29,17 +29,17 @@
             private void InitializeComponent()
             {
                   this.components = new System.ComponentModel.Container();
-                  System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
-                  System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
-                  System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
+                  System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+                  System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+                  System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
                   System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmCut));
-                  System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
-                  System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
-                  System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle18 = new System.Windows.Forms.DataGridViewCellStyle();
-                  System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-                  System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-                  System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
-                  System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+                  System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+                  System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+                  System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+                  System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+                  System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+                  System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+                  System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
                   this.txtscale = new System.Windows.Forms.TextBox();
                   this.btnstock = new System.Windows.Forms.Button();
                   this.dgvStock = new System.Windows.Forms.DataGridView();
@@ -50,6 +50,7 @@
                   this.cmbsuanfa = new FZYK.WinCtrl.YKComboBox();
                   this.cmbType = new FZYK.WinCtrl.YKComboBox();
                   this.chkwidth = new FZYK.WinCtrl.YKCheckBox(this.components);
+                  this.chkPrintvalue = new FZYK.WinCtrl.YKCheckBox(this.components);
                   this.chkbinxing = new FZYK.WinCtrl.YKCheckBox(this.components);
                   this.chkGrid = new FZYK.WinCtrl.YKCheckBox(this.components);
                   this.chkPress = new FZYK.WinCtrl.YKCheckBox(this.components);
@@ -59,6 +60,7 @@
                   this.lblinfo = new FZYK.WinCtrl.YKLabel(this.components);
                   this.txtheight = new FZYK.WinCtrl.YKTextBox(this.components);
                   this.txtwidth = new FZYK.WinCtrl.YKTextBox(this.components);
+                  this.txtT = new System.Windows.Forms.TextBox();
                   this.txtDis = new System.Windows.Forms.TextBox();
                   this.txtprogress = new System.Windows.Forms.TextBox();
                   this.txtjiaodu = new System.Windows.Forms.TextBox();
@@ -70,7 +72,10 @@
                   this.btndel = new System.Windows.Forms.Button();
                   this.btnDXF = new System.Windows.Forms.Button();
                   this.btnpara = new System.Windows.Forms.Button();
+                  this.btnsetT = new System.Windows.Forms.Button();
                   this.btncpu = new System.Windows.Forms.Button();
+                  this.btnby = new System.Windows.Forms.Button();
+                  this.btnby_cs = new System.Windows.Forms.Button();
                   this.btnGPU = new System.Windows.Forms.Button();
                   this.btnprint = new System.Windows.Forms.Button();
                   this.btncreate = new System.Windows.Forms.Button();
@@ -106,9 +111,9 @@
                   this.tabPage3 = new System.Windows.Forms.TabPage();
                   this.ykSplitContainer2 = new FZYK.WinCtrl.YKSplitContainer(this.components);
                   this.pnlcad = new FZYK.WinCtrl.YKPanel(this.components);
-                  this.btnby = new System.Windows.Forms.Button();
                   this.cad = new myCad.CADInterfaceCtrl.CADInterface();
-                  this.btnby_cs = new System.Windows.Forms.Button();
+                  this.btngpu2 = new System.Windows.Forms.Button();
+                  this.btncpu2 = new System.Windows.Forms.Button();
                   ((System.ComponentModel.ISupportInitialize)(this.dgvStock)).BeginInit();
                   this.panel1.SuspendLayout();
                   ((System.ComponentModel.ISupportInitialize)(this.ykSplitContainer1)).BeginInit();
@@ -151,36 +156,36 @@
                   // dgvStock
                   // 
                   this.dgvStock.BackgroundColor = System.Drawing.Color.White;
-                  dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-                  dataGridViewCellStyle13.BackColor = System.Drawing.SystemColors.Control;
-                  dataGridViewCellStyle13.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-                  dataGridViewCellStyle13.ForeColor = System.Drawing.SystemColors.WindowText;
-                  dataGridViewCellStyle13.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-                  dataGridViewCellStyle13.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-                  dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-                  this.dgvStock.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle13;
+                  dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+                  dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Control;
+                  dataGridViewCellStyle7.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+                  dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.WindowText;
+                  dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+                  dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+                  dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+                  this.dgvStock.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
                   this.dgvStock.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
                   this.dgvStock.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.sLength,
             this.sWidth});
-                  dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-                  dataGridViewCellStyle14.BackColor = System.Drawing.SystemColors.Window;
-                  dataGridViewCellStyle14.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-                  dataGridViewCellStyle14.ForeColor = System.Drawing.SystemColors.ControlText;
-                  dataGridViewCellStyle14.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-                  dataGridViewCellStyle14.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-                  dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-                  this.dgvStock.DefaultCellStyle = dataGridViewCellStyle14;
+                  dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+                  dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Window;
+                  dataGridViewCellStyle8.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+                  dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.ControlText;
+                  dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+                  dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+                  dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+                  this.dgvStock.DefaultCellStyle = dataGridViewCellStyle8;
                   this.dgvStock.Location = new System.Drawing.Point(3, 3);
                   this.dgvStock.Name = "dgvStock";
-                  dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-                  dataGridViewCellStyle15.BackColor = System.Drawing.SystemColors.Control;
-                  dataGridViewCellStyle15.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-                  dataGridViewCellStyle15.ForeColor = System.Drawing.SystemColors.WindowText;
-                  dataGridViewCellStyle15.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-                  dataGridViewCellStyle15.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-                  dataGridViewCellStyle15.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-                  this.dgvStock.RowHeadersDefaultCellStyle = dataGridViewCellStyle15;
+                  dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+                  dataGridViewCellStyle9.BackColor = System.Drawing.SystemColors.Control;
+                  dataGridViewCellStyle9.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+                  dataGridViewCellStyle9.ForeColor = System.Drawing.SystemColors.WindowText;
+                  dataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+                  dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+                  dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+                  this.dgvStock.RowHeadersDefaultCellStyle = dataGridViewCellStyle9;
                   this.dgvStock.RowTemplate.Height = 23;
                   this.dgvStock.Size = new System.Drawing.Size(192, 84);
                   this.dgvStock.TabIndex = 0;
@@ -207,6 +212,7 @@
                   this.panel1.Controls.Add(this.cmbsuanfa);
                   this.panel1.Controls.Add(this.cmbType);
                   this.panel1.Controls.Add(this.chkwidth);
+                  this.panel1.Controls.Add(this.chkPrintvalue);
                   this.panel1.Controls.Add(this.chkbinxing);
                   this.panel1.Controls.Add(this.chkGrid);
                   this.panel1.Controls.Add(this.chkPress);
@@ -217,6 +223,7 @@
                   this.panel1.Controls.Add(this.txtheight);
                   this.panel1.Controls.Add(this.txtwidth);
                   this.panel1.Controls.Add(this.dgvStock);
+                  this.panel1.Controls.Add(this.txtT);
                   this.panel1.Controls.Add(this.txtDis);
                   this.panel1.Controls.Add(this.txtprogress);
                   this.panel1.Controls.Add(this.txtjiaodu);
@@ -229,9 +236,12 @@
                   this.panel1.Controls.Add(this.btndel);
                   this.panel1.Controls.Add(this.btnDXF);
                   this.panel1.Controls.Add(this.btnpara);
+                  this.panel1.Controls.Add(this.btnsetT);
+                  this.panel1.Controls.Add(this.btncpu2);
                   this.panel1.Controls.Add(this.btncpu);
                   this.panel1.Controls.Add(this.btnby);
                   this.panel1.Controls.Add(this.btnby_cs);
+                  this.panel1.Controls.Add(this.btngpu2);
                   this.panel1.Controls.Add(this.btnGPU);
                   this.panel1.Controls.Add(this.btnprint);
                   this.panel1.Controls.Add(this.btncreate);
@@ -252,7 +262,7 @@
                   this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
                   this.panel1.Location = new System.Drawing.Point(0, 0);
                   this.panel1.Name = "panel1";
-                  this.panel1.Size = new System.Drawing.Size(1351, 119);
+                  this.panel1.Size = new System.Drawing.Size(1351, 167);
                   this.panel1.TabIndex = 3;
                   // 
                   // btnexport
@@ -323,6 +333,17 @@
                   this.chkwidth.TabIndex = 6;
                   this.chkwidth.Text = "匹配板宽";
                   this.chkwidth.UseVisualStyleBackColor = false;
+                  // 
+                  // chkPrintvalue
+                  // 
+                  this.chkPrintvalue.AutoSize = true;
+                  this.chkPrintvalue.BackColor = System.Drawing.Color.Transparent;
+                  this.chkPrintvalue.Location = new System.Drawing.Point(619, 56);
+                  this.chkPrintvalue.Name = "chkPrintvalue";
+                  this.chkPrintvalue.Size = new System.Drawing.Size(60, 16);
+                  this.chkPrintvalue.TabIndex = 6;
+                  this.chkPrintvalue.Text = "打印值";
+                  this.chkPrintvalue.UseVisualStyleBackColor = false;
                   // 
                   // chkbinxing
                   // 
@@ -438,6 +459,14 @@
                   this.txtwidth.UnderLine = true;
                   this.txtwidth.UnderLineColor = System.Drawing.Color.Black;
                   // 
+                  // txtT
+                  // 
+                  this.txtT.Location = new System.Drawing.Point(1129, 58);
+                  this.txtT.Name = "txtT";
+                  this.txtT.Size = new System.Drawing.Size(53, 21);
+                  this.txtT.TabIndex = 2;
+                  this.txtT.Text = "10";
+                  // 
                   // txtDis
                   // 
                   this.txtDis.Location = new System.Drawing.Point(917, 4);
@@ -529,6 +558,16 @@
                   this.btnpara.UseVisualStyleBackColor = true;
                   this.btnpara.Click += new System.EventHandler(this.btnpara_Click);
                   // 
+                  // btnsetT
+                  // 
+                  this.btnsetT.Location = new System.Drawing.Point(1129, 84);
+                  this.btnsetT.Name = "btnsetT";
+                  this.btnsetT.Size = new System.Drawing.Size(53, 23);
+                  this.btnsetT.TabIndex = 1;
+                  this.btnsetT.Text = "配置";
+                  this.btnsetT.UseVisualStyleBackColor = true;
+                  this.btnsetT.Click += new System.EventHandler(this.btnsetT_Click);
+                  // 
                   // btncpu
                   // 
                   this.btncpu.Location = new System.Drawing.Point(615, 73);
@@ -538,6 +577,26 @@
                   this.btncpu.Text = "CPU测试";
                   this.btncpu.UseVisualStyleBackColor = true;
                   this.btncpu.Click += new System.EventHandler(this.btncpu_Click);
+                  // 
+                  // btnby
+                  // 
+                  this.btnby.Location = new System.Drawing.Point(568, 29);
+                  this.btnby.Name = "btnby";
+                  this.btnby.Size = new System.Drawing.Size(45, 23);
+                  this.btnby.TabIndex = 1;
+                  this.btnby.Text = "编译";
+                  this.btnby.UseVisualStyleBackColor = true;
+                  this.btnby.Click += new System.EventHandler(this.btnby_Click);
+                  // 
+                  // btnby_cs
+                  // 
+                  this.btnby_cs.Location = new System.Drawing.Point(489, 29);
+                  this.btnby_cs.Name = "btnby_cs";
+                  this.btnby_cs.Size = new System.Drawing.Size(75, 23);
+                  this.btnby_cs.TabIndex = 1;
+                  this.btnby_cs.Text = "编译-测试";
+                  this.btnby_cs.UseVisualStyleBackColor = true;
+                  this.btnby_cs.Click += new System.EventHandler(this.btnby_cs_Click);
                   // 
                   // btnGPU
                   // 
@@ -712,7 +771,7 @@
                   this.ykSplitContainer1.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
                   this.ykSplitContainer1.Cursor = System.Windows.Forms.Cursors.Default;
                   this.ykSplitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-                  this.ykSplitContainer1.Location = new System.Drawing.Point(0, 119);
+                  this.ykSplitContainer1.Location = new System.Drawing.Point(0, 167);
                   this.ykSplitContainer1.Name = "ykSplitContainer1";
                   // 
                   // ykSplitContainer1.Panel1
@@ -726,7 +785,7 @@
                   this.ykSplitContainer1.Panel2.Controls.Add(this.tabMain);
                   this.ykSplitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(1);
                   this.ykSplitContainer1.Panel2MinSize = 0;
-                  this.ykSplitContainer1.Size = new System.Drawing.Size(1351, 499);
+                  this.ykSplitContainer1.Size = new System.Drawing.Size(1351, 451);
                   this.ykSplitContainer1.SplitterDistance = 540;
                   this.ykSplitContainer1.SplitterWidth = 9;
                   this.ykSplitContainer1.TabIndex = 5;
@@ -741,7 +800,7 @@
                   this.tabMain.myBackColor = System.Drawing.Color.White;
                   this.tabMain.Name = "tabMain";
                   this.tabMain.SelectedIndex = 0;
-                  this.tabMain.Size = new System.Drawing.Size(1349, 497);
+                  this.tabMain.Size = new System.Drawing.Size(1349, 449);
                   this.tabMain.TabIndex = 0;
                   // 
                   // tabPage1
@@ -751,7 +810,7 @@
                   this.tabPage1.Location = new System.Drawing.Point(4, 26);
                   this.tabPage1.Name = "tabPage1";
                   this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-                  this.tabPage1.Size = new System.Drawing.Size(1341, 467);
+                  this.tabPage1.Size = new System.Drawing.Size(1341, 419);
                   this.tabPage1.TabIndex = 0;
                   this.tabPage1.Text = "tabPage1";
                   this.tabPage1.UseVisualStyleBackColor = true;
@@ -776,8 +835,8 @@
                   this.ykSplitContainer3.Panel2.Controls.Add(this.pboxLine);
                   this.ykSplitContainer3.Panel2.Padding = new System.Windows.Forms.Padding(1);
                   this.ykSplitContainer3.Panel2MinSize = 0;
-                  this.ykSplitContainer3.Size = new System.Drawing.Size(1007, 461);
-                  this.ykSplitContainer3.SplitterDistance = 355;
+                  this.ykSplitContainer3.Size = new System.Drawing.Size(1007, 413);
+                  this.ykSplitContainer3.SplitterDistance = 318;
                   this.ykSplitContainer3.SplitterWidth = 9;
                   this.ykSplitContainer3.TabIndex = 2;
                   // 
@@ -788,7 +847,7 @@
                   this.pnlgrid.Dock = System.Windows.Forms.DockStyle.Fill;
                   this.pnlgrid.Location = new System.Drawing.Point(1, 1);
                   this.pnlgrid.Name = "pnlgrid";
-                  this.pnlgrid.Size = new System.Drawing.Size(1005, 353);
+                  this.pnlgrid.Size = new System.Drawing.Size(1005, 316);
                   this.pnlgrid.TabIndex = 0;
                   // 
                   // pboxLine
@@ -797,7 +856,7 @@
                   this.pboxLine.Dock = System.Windows.Forms.DockStyle.Fill;
                   this.pboxLine.Location = new System.Drawing.Point(1, 1);
                   this.pboxLine.Name = "pboxLine";
-                  this.pboxLine.Size = new System.Drawing.Size(1005, 95);
+                  this.pboxLine.Size = new System.Drawing.Size(1005, 84);
                   this.pboxLine.TabIndex = 0;
                   this.pboxLine.TabStop = false;
                   // 
@@ -811,14 +870,14 @@
                   this.dgvshape.AllowUserToAddRows = false;
                   this.dgvshape.AllowUserToOrderColumns = true;
                   this.dgvshape.BackgroundColor = System.Drawing.Color.White;
-                  dataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-                  dataGridViewCellStyle16.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(247)))), ((int)(((byte)(246)))), ((int)(((byte)(239)))));
-                  dataGridViewCellStyle16.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-                  dataGridViewCellStyle16.ForeColor = System.Drawing.SystemColors.WindowText;
-                  dataGridViewCellStyle16.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-                  dataGridViewCellStyle16.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-                  dataGridViewCellStyle16.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-                  this.dgvshape.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle16;
+                  dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+                  dataGridViewCellStyle10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(247)))), ((int)(((byte)(246)))), ((int)(((byte)(239)))));
+                  dataGridViewCellStyle10.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+                  dataGridViewCellStyle10.ForeColor = System.Drawing.SystemColors.WindowText;
+                  dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+                  dataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+                  dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+                  this.dgvshape.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle10;
                   this.dgvshape.ColumnHeadersHeight = 30;
                   this.dgvshape.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
                   this.dgvshape.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -828,14 +887,14 @@
             this.lenrate,
             this.len,
             this.wid});
-                  dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-                  dataGridViewCellStyle17.BackColor = System.Drawing.SystemColors.Window;
-                  dataGridViewCellStyle17.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-                  dataGridViewCellStyle17.ForeColor = System.Drawing.SystemColors.ControlText;
-                  dataGridViewCellStyle17.SelectionBackColor = System.Drawing.Color.Wheat;
-                  dataGridViewCellStyle17.SelectionForeColor = System.Drawing.Color.DarkSlateBlue;
-                  dataGridViewCellStyle17.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-                  this.dgvshape.DefaultCellStyle = dataGridViewCellStyle17;
+                  dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+                  dataGridViewCellStyle11.BackColor = System.Drawing.SystemColors.Window;
+                  dataGridViewCellStyle11.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+                  dataGridViewCellStyle11.ForeColor = System.Drawing.SystemColors.ControlText;
+                  dataGridViewCellStyle11.SelectionBackColor = System.Drawing.Color.Wheat;
+                  dataGridViewCellStyle11.SelectionForeColor = System.Drawing.Color.DarkSlateBlue;
+                  dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+                  this.dgvshape.DefaultCellStyle = dataGridViewCellStyle11;
                   this.dgvshape.Dock = System.Windows.Forms.DockStyle.Right;
                   this.dgvshape.EnableHeadersVisualStyles = false;
                   this.dgvshape.GridColor = System.Drawing.SystemColors.GradientActiveCaption;
@@ -845,18 +904,18 @@
                   this.dgvshape.Name = "dgvshape";
                   this.dgvshape.ReadOnly = true;
                   this.dgvshape.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-                  dataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-                  dataGridViewCellStyle18.BackColor = System.Drawing.SystemColors.Window;
-                  dataGridViewCellStyle18.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-                  dataGridViewCellStyle18.ForeColor = System.Drawing.SystemColors.WindowText;
-                  dataGridViewCellStyle18.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-                  dataGridViewCellStyle18.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-                  dataGridViewCellStyle18.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-                  this.dgvshape.RowHeadersDefaultCellStyle = dataGridViewCellStyle18;
+                  dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+                  dataGridViewCellStyle12.BackColor = System.Drawing.SystemColors.Window;
+                  dataGridViewCellStyle12.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+                  dataGridViewCellStyle12.ForeColor = System.Drawing.SystemColors.WindowText;
+                  dataGridViewCellStyle12.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+                  dataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+                  dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+                  this.dgvshape.RowHeadersDefaultCellStyle = dataGridViewCellStyle12;
                   this.dgvshape.RowHeadersWidth = 10;
                   this.dgvshape.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
                   this.dgvshape.RowTemplate.Height = 23;
-                  this.dgvshape.Size = new System.Drawing.Size(328, 461);
+                  this.dgvshape.Size = new System.Drawing.Size(328, 413);
                   this.dgvshape.TabIndex = 1;
                   // 
                   // part
@@ -921,23 +980,23 @@
                   // 
                   // chart1
                   // 
-                  chartArea3.AxisY.IsStartedFromZero = false;
-                  chartArea3.Name = "ChartArea1";
-                  this.chart1.ChartAreas.Add(chartArea3);
+                  chartArea2.AxisY.IsStartedFromZero = false;
+                  chartArea2.Name = "ChartArea1";
+                  this.chart1.ChartAreas.Add(chartArea2);
                   this.chart1.Dock = System.Windows.Forms.DockStyle.Fill;
-                  legend3.Enabled = false;
-                  legend3.Name = "Legend1";
-                  this.chart1.Legends.Add(legend3);
+                  legend2.Enabled = false;
+                  legend2.Name = "Legend1";
+                  this.chart1.Legends.Add(legend2);
                   this.chart1.Location = new System.Drawing.Point(3, 3);
                   this.chart1.Name = "chart1";
-                  series5.ChartArea = "ChartArea1";
-                  series5.Legend = "Legend1";
-                  series5.Name = "Series1";
-                  series6.ChartArea = "ChartArea1";
-                  series6.Legend = "Legend1";
-                  series6.Name = "Series2";
-                  this.chart1.Series.Add(series5);
-                  this.chart1.Series.Add(series6);
+                  series3.ChartArea = "ChartArea1";
+                  series3.Legend = "Legend1";
+                  series3.Name = "Series1";
+                  series4.ChartArea = "ChartArea1";
+                  series4.Legend = "Legend1";
+                  series4.Name = "Series2";
+                  this.chart1.Series.Add(series3);
+                  this.chart1.Series.Add(series4);
                   this.chart1.Size = new System.Drawing.Size(1127, 461);
                   this.chart1.TabIndex = 0;
                   this.chart1.Text = "chart1";
@@ -999,16 +1058,6 @@
                   this.pnlcad.TabIndex = 8;
                   this.pnlcad.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlcad_Paint);
                   // 
-                  // btnby
-                  // 
-                  this.btnby.Location = new System.Drawing.Point(568, 29);
-                  this.btnby.Name = "btnby";
-                  this.btnby.Size = new System.Drawing.Size(45, 23);
-                  this.btnby.TabIndex = 1;
-                  this.btnby.Text = "编译";
-                  this.btnby.UseVisualStyleBackColor = true;
-                  this.btnby.Click += new System.EventHandler(this.btnby_Click);
-                  // 
                   // cad
                   // 
                   this.cad.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1018,15 +1067,25 @@
                   this.cad.Size = new System.Drawing.Size(1333, 459);
                   this.cad.TabIndex = 7;
                   // 
-                  // btnby_cs
+                  // btngpu2
                   // 
-                  this.btnby_cs.Location = new System.Drawing.Point(489, 29);
-                  this.btnby_cs.Name = "btnby_cs";
-                  this.btnby_cs.Size = new System.Drawing.Size(75, 23);
-                  this.btnby_cs.TabIndex = 1;
-                  this.btnby_cs.Text = "编译-测试";
-                  this.btnby_cs.UseVisualStyleBackColor = true;
-                  this.btnby_cs.Click += new System.EventHandler(this.btnby_cs_Click);
+                  this.btngpu2.Location = new System.Drawing.Point(531, 124);
+                  this.btngpu2.Name = "btngpu2";
+                  this.btngpu2.Size = new System.Drawing.Size(75, 23);
+                  this.btngpu2.TabIndex = 1;
+                  this.btngpu2.Text = "GPU测试";
+                  this.btngpu2.UseVisualStyleBackColor = true;
+                  this.btngpu2.Click += new System.EventHandler(this.btngpu2_Click);
+                  // 
+                  // btncpu2
+                  // 
+                  this.btncpu2.Location = new System.Drawing.Point(612, 124);
+                  this.btncpu2.Name = "btncpu2";
+                  this.btncpu2.Size = new System.Drawing.Size(75, 23);
+                  this.btncpu2.TabIndex = 1;
+                  this.btncpu2.Text = "CPU测试";
+                  this.btncpu2.UseVisualStyleBackColor = true;
+                  this.btncpu2.Click += new System.EventHandler(this.btncpu2_Click);
                   // 
                   // FrmCut
                   // 
@@ -1135,5 +1194,10 @@
             private System .Windows .Forms .Button btncpu;
             private System .Windows .Forms .Button btnby;
             private System .Windows .Forms .Button btnby_cs;
+            private System .Windows .Forms .TextBox txtT;
+            private System .Windows .Forms .Button btnsetT;
+            private FZYK .WinCtrl .YKCheckBox chkPrintvalue;
+            private System .Windows .Forms .Button btncpu2;
+            private System .Windows .Forms .Button btngpu2;
       }
 }

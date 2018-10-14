@@ -886,7 +886,7 @@ __kernel void GetGridValue(__global MyPoint* plist,int pcount,float W,float H,fl
         }
         SetGridValueX(plist,pcount,i,y,HI,T,result);
     }
-    else if(i >= HI && i < WI+HI)
+    else
     {
         int j = i-HI;
         int x = j*T;
@@ -898,3 +898,21 @@ __kernel void GetGridValue(__global MyPoint* plist,int pcount,float W,float H,fl
     }
 }
 
+__kernel void InitArray(__global int* result)
+{
+	result[get_global_id(0)] = 0;
+}
+
+
+__kernel void Insert(__global int* numlist,__global int *num ,int minnum)
+{
+    unsigned int id = get_global_id(0); 
+    if(numlist[id] > minnum)
+    {
+        num[id] = 1;
+    }
+    else
+    {
+        num[id] = 0;
+    }
+}

@@ -898,3 +898,9 @@ __kernel void GetGridValue(__global MyPoint* plist,int pcount,float W,float H,fl
     }
 }
 
+__kernel void InitArray(__global int* result)
+{
+	int i = get_global_id(0);
+	result[i] = 0;
+}
+
