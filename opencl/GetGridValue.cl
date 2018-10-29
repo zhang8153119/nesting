@@ -8,7 +8,7 @@ typedef struct
 
 /* X扫描线
 */
-void SetGridValueX(__global MyPoint* plist,int PCOUNT,int j ,float y,int HI,int T,__global int* result)
+void SetGridValueX(__global MyPoint* plist,int PCOUNT,int j ,float y,int WI,int T,__global int* result)
 {
 	MyPoint parray[100];
 	int c = 0;
@@ -418,10 +418,10 @@ void SetGridValueX(__global MyPoint* plist,int PCOUNT,int j ,float y,int HI,int 
 		int t2 = (int)parray[g+1].X/T;
 		for(int xx = t1;xx<=t2;xx++)
 		{
-			result[xx*HI+j] =1;
-			if(xx*HI+j-1>=0)
+			result[j*WI+xx] =1;
+			if((j-1)*WI+xx>=0)
 			{
-				result[xx*HI+j-1] = 1;
+				result[(j-1)*WI+xx] = 1;
 			}
 		}
 	}
@@ -431,17 +431,17 @@ void SetGridValueX(__global MyPoint* plist,int PCOUNT,int j ,float y,int HI,int 
 		int t2 = (int)line[g+1].X/T;
 		for(int xx = t1;xx<=t2;xx++)
 		{
-			result[xx*HI+j] =1;
-			if(xx*HI+j-1>=0)
+			result[j*WI+xx] =1;
+			if((j-1)*WI+xx>=0)
 			{
-				result[xx*HI+j-1] = 1;
+				result[(j-1)*WI+xx] = 1;
 			}
 		}
 	}
 }
 /* Y扫描线
  */
-void SetGridValueY(__global MyPoint* plist,int PCOUNT,int i ,float x,int HI,int T,__global int* result)
+void SetGridValueY(__global MyPoint* plist,int PCOUNT,int i ,float x,int WI,int T,__global int* result)
 {
     
 	MyPoint parray[100];
@@ -852,10 +852,10 @@ void SetGridValueY(__global MyPoint* plist,int PCOUNT,int i ,float x,int HI,int 
 		int t2 = (int)parray[g+1].Y/T;
 		for(int yy = t1;yy<=t2;yy++)
 		{
-			result[i*HI+yy] =1;
-			if(i-1>=0)
+			result[yy*WI+i] =1;
+			if(yy*WI+i-1>=0)
 			{
-				result[(i-1)*HI+yy] = 1;
+				result[yy*WI+i-1] = 1;
 			}
 		}
 	}
@@ -865,14 +865,16 @@ void SetGridValueY(__global MyPoint* plist,int PCOUNT,int i ,float x,int HI,int 
 		int t2 = (int)line[g+1].Y/T;
 		for(int yy = t1;yy<=t2;yy++)
 		{
-			result[i*HI+yy] =1;
-			if(i-1>=0)
+			result[yy*WI+i] =1;
+			if(yy*WI+i-1>=0)
 			{
-				result[(i-1)*HI+yy] = 1;
+				result[yy*WI+i-1] = 1;
 			}
 		}
 	}
 }
+
+
 
 __kernel void GetGridValue(__global MyPoint* plist,int pcount,float W,float H,float T,int WI,int HI,__global int* result)
 {
@@ -884,7 +886,7 @@ __kernel void GetGridValue(__global MyPoint* plist,int pcount,float W,float H,fl
         {
             y = H;
         }
-        SetGridValueX(plist,pcount,i,y,HI,T,result);
+        SetGridValueX(plist,pcount,i,y,WI,T,result);
     }
     else
     {
@@ -894,13 +896,25 @@ __kernel void GetGridValue(__global MyPoint* plist,int pcount,float W,float H,fl
 	    {
 		    x = W;
 	    }
-        SetGridValueY(plist,pcount,j,x,HI,T,result);
+        SetGridValueY(plist,pcount,j,x,WI,T,result);
     }
 }
 
 __kernel void InitArray(__global int* result)
 {
-	int i = get_global_id(0);
-	result[i] = 0;
+	result[get_global_id(0)] = 0;
 }
 
+
+__kernel void Insert(__global int* numlist,__global int *num ,int minnum)
+{
+    unsigned int id = get_global_id(0); 
+    if(numlist[id] > minnum)
+    {
+        num[id] = 1;
+    }
+    else
+    {
+        num[id] = 0;
+    }
+}

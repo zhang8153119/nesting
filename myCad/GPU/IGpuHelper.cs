@@ -1,4 +1,5 @@
 ﻿using Cloo;
+using myCad .Model;
 using myCad .Utility;
 using System;
 using System .Collections .Generic;
@@ -10,12 +11,11 @@ namespace GPU
       {
             void GetHello(float num, ref float str);
 
-            GridLib GetGridValue(List<PointF> pointlist, float W, float H, float T, ComputeProgram gpuprogram);
-
-
-            int[,] GetGridValue(List<PointF> pointlist, float W, float H, float T);
-
-            int[] Insert(int[] numlist, int num, ComputeProgram program);
+            GridLib GetGridValue(PlateModel pm, float T, ComputeProgram gpuprogram);
+            GridLib GetGridValueCombine(PlateCombine pc, float T, ComputeProgram gpuprogram);
+            int[,] GetGridArray(PlateModel pm, float T, ComputeProgram program);
+                  
+            int[] Insert(int[] test1, int[] test2, ComputeProgram program);
             ComputeProgram Build();
       }
 }

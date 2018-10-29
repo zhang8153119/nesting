@@ -46,6 +46,9 @@
                   this.sLength = new System.Windows.Forms.DataGridViewTextBoxColumn();
                   this.sWidth = new System.Windows.Forms.DataGridViewTextBoxColumn();
                   this.panel1 = new System.Windows.Forms.Panel();
+                  this.txttime = new System.Windows.Forms.RichTextBox();
+                  this.cmbway = new System.Windows.Forms.ComboBox();
+                  this.lblbystate = new System.Windows.Forms.Label();
                   this.btnexport = new FZYK.WinCtrl.YKButton(this.components);
                   this.cmbsuanfa = new FZYK.WinCtrl.YKComboBox();
                   this.cmbType = new FZYK.WinCtrl.YKComboBox();
@@ -73,9 +76,11 @@
                   this.btnDXF = new System.Windows.Forms.Button();
                   this.btnpara = new System.Windows.Forms.Button();
                   this.btnsetT = new System.Windows.Forms.Button();
+                  this.btncpu2 = new System.Windows.Forms.Button();
                   this.btncpu = new System.Windows.Forms.Button();
                   this.btnby = new System.Windows.Forms.Button();
                   this.btnby_cs = new System.Windows.Forms.Button();
+                  this.btngpu2 = new System.Windows.Forms.Button();
                   this.btnGPU = new System.Windows.Forms.Button();
                   this.btnprint = new System.Windows.Forms.Button();
                   this.btncreate = new System.Windows.Forms.Button();
@@ -111,9 +116,9 @@
                   this.tabPage3 = new System.Windows.Forms.TabPage();
                   this.ykSplitContainer2 = new FZYK.WinCtrl.YKSplitContainer(this.components);
                   this.pnlcad = new FZYK.WinCtrl.YKPanel(this.components);
+                  this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
                   this.cad = new myCad.CADInterfaceCtrl.CADInterface();
-                  this.btngpu2 = new System.Windows.Forms.Button();
-                  this.btncpu2 = new System.Windows.Forms.Button();
+                  this.chkstep = new System.Windows.Forms.CheckBox();
                   ((System.ComponentModel.ISupportInitialize)(this.dgvStock)).BeginInit();
                   this.panel1.SuspendLayout();
                   ((System.ComponentModel.ISupportInitialize)(this.ykSplitContainer1)).BeginInit();
@@ -208,6 +213,10 @@
                   // 
                   // panel1
                   // 
+                  this.panel1.Controls.Add(this.chkstep);
+                  this.panel1.Controls.Add(this.txttime);
+                  this.panel1.Controls.Add(this.cmbway);
+                  this.panel1.Controls.Add(this.lblbystate);
                   this.panel1.Controls.Add(this.btnexport);
                   this.panel1.Controls.Add(this.cmbsuanfa);
                   this.panel1.Controls.Add(this.cmbType);
@@ -264,6 +273,39 @@
                   this.panel1.Name = "panel1";
                   this.panel1.Size = new System.Drawing.Size(1351, 167);
                   this.panel1.TabIndex = 3;
+                  // 
+                  // txttime
+                  // 
+                  this.txttime.Location = new System.Drawing.Point(1188, 56);
+                  this.txttime.Name = "txttime";
+                  this.txttime.Size = new System.Drawing.Size(151, 105);
+                  this.txttime.TabIndex = 11;
+                  this.txttime.Text = "";
+                  // 
+                  // cmbway
+                  // 
+                  this.cmbway.FormattingEnabled = true;
+                  this.cmbway.Items.AddRange(new object[] {
+            "1",
+            "2",
+            "3",
+            "4"});
+                  this.cmbway.Location = new System.Drawing.Point(790, 114);
+                  this.cmbway.Name = "cmbway";
+                  this.cmbway.Size = new System.Drawing.Size(121, 20);
+                  this.cmbway.TabIndex = 10;
+                  this.cmbway.Text = "4";
+                  this.cmbway.TextChanged += new System.EventHandler(this.cmbway_TextChanged);
+                  // 
+                  // lblbystate
+                  // 
+                  this.lblbystate.AutoSize = true;
+                  this.lblbystate.ForeColor = System.Drawing.Color.Red;
+                  this.lblbystate.Location = new System.Drawing.Point(12, 135);
+                  this.lblbystate.Name = "lblbystate";
+                  this.lblbystate.Size = new System.Drawing.Size(59, 12);
+                  this.lblbystate.TabIndex = 9;
+                  this.lblbystate.Text = "编译中...";
                   // 
                   // btnexport
                   // 
@@ -568,6 +610,16 @@
                   this.btnsetT.UseVisualStyleBackColor = true;
                   this.btnsetT.Click += new System.EventHandler(this.btnsetT_Click);
                   // 
+                  // btncpu2
+                  // 
+                  this.btncpu2.Location = new System.Drawing.Point(612, 124);
+                  this.btncpu2.Name = "btncpu2";
+                  this.btncpu2.Size = new System.Drawing.Size(75, 23);
+                  this.btncpu2.TabIndex = 1;
+                  this.btncpu2.Text = "CPU测试";
+                  this.btncpu2.UseVisualStyleBackColor = true;
+                  this.btncpu2.Click += new System.EventHandler(this.btncpu2_Click);
+                  // 
                   // btncpu
                   // 
                   this.btncpu.Location = new System.Drawing.Point(615, 73);
@@ -597,6 +649,16 @@
                   this.btnby_cs.Text = "编译-测试";
                   this.btnby_cs.UseVisualStyleBackColor = true;
                   this.btnby_cs.Click += new System.EventHandler(this.btnby_cs_Click);
+                  // 
+                  // btngpu2
+                  // 
+                  this.btngpu2.Location = new System.Drawing.Point(531, 124);
+                  this.btngpu2.Name = "btngpu2";
+                  this.btngpu2.Size = new System.Drawing.Size(75, 23);
+                  this.btngpu2.TabIndex = 1;
+                  this.btngpu2.Text = "GPU测试";
+                  this.btngpu2.UseVisualStyleBackColor = true;
+                  this.btngpu2.Click += new System.EventHandler(this.btngpu2_Click);
                   // 
                   // btnGPU
                   // 
@@ -973,7 +1035,7 @@
                   this.tabPage2.Location = new System.Drawing.Point(4, 26);
                   this.tabPage2.Name = "tabPage2";
                   this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-                  this.tabPage2.Size = new System.Drawing.Size(1341, 467);
+                  this.tabPage2.Size = new System.Drawing.Size(1341, 419);
                   this.tabPage2.TabIndex = 1;
                   this.tabPage2.Text = "tabPage2";
                   this.tabPage2.UseVisualStyleBackColor = true;
@@ -997,7 +1059,7 @@
                   series4.Name = "Series2";
                   this.chart1.Series.Add(series3);
                   this.chart1.Series.Add(series4);
-                  this.chart1.Size = new System.Drawing.Size(1127, 461);
+                  this.chart1.Size = new System.Drawing.Size(1127, 413);
                   this.chart1.TabIndex = 0;
                   this.chart1.Text = "chart1";
                   // 
@@ -1006,7 +1068,7 @@
                   this.txttestvalue.Dock = System.Windows.Forms.DockStyle.Right;
                   this.txttestvalue.Location = new System.Drawing.Point(1130, 3);
                   this.txttestvalue.Name = "txttestvalue";
-                  this.txttestvalue.Size = new System.Drawing.Size(208, 461);
+                  this.txttestvalue.Size = new System.Drawing.Size(208, 413);
                   this.txttestvalue.TabIndex = 0;
                   this.txttestvalue.Text = "";
                   // 
@@ -1016,7 +1078,7 @@
                   this.tabPage3.Location = new System.Drawing.Point(4, 26);
                   this.tabPage3.Name = "tabPage3";
                   this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-                  this.tabPage3.Size = new System.Drawing.Size(1341, 467);
+                  this.tabPage3.Size = new System.Drawing.Size(1341, 419);
                   this.tabPage3.TabIndex = 2;
                   this.tabPage3.Text = "tabPage3";
                   this.tabPage3.UseVisualStyleBackColor = true;
@@ -1042,7 +1104,7 @@
                   this.ykSplitContainer2.Panel2.Controls.Add(this.cad);
                   this.ykSplitContainer2.Panel2.Padding = new System.Windows.Forms.Padding(1);
                   this.ykSplitContainer2.Panel2MinSize = 0;
-                  this.ykSplitContainer2.Size = new System.Drawing.Size(1335, 461);
+                  this.ykSplitContainer2.Size = new System.Drawing.Size(1335, 413);
                   this.ykSplitContainer2.SplitterDistance = 86;
                   this.ykSplitContainer2.SplitterWidth = 9;
                   this.ykSplitContainer2.TabIndex = 9;
@@ -1058,34 +1120,31 @@
                   this.pnlcad.TabIndex = 8;
                   this.pnlcad.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlcad_Paint);
                   // 
+                  // backgroundWorker1
+                  // 
+                  this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+                  this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+                  // 
                   // cad
                   // 
                   this.cad.Dock = System.Windows.Forms.DockStyle.Fill;
                   this.cad.Location = new System.Drawing.Point(1, 1);
                   this.cad.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
                   this.cad.Name = "cad";
-                  this.cad.Size = new System.Drawing.Size(1333, 459);
+                  this.cad.Size = new System.Drawing.Size(1333, 411);
                   this.cad.TabIndex = 7;
                   // 
-                  // btngpu2
+                  // chkstep
                   // 
-                  this.btngpu2.Location = new System.Drawing.Point(531, 124);
-                  this.btngpu2.Name = "btngpu2";
-                  this.btngpu2.Size = new System.Drawing.Size(75, 23);
-                  this.btngpu2.TabIndex = 1;
-                  this.btngpu2.Text = "GPU测试";
-                  this.btngpu2.UseVisualStyleBackColor = true;
-                  this.btngpu2.Click += new System.EventHandler(this.btngpu2_Click);
-                  // 
-                  // btncpu2
-                  // 
-                  this.btncpu2.Location = new System.Drawing.Point(612, 124);
-                  this.btncpu2.Name = "btncpu2";
-                  this.btncpu2.Size = new System.Drawing.Size(75, 23);
-                  this.btncpu2.TabIndex = 1;
-                  this.btncpu2.Text = "CPU测试";
-                  this.btncpu2.UseVisualStyleBackColor = true;
-                  this.btncpu2.Click += new System.EventHandler(this.btncpu2_Click);
+                  this.chkstep.AutoSize = true;
+                  this.chkstep.Checked = true;
+                  this.chkstep.CheckState = System.Windows.Forms.CheckState.Checked;
+                  this.chkstep.Location = new System.Drawing.Point(1016, 106);
+                  this.chkstep.Name = "chkstep";
+                  this.chkstep.Size = new System.Drawing.Size(48, 16);
+                  this.chkstep.TabIndex = 12;
+                  this.chkstep.Text = "跳过";
+                  this.chkstep.UseVisualStyleBackColor = true;
                   // 
                   // FrmCut
                   // 
@@ -1199,5 +1258,10 @@
             private FZYK .WinCtrl .YKCheckBox chkPrintvalue;
             private System .Windows .Forms .Button btncpu2;
             private System .Windows .Forms .Button btngpu2;
+            private System .ComponentModel .BackgroundWorker backgroundWorker1;
+            private System .Windows .Forms .Label lblbystate;
+            private System .Windows .Forms .ComboBox cmbway;
+            private System .Windows .Forms .RichTextBox txttime;
+            private System .Windows .Forms .CheckBox chkstep;
       }
 }
