@@ -855,7 +855,7 @@ void SetGridValueY(__global MyPoint* plist,int PCOUNT,int i ,float x,int WI,int 
 			result[yy*WI+i] =1;
 			if(i-1>=0)
 			{
-				result[yy*WI+i-1] = 1;
+				result[yy*WI+i-1] =1;
 			}
 		}
 	}

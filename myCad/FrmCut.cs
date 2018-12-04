@@ -1371,6 +1371,8 @@ namespace myCad
             {
                   if (_way == "4")
                         return CountFitnessRectangle4(d);
+                  else if (_way == "5")
+                        return CountFitnessRectangle5(d);
                   else
                         return CountFitnessRectangle3(d);
             }
@@ -1522,7 +1524,663 @@ namespace myCad
                   rect = RectangleCreate(rect, rpart);
                   return new Point(r .X - movex, r .Y - movey);
             }
+            /// <summary>
+            /// 剩余矩形动态匹配算法解码,平行四边形
+            /// </summary>
+            /// <param name="d"></param>
+            /// <returns></returns>
+            private DNA CountFitnessRectangle5(DNA d)
+            {
+                  txttime .Text = "";
+                  System .Diagnostics .Stopwatch watch = new System .Diagnostics .Stopwatch();
+                  watch .Start();  //开始监视代码运行时间
 
+                  DNA dna = d .Copy();
+                  float sumArea = 0f;
+                  //所有库存初始化
+                  for (int i = 0; i < dna .Stock .Count; i++)
+                  {
+                        dna .Stock[i] .PartInfoList .Clear();
+                        dna .Stock[i] .Use = 0;
+                        for (int r = 0; r < dna .Stock[i] .Disable .GetLength(0); r++)
+                        {
+                              for (int c = 0; c < dna .Stock[i] .Disable .GetLength(1); c++)
+                              {
+                                    dna .Stock[i] .Disable[r, c] = 0;
+                              }
+                        }
+
+                        List<MyRectangle> rect = new List<MyRectangle>();//剩余空间
+                        Stock s = dna .Stock[i];
+                        rect .Add(new MyRectangle(0, 0, s .Disable .GetLength(0), s .Disable .GetLength(1)));
+
+                        while (rect .Count > 0)
+                        {
+                              rect .Sort(new CompareRect());
+                              MyRectangle r = rect[0];
+                              int n = 0;
+                              bool nestin = false;
+                              while (n < dna .Basic .Count)
+                              {
+                                    Basic b = dna .Basic[n];
+                                    int count = b .Count;
+                                    if (count == 0)
+                                    {
+                                          n++;
+                                          continue;
+                                    }
+                                    var tp = GetBasicNew(b);
+                                    List<GridData> grid = tp .Item1 .Grid;
+                                    List<GridData> gridCombine = tp .Item2 == null ? null : tp .Item2 .Grid;
+                                    int[,] array = tp .Item1 .GridArray;
+                                    int[,] arrayCombine = tp .Item2 == null ? null : tp .Item2 .GridArray;
+
+                                    List<GridData> grid90 = tp .Item3 .Grid;
+                                    int[,] array90 = tp .Item3 .GridArray;
+
+                                    List<GridData> grid180 = tp .Item4 .Grid;//增加旋转180度排样
+                                    int[,] array180 = tp .Item4 .GridArray;
+
+                                    float area = b .Area;
+
+                                    bool find = false;
+                                    //判断组合零件是否可以排在此处
+                                    if (count > 1 && gridCombine != null)
+                                    {
+                                          int width = arrayCombine .GetLength(0);
+                                          int height = arrayCombine .GetLength(1);
+
+                                          bool big = false;
+                                          Point p = new Point(0, 0);
+                                          if (width + r .Width > s .Disable .GetLength(0)
+                                                || height + r .Height > s .Disable .GetLength(1))
+                                          {
+                                                p = VirtualMove(s, rect, arrayCombine, gridCombine);
+                                                big = true;
+                                          }
+
+                                          if (height - p .Y <= r .Height
+                                                && width - p .X <= r .Width)// && (height > _small || width > _small)
+                                          {
+                                                find = true;
+                                                Point location;
+                                                if (big)
+                                                      location = ActionMove(p, ref s, ref rect, ref arrayCombine, ref gridCombine);
+                                                else
+                                                      location = BottomLeftMove(ref s, ref rect, ref arrayCombine, ref gridCombine);
+
+                                                s .PartInfoList .Add(new PartInfo(b .Id, "2", b .AngleCombine, location, b .CombineType));
+
+                                                dna .Basic[n] .Count -= 2;
+                                                sumArea += area * 2;
+                                                nestin = true;
+                                                break;
+                                          }
+                                    }
+                                    //判断单一图形是否可以排入
+                                    if (!find)
+                                    {
+                                          int width = array .GetLength(0);
+                                          int height = array .GetLength(1);
+
+                                          bool big = false;
+                                          Point p = new Point(0, 0);
+                                          if (width + r .Width > s .Disable .GetLength(0)
+                                                || height + r .Height > s .Disable .GetLength(1))
+                                          {
+                                                p = VirtualMove(s, rect, array, grid);
+                                                big = true;
+                                          }
+
+                                          if (height - p .Y <= r .Height
+                                                && width - p .X <= r .Width)// && (height > _small || width > _small)
+                                          {
+                                                find = true;
+                                                Point location;
+                                                if (big)
+                                                      location = ActionMove(p, ref s, ref rect, ref array, ref grid);
+                                                else
+                                                      location = BottomLeftMove(ref s, ref rect, ref array, ref grid);
+
+                                                s .PartInfoList .Add(new PartInfo(b .Id, "1", b .Angle, location));
+
+                                                dna .Basic[n] .Count--;
+                                                if (_rotate)//单件排入后旋转180度
+                                                {
+                                                      dna .Basic[n] .Angle = (dna .Basic[n] .Angle + 180) % 360;
+                                                }
+                                                sumArea += area;
+                                                nestin = true;
+                                                break;
+                                          }
+                                    }
+                                    //单一图形旋转90度后再次试排
+                                    if (!find)
+                                    {
+                                          int width = array90 .GetLength(0);
+                                          int height = array90 .GetLength(1);
+
+                                          bool big = false;
+                                          Point p = new Point(0, 0);
+                                          if (width + r .Width > s .Disable .GetLength(0)
+                                                || height + r .Height > s .Disable .GetLength(1))
+                                          {
+                                                p = VirtualMove(s, rect, array90, grid90);
+                                                big = true;
+                                          }
+
+                                          if (height - p .Y <= r .Height
+                                               && width - p .X <= r .Width)// && (height > _small || width > _small)
+                                          {
+                                                find = true;
+                                                Point location;
+                                                if (big)
+                                                      location = ActionMove(p, ref s, ref rect, ref array90, ref grid90);
+                                                else
+                                                      location = BottomLeftMove(ref s, ref rect, ref array90, ref grid90);
+
+                                                s .PartInfoList .Add(new PartInfo(b .Id, "1", (b .Angle + 90) % 360, location));
+                                                dna .Basic[n] .Count--;
+                                                if (_rotate)//单件排入后旋转180度
+                                                {
+                                                      dna .Basic[n] .Angle = (dna .Basic[n] .Angle + 180) % 360;
+                                                }
+                                                sumArea += area;
+                                                nestin = true;
+                                                break;
+                                          }
+                                    }
+                                    //单一图形旋转180 度后再次试排
+                                    if (!find)
+                                    {
+                                          int width = array180 .GetLength(0);
+                                          int height = array180 .GetLength(1);
+
+                                          bool big = false;
+                                          Point p = new Point(0, 0);
+                                          if (width + r .Width > s .Disable .GetLength(0)
+                                                || height + r .Height > s .Disable .GetLength(1))
+                                          {
+                                                p = VirtualMove(s, rect, array180, grid180);
+                                                big = true;
+                                          }
+
+                                          if (height - p .Y <= r .Height
+                                               && width - p .X <= r .Width)// && (height > _small || width > _small)
+                                          {
+                                                find = true;
+                                                Point location;
+                                                if (big)
+                                                      location = ActionMove(p, ref s, ref rect, ref array180, ref grid180);
+                                                else
+                                                      location = BottomLeftMove(ref s, ref rect, ref array180, ref grid180);
+
+                                                s .PartInfoList .Add(new PartInfo(b .Id, "1", (b .Angle + 180) % 360, location));
+                                                dna .Basic[n] .Count--;
+                                                if (_rotate)//单件排入后旋转180度
+                                                {
+                                                      dna .Basic[n] .Angle = (dna .Basic[n] .Angle + 180) % 360;
+                                                }
+                                                sumArea += area;
+                                                nestin = true;
+                                                break;
+                                          }
+                                    }
+                                    //如果当前零件不合适，则向后搜索宽度最匹配零件插入当前位置
+                                    if (!find)
+                                    {
+                                          int bestheight = 0;
+                                          int bestindex = -1;
+                                          for (int t = n + 1; t < dna .Basic .Count; t++)
+                                          {
+                                                Basic test = dna .Basic[t];
+                                                int testcount = test .Count;
+
+                                                if (testcount == 0)
+                                                {
+                                                      continue;
+                                                }
+                                                var testtp = GetBasicNew(test);
+                                                List<GridData> testgrid = testtp .Item1 .Grid;
+                                                List<GridData> testgridCombine = testtp .Item2 == null ? null : testtp .Item2 .Grid;
+                                                int[,] testarray = testtp .Item1 .GridArray;
+                                                int[,] testarrayCombine = testtp .Item2 == null ? null : testtp .Item2 .GridArray;
+
+                                                List<GridData> testgrid90 = testtp .Item3 .Grid;
+                                                int[,] testarray90 = testtp .Item3 .GridArray;
+
+                                                List<GridData> testgrid180 = testtp .Item4 .Grid;
+                                                int[,] testarray180 = testtp .Item4 .GridArray;
+                                                bool testfind = false;
+                                                if (testcount > 1 && testgridCombine != null)
+                                                {
+                                                      int testwidth = testarrayCombine .GetLength(0);
+                                                      int testheight = testarrayCombine .GetLength(1);
+
+                                                      Point p = new Point(0, 0);
+                                                      if (testwidth + r .Width > s .Disable .GetLength(0)
+                                                            || testheight + r .Height > s .Disable .GetLength(1))
+                                                      {
+                                                            p = VirtualMove(s, rect, testarrayCombine, testgridCombine);
+                                                      }
+
+                                                      if (testheight - p .Y <= r .Height
+                                                            && testwidth - p .X <= r .Width)//&& (testheight > _small || testwidth > _small)
+                                                      {
+                                                            testfind = true;
+                                                            if (testheight > bestheight)
+                                                            {
+                                                                  bestheight = testheight;
+                                                                  bestindex = t;
+                                                            }
+                                                      }
+                                                }
+                                                if (!testfind)
+                                                {
+                                                      int testwidth = testarray .GetLength(0);
+                                                      int testheight = testarray .GetLength(1);
+
+                                                      Point p = new Point(0, 0);
+                                                      if (testwidth + r .Width > s .Disable .GetLength(0)
+                                                            || testheight + r .Height > s .Disable .GetLength(1))
+                                                      {
+                                                            p = VirtualMove(s, rect, testarray, testgrid);
+                                                      }
+                                                      if (testheight - p .Y <= r .Height
+                                                            && testwidth - p .X <= r .Width)//&& (testheight > _small || testwidth > _small)
+                                                      {
+                                                            testfind = true;
+                                                            if (testheight > bestheight)
+                                                            {
+                                                                  bestheight = testheight;
+                                                                  bestindex = t;
+                                                            }
+                                                      }
+                                                }
+                                                if (!testfind)
+                                                {
+                                                      int testwidth = testarray90 .GetLength(0);
+                                                      int testheight = testarray90 .GetLength(1);
+
+                                                      Point p = new Point(0, 0);
+                                                      if (testwidth + r .Width > s .Disable .GetLength(0)
+                                                            || testheight + r .Height > s .Disable .GetLength(1))
+                                                      {
+                                                            p = VirtualMove(s, rect, testarray90, testgrid90);
+                                                      }
+                                                      if (testheight - p .Y <= r .Height
+                                                            && testwidth - p .X <= r .Width)//&& (testheight > _small || testwidth > _small)
+                                                      {
+                                                            testfind = true;
+                                                            if (testheight > bestheight)
+                                                            {
+                                                                  bestheight = testheight;
+                                                                  bestindex = t;
+                                                            }
+                                                      }
+                                                }
+                                                //旋转180度试
+                                                if (!testfind)
+                                                {
+                                                      int testwidth = testarray180 .GetLength(0);
+                                                      int testheight = testarray180 .GetLength(1);
+
+                                                      Point p = new Point(0, 0);
+                                                      if (testwidth + r .Width > s .Disable .GetLength(0)
+                                                            || testheight + r .Height > s .Disable .GetLength(1))
+                                                      {
+                                                            p = VirtualMove(s, rect, testarray180, testgrid180);
+                                                      }
+                                                      if (testheight - p .Y <= r .Height
+                                                            && testwidth - p .X <= r .Width)//&& (testheight > _small || testwidth > _small)
+                                                      {
+                                                            testfind = true;
+                                                            if (testheight > bestheight)
+                                                            {
+                                                                  bestheight = testheight;
+                                                                  bestindex = t;
+                                                            }
+                                                      }
+                                                }
+                                          }
+                                          if (bestindex > 0)
+                                          {
+                                                Basic testb = dna .Basic[bestindex] .Copy();
+                                                dna .Basic .RemoveAt(bestindex);
+                                                dna .Basic .Insert(n + 1, testb);//前插会导致小件挤在左边
+                                                find = true;
+                                                n++;
+                                          }
+                                          else
+                                          {
+                                                find = false;
+                                                n++;
+                                          }
+                                    }
+                              }
+
+                              if (!nestin)
+                              {
+                                    rect .RemoveAt(0);//若无法排入任何件号，则删除该矩形
+                              }
+                        }//end while (rect .Count > 0)
+
+                        watch .Stop();  //停止监视
+                        txttime .Text += ("剩余矩形：" + watch .Elapsed .TotalMilliseconds .ToString() + "ms\r\n");
+                        watch .Restart();
+
+                        #region 剩余零件插孔排入
+                        for (int b = 0; b < dna .Basic .Count; b++)
+                        {
+                              int count = dna .Basic[b] .Count;
+                              if (count > 0)
+                              {
+                                    Basic basic = dna .Basic[b];
+                                    var tp = GetBasicNew(basic);
+                                    List<GridData> grid = tp .Item1 .Grid;
+                                    List<GridData> gridCombine = tp .Item2 == null ? null : tp .Item2 .Grid;
+                                    int[,] array = tp .Item1 .GridArray;
+                                    int[,] arrayz = tp .Item1 .GridArrayZero;
+                                    int[,] arrayCombine = tp .Item2 == null ? null : tp .Item2 .GridArray;
+                                    int[,] arrayCombinez = tp .Item2 == null ? null : tp .Item2 .GridArrayZero;
+                                    List<GridData> grid90 = tp .Item3 .Grid;
+                                    int[,] array90 = tp .Item3 .GridArray;
+                                    int[,] array90z = tp .Item3 .GridArrayZero;
+                                    List<GridData> grid180 = tp .Item4 .Grid;
+                                    int[,] array180 = tp .Item4 .GridArray;
+                                    int[,] array180z = tp .Item4 .GridArrayZero;
+
+                                    int length = -1;
+                                    int width = -1;
+                                    if (array != null)
+                                    {
+                                          length = array .GetLength(0);
+                                          width = array .GetLength(1);
+                                    }
+                                    int lengthC = -1;
+                                    int widthC = -1;
+                                    if (arrayCombine != null)
+                                    {
+                                          lengthC = arrayCombine .GetLength(0);
+                                          widthC = arrayCombine .GetLength(1);
+                                    }
+                                    int length90 = -1;
+                                    int width90 = -1;
+                                    if (array90 != null)
+                                    {
+                                          length90 = array90 .GetLength(0);
+                                          width90 = array90 .GetLength(1);
+                                    }
+                                    int length180 = -1;
+                                    int width180 = -1;
+                                    if (array180 != null)
+                                    {
+                                          length180 = array180 .GetLength(0);
+                                          width180 = array180 .GetLength(1);
+                                    }
+                                    float area = basic .Area;
+
+                                    int rowcount = s .Disable .GetLength(0);
+                                    int colcount = s .Disable .GetLength(1);
+
+                                    while (count > 0)
+                                    {
+                                          bool added = false;
+                                          if (lengthC < _small && widthC < _small && lengthC > 0 && widthC > 0 && count > 1)//lengthC < _small && widthC < _small && 
+                                          {
+                                                for (int m = 0; m < rowcount - lengthC; m++)
+                                                {
+                                                      //组合图形适配
+                                                      int n = 0;
+                                                      while (n < colcount - widthC && count >= 2)
+                                                      {
+                                                            if (_step)
+                                                            {
+                                                                  /*int col = gridCombine[0] .Col;
+                                                                   if (n + col >= colcount)
+                                                                  {
+                                                                        break;
+                                                                  }
+                                                                  int svalue = s .Disable[m, n + col];
+                                                                  if (svalue > 0)
+                                                                  {
+                                                                        n += svalue;
+                                                                        continue;
+                                                                  }*/
+                                                                  if (n + arrayCombinez .GetLength(1) > colcount)
+                                                                  {
+                                                                        break;
+                                                                  }
+                                                                  int step = GetStep(s .Disable, arrayCombinez, m, n);
+                                                                  if (step > 0)
+                                                                  {
+                                                                        n += step;
+                                                                        continue;
+                                                                  }
+                                                            }
+
+                                                            if (CanAddNew(s .Disable, arrayCombine, m, n))
+                                                            {
+                                                                  s .Disable = GridAddNew(s .Disable, arrayCombine, m, n);
+                                                                  sumArea += area * 2;
+                                                                  added = true;
+                                                                  count -= 2;
+                                                                  dna .Basic[b] .Count -= 2;
+                                                                  s .PartInfoList .Add(new PartInfo(basic .Id, "2", basic .AngleCombine, new Point(m, n), basic .CombineType));
+                                                                  break;
+                                                            }
+                                                            n++;
+                                                      }
+                                                      if (added)
+                                                            break;
+                                                }//end for(rowcount)
+                                          }
+                                          if (!added)
+                                          {
+                                                if (length < _small && width < _small && length > 0 && width > 0 && count > 0)//length < _small && width < _small && 
+                                                {
+                                                      for (int m = 0; m < rowcount - length; m++)
+                                                      {
+                                                            //单一图形适配
+                                                            int n = 0;
+                                                            while (n < colcount - width && count >= 1)
+                                                            {
+                                                                  if (_step)
+                                                                  {
+                                                                        /*int col = grid[0] .Col;
+                                                                        if (n + col >= colcount)
+                                                                        {
+                                                                              break;
+                                                                        }
+                                                                        int svalue = s .Disable[m, n + col];
+                                                                        if (svalue > 0)
+                                                                        {
+                                                                              n += svalue;
+                                                                              continue;
+                                                                        }*/
+                                                                        if (n + arrayz .GetLength(1) > colcount)
+                                                                        {
+                                                                              break;
+                                                                        }
+                                                                        int step = GetStep(s .Disable, arrayz, m, n);
+                                                                        if (step > 0)
+                                                                        {
+                                                                              n += step;
+                                                                              continue;
+                                                                        }
+                                                                  }
+                                                                  if (CanAddNew(s .Disable, array, m, n))
+                                                                  {
+                                                                        s .Disable = GridAddNew(s .Disable, array, m, n);
+                                                                        sumArea += area;
+                                                                        added = true;
+                                                                        count -= 1;
+                                                                        dna .Basic[b] .Count -= 1;
+                                                                        s .PartInfoList .Add(new PartInfo(basic .Id, "1", basic .Angle, new Point(m, n)));
+                                                                        break;
+                                                                  }
+                                                                  n++;
+                                                            }
+                                                            if (added)
+                                                                  break;
+                                                      }//end for(rowcount)
+                                                }
+                                          }
+                                          if (!added)
+                                          {
+                                                if (length90 < _small && width90 < _small && length90 > 0 && width90 > 0 && count > 0)//length < _small && width < _small && 
+                                                {
+                                                      for (int m = 0; m < rowcount - length90; m++)
+                                                      {
+                                                            //单一图形适配旋转90
+                                                            int n = 0;
+                                                            while (n < colcount - width90 && count >= 1)
+                                                            {
+                                                                  if (_step)
+                                                                  {
+                                                                        /*int col = grid90[0] .Col;
+                                                                        if (n + col >= colcount)
+                                                                        {
+                                                                              break;
+                                                                        }
+                                                                        int svalue = s .Disable[m, n + col];
+                                                                        if (svalue > 0)
+                                                                        {
+                                                                              n += svalue;
+                                                                              continue;
+                                                                        }*/
+                                                                        if (n + array90z .GetLength(1) > colcount)
+                                                                        {
+                                                                              break;
+                                                                        }
+                                                                        int step = GetStep(s .Disable, array90z, m, n);
+                                                                        if (step > 0)
+                                                                        {
+                                                                              n += step;
+                                                                              continue;
+                                                                        }
+                                                                  }
+                                                                  if (CanAddNew(s .Disable, array90, m, n))
+                                                                  {
+                                                                        s .Disable = GridAddNew(s .Disable, array90, m, n);
+                                                                        sumArea += area;
+                                                                        added = true;
+                                                                        count -= 1;
+                                                                        dna .Basic[b] .Count -= 1;
+                                                                        s .PartInfoList .Add(new PartInfo(basic .Id, "1", (basic .Angle + 90) % 360, new Point(m, n)));
+                                                                        break;
+                                                                  }
+                                                                  n++;
+                                                            }
+                                                            if (added)
+                                                                  break;
+                                                      }//end for(rowcount)
+                                                }
+                                          }
+                                          if (!added)
+                                          {
+                                                if (length180 < _small && width180 < _small && length180 > 0 && width180 > 0 && count > 0)//length < _small && width < _small && 
+                                                {
+                                                      for (int m = 0; m < rowcount - length180; m++)
+                                                      {
+                                                            //单一图形适配旋转180
+                                                            int n = 0;
+                                                            while (n < colcount - width180 && count >= 1)
+                                                            {
+                                                                  if (_step)
+                                                                  {
+                                                                        /*int col = grid180[0] .Col;
+                                                                        if (n + col >= colcount)
+                                                                        {
+                                                                              break;
+                                                                        }
+                                                                        int svalue = s .Disable[m, n + col];
+                                                                        if (svalue > 0)
+                                                                        {
+                                                                              n += svalue;
+                                                                              continue;
+                                                                        }*/
+                                                                        if (n + array180z .GetLength(1) > colcount)
+                                                                        {
+                                                                              break;
+                                                                        }
+                                                                        int step = GetStep(s .Disable, array180z, m, n);
+                                                                        if (step > 0)
+                                                                        {
+                                                                              n += step;
+                                                                              continue;
+                                                                        }
+                                                                  }
+                                                                  if (CanAddNew(s .Disable, array180, m, n))
+                                                                  {
+                                                                        s .Disable = GridAddNew(s .Disable, array180, m, n);
+                                                                        sumArea += area;
+                                                                        added = true;
+                                                                        count -= 1;
+                                                                        dna .Basic[b] .Count -= 1;
+                                                                        s .PartInfoList .Add(new PartInfo(basic .Id, "1", (basic .Angle + 180) % 360, new Point(m, n)));
+                                                                        break;
+                                                                  }
+                                                                  n++;
+                                                            }
+                                                            if (added)
+                                                                  break;
+                                                      }//end for(rowcount)
+                                                }
+                                          }
+                                          if (!added)
+                                                break;
+                                    }
+                              }
+                        }
+                        #endregion
+
+                        watch .Stop();  //停止监视
+                        txttime .Text += ("插孔：" + watch .Elapsed .TotalMilliseconds .ToString() + "ms\r\n");
+                        watch .Restart();
+
+                        dna .Stock[i] = s;
+                  }
+                  d .Stock = dna .Stock .ToList();
+
+                  //计算每块板的使用量
+                  float sumStock = 0f;
+                  float fitness = 0f;
+                  for (int i = 0; i < dna .Stock .Count; i++)
+                  {
+                        /*float use = dna .Stock[i] .Use;
+                        if (use == 0 && i > 0)//若为0，则上一块为最后一块，-整块面积+使用面积，结束计算
+                        {
+                              sumStock += (use * dna .Stock[i - 1] .Height - dna .Stock[i - 1] .Height * dna .Stock[i - 1] .Width);
+                              break;
+                        }
+                        else if (use > 0 && i == dna .Stock .Count - 1)//找到最后一个还是大于0，则本块为最后一块
+                        {
+                              sumStock += use * dna .Stock[i] .Height;
+                        }
+                        else
+                        {
+                              sumStock += dna .Stock[i] .Height * dna .Stock[i] .Width;
+                        }*/
+                        float use = dna .Stock[i] .Use;
+                        if (use > 0)
+                        {
+                              sumStock += dna .Stock[i] .Height * dna .Stock[i] .Width;
+                        }
+                  }
+
+                  //适应度计算
+                  if (sumStock > 0)
+                  {
+                        fitness = sumArea / sumStock * 100;
+                  }
+                  d .Fitness = fitness;
+
+                  watch .Stop();  //停止监视
+                  txttime .Text += ("结束：" + watch .Elapsed .TotalMilliseconds .ToString() + "ms\r\n");
+
+                  return d;
+            }
             /// <summary>
             /// 剩余矩形动态匹配算法解码,平行四边形
             /// </summary>
@@ -1879,11 +2537,15 @@ namespace myCad
                                     List<GridData> grid = tp .Item1 .Grid;
                                     List<GridData> gridCombine = tp .Item2 == null ? null : tp .Item2 .Grid;
                                     int[,] array = tp .Item1 .GridArray;
+                                    int[,] arrayz = tp .Item1 .GridArrayZero;
                                     int[,] arrayCombine = tp .Item2 == null ? null : tp .Item2 .GridArray;
+                                    int[,] arrayCombinez = tp .Item2 == null ? null : tp .Item2 .GridArrayZero;
                                     List<GridData> grid90 = tp .Item3 .Grid;
                                     int[,] array90 = tp .Item3 .GridArray;
+                                    int[,] array90z = tp .Item3 .GridArrayZero;
                                     List<GridData> grid180 = tp .Item4 .Grid;
                                     int[,] array180 = tp .Item4 .GridArray;
+                                    int[,] array180z = tp .Item4 .GridArrayZero;
 
                                     int length = -1;
                                     int width = -1;
@@ -1931,8 +2593,8 @@ namespace myCad
                                                       {
                                                             if (_step)
                                                             {
-                                                                  int col = gridCombine[0] .Col;
-                                                                  if (n + col >= colcount)
+                                                                  /*int col = gridCombine[0] .Col;
+                                                                   if (n + col >= colcount)
                                                                   {
                                                                         break;
                                                                   }
@@ -1940,6 +2602,16 @@ namespace myCad
                                                                   if (svalue > 0)
                                                                   {
                                                                         n += svalue;
+                                                                        continue;
+                                                                  }*/
+                                                                  if (n + arrayCombinez .GetLength(1) > colcount)
+                                                                  {
+                                                                        break;
+                                                                  }
+                                                                  int step = GetStep(s .Disable, arrayCombinez, m, n);
+                                                                  if (step > 0)
+                                                                  {
+                                                                        n += step;
                                                                         continue;
                                                                   }
                                                             }
@@ -1972,7 +2644,7 @@ namespace myCad
                                                             {
                                                                   if (_step)
                                                                   {
-                                                                        int col = grid[0] .Col;
+                                                                        /*int col = grid[0] .Col;
                                                                         if (n + col >= colcount)
                                                                         {
                                                                               break;
@@ -1981,6 +2653,16 @@ namespace myCad
                                                                         if (svalue > 0)
                                                                         {
                                                                               n += svalue;
+                                                                              continue;
+                                                                        }*/
+                                                                        if (n + arrayz .GetLength(1) > colcount)
+                                                                        {
+                                                                              break;
+                                                                        }
+                                                                        int step = GetStep(s .Disable, arrayz, m, n);
+                                                                        if (step > 0)
+                                                                        {
+                                                                              n += step;
                                                                               continue;
                                                                         }
                                                                   }
@@ -2013,7 +2695,7 @@ namespace myCad
                                                             {
                                                                   if (_step)
                                                                   {
-                                                                        int col = grid90[0] .Col;
+                                                                        /*int col = grid90[0] .Col;
                                                                         if (n + col >= colcount)
                                                                         {
                                                                               break;
@@ -2022,6 +2704,16 @@ namespace myCad
                                                                         if (svalue > 0)
                                                                         {
                                                                               n += svalue;
+                                                                              continue;
+                                                                        }*/
+                                                                        if (n + array90z .GetLength(1) > colcount)
+                                                                        {
+                                                                              break;
+                                                                        }
+                                                                        int step = GetStep(s .Disable, array90z, m, n);
+                                                                        if (step > 0)
+                                                                        {
+                                                                              n += step;
                                                                               continue;
                                                                         }
                                                                   }
@@ -2054,7 +2746,7 @@ namespace myCad
                                                             {
                                                                   if (_step)
                                                                   {
-                                                                        int col = grid180[0] .Col;
+                                                                        /*int col = grid180[0] .Col;
                                                                         if (n + col >= colcount)
                                                                         {
                                                                               break;
@@ -2063,6 +2755,16 @@ namespace myCad
                                                                         if (svalue > 0)
                                                                         {
                                                                               n += svalue;
+                                                                              continue;
+                                                                        }*/
+                                                                        if (n + array180z .GetLength(1) > colcount)
+                                                                        {
+                                                                              break;
+                                                                        }
+                                                                        int step = GetStep(s .Disable, array180z, m, n);
+                                                                        if (step > 0)
+                                                                        {
+                                                                              n += step;
                                                                               continue;
                                                                         }
                                                                   }
@@ -4284,6 +4986,31 @@ namespace myCad
                   return true;
             }
             /// <summary>
+            /// 计算跳过的步数
+            /// </summary>
+            /// <param name="s"></param>
+            /// <param name="p"></param>
+            /// <param name="rowindex"></param>
+            /// <param name="colindex"></param>
+            /// <returns></returns>
+            private int GetStep(int[,] s, int[,] p, int rowindex, int colindex)
+            {
+                  int rows = p .GetLength(0);
+                  int cols = p .GetLength(1);
+                  int s_rows = s .GetLength(0);
+                  int s_cols = s .GetLength(1);
+
+                  int step = 0;
+
+                  for (int i = 0; i < rows; i++)
+                  {
+                        int t = s[rowindex + i, colindex] - p[i, 0];
+                        step = Math .Max(step, t);
+                  }
+
+                  return step;
+            }
+            /// <summary>
             /// 栅格排入
             /// </summary>
             /// <param name="gridarray"></param>
@@ -4328,6 +5055,30 @@ namespace myCad
                         }
                   });
                   return s;
+                  /*
+                  int r = p .GetLength(0);
+                  int c = p .GetLength(1);
+
+                  Parallel .For(0, r, (i) =>
+                     {
+                           int v = 1;
+                           for (int j = c - 1; j >= 0; j--)
+                           {
+                                 if (p[i, j] == 0)
+                                 {
+                                       s[i + rowindex, j + colindex] = v;
+                                       v++;
+                                 }
+                                 else
+                                 {
+                                       s[i + rowindex, j + colindex] = 0;
+                                       v = 1;
+                                 }
+                           }
+                     });
+
+                  return s;
+                  */
             }
             /// <summary>
             /// 交叉
@@ -5147,7 +5898,7 @@ namespace myCad
 
                         if (chkPrintvalue .Checked)
                         {
-                              frmtext frm = new frmtext(gl .GridArray);
+                              frmtext frm = new frmtext(gl .GridArrayZero);
                               frm .Show();
                         }
                         watch .Stop();  //停止监视

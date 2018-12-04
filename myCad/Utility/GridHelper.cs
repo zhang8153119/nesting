@@ -1085,12 +1085,19 @@ namespace myCad .Utility
       {
             public List<GridData> Grid { get; set; }
             public int[,] GridArray { get; set; }
+            public int[,] GridArrayZero { get; set; }
             public GridLib()
             {
 
             }
             public GridLib(List<GridData> grid, int[,] gridarray)
             {
+                  GridArray = gridarray;
+                  Grid = grid;
+            }
+            public GridLib(List<GridData> grid, int[,] gridarray,int [,] gridarrayZero)
+            {
+                  GridArrayZero = gridarrayZero;
                   GridArray = gridarray;
                   Grid = grid;
             }

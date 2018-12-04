@@ -967,12 +967,12 @@ namespace myCad .Utility
                               //test
                               if (limit > 0 && matchwidth)
                               {
-                                    if (height02 > height0)
+                                    if (height02 > height0 && height02 >= limit * 0.9 && height02 <= limit)
                                     {
                                           area0 = limit * length02;
                                           dic0["area"] = area0;
                                     }
-                                    else
+                                    else if (height0 > height02 && height0 >= limit * 0.9 && height0 <= limit)
                                     {
                                           area0 = limit * length0;
                                           dic0["area"] = area0;
@@ -1248,12 +1248,12 @@ namespace myCad .Utility
 
                               if (limit > 0 && matchwidth)
                               {
-                                    if (height02 > height0)
+                                    if (height02 > height0 && height02 >= limit * 0.9 && height02 <= limit)
                                     {
                                           area0 = limit * length02;
                                           dic0["area"] = area0;
                                     }
-                                    else
+                                    else if (height0 > height02 && height0 >= limit * 0.9 && height0 <= limit)
                                     {
                                           area0 = limit * length0;
                                           dic0["area"] = area0;
@@ -1517,12 +1517,12 @@ namespace myCad .Utility
 
                               if (limit > 0 && matchwidth)
                               {
-                                    if (height02 > height0)
+                                    if (height02 > height0 && height02 >= limit * 0.9 && height02 <= limit)
                                     {
                                           area0 = limit * length02;
                                           dic0["area"] = area0;
                                     }
-                                    else
+                                    else if (height0 > height02 && height0 >= limit * 0.9 && height0 <= limit)
                                     {
                                           area0 = limit * length0;
                                           dic0["area"] = area0;
@@ -1798,12 +1798,12 @@ namespace myCad .Utility
 
                               if (limit > 0 && matchwidth)
                               {
-                                    if (height02 > height0)
+                                    if (height02 > height0 && height02 >= limit * 0.9 && height02 <= limit)
                                     {
                                           area0 = limit * length02;
                                           dic0["area"] = area0;
                                     }
-                                    else
+                                    else if (height0 > height02 && height0 >= limit * 0.9 && height0 <= limit)
                                     {
                                           area0 = limit * length0;
                                           dic0["area"] = area0;

@@ -17,6 +17,7 @@ namespace myCad .Model
             public string Type { get; set; }
             public float Angle { get; set; }
             public Point Location { get; set; }
+            public PointF LocationF { get; set; }
             public int combineType { get; set; }
             public PartInfo(int id, string type, float angle, Point location, int combinetype = 0)
             {
@@ -26,10 +27,26 @@ namespace myCad .Model
                   Location = location;
                   combineType = combinetype;
             }
-
+            public PartInfo(int id, string type, float angle, PointF locationF, int combinetype = 0)
+            {
+                  ID = id;
+                  Type = type;
+                  Angle = angle;
+                  LocationF = locationF;
+                  combineType = combinetype;
+            }
+            public PartInfo(int id, string type, float angle, Point location, PointF locationF, int combinetype = 0)
+            {
+                  ID = id;
+                  Type = type;
+                  Angle = angle;
+                  Location = location;
+                  LocationF = locationF;
+                  combineType = combinetype;
+            }
             public PartInfo Copy()
             {
-                  PartInfo p = new PartInfo(ID, Type, Angle, Location, combineType);
+                  PartInfo p = new PartInfo(ID, Type, Angle, Location, LocationF, combineType);
                   return p;
             }
       }

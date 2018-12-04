@@ -162,10 +162,12 @@ namespace GPU
                   int[,] gridarray = GetGridArray(pm, T, program);
                   int WI = gridarray .GetLength(0);
                   int HI = gridarray .GetLength(1);
+                  int[,] gridarrayzero = new int[WI, HI];
                   List<GridData> grid = new List<GridData>();
                   for (int i = WI - 1; i >= 0; i--)
                   {
                         int v = 1;
+                        int vz = 1;
                         for (int j = HI - 1; j >= 0; j--)
                         {
                               if (gridarray[i, j] == 1)
@@ -173,14 +175,20 @@ namespace GPU
                                     gridarray[i, j] = v;
                                     grid .Insert(0, new GridData(i, j, v));
                                     v++;
+
+                                    gridarrayzero[i, j] = 0;
+                                    vz = 1;
                               }
                               else
                               {
                                     v = 1;
+
+                                    gridarrayzero[i, j] = vz;
+                                    vz++;
                               }
                         }
                   }
-                  return new GridLib(grid, gridarray);
+                  return new GridLib(grid, gridarray, gridarrayzero);
             }
             /// <summary>
             /// 合并图形栅格数据
@@ -201,10 +209,12 @@ namespace GPU
                   int h = Math .Max(h1, h2);
 
                   int[,] array = new int[w, h];
+                  int[,] arrayzero = new int[w, h];
                   List<GridData> grid = new List<GridData>();
                   for (int i = w - 1; i >= 0; i--)
                   {
                         int v = 1;
+                        int vz = 1;
                         for (int j = h - 1; j >= 0; j--)
                         {
                               int v1 = 0;
@@ -219,15 +229,21 @@ namespace GPU
                                     array[i, j] = v;
                                     grid .Insert(0, new GridData(i, j, v));
                                     v++;
+
+                                    arrayzero[i, j] = 0;
+                                    vz = 1;
                               }
                               else
                               {
                                     array[i, j] = 0;
                                     v = 1;
+
+                                    arrayzero[i, j] = vz;
+                                    vz++;
                               }
                         }
                   }
-                  return new GridLib(grid, array);
+                  return new GridLib(grid, array,arrayzero);
             }
             /// <summary>
             /// 栅格化范围数组
